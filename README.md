@@ -10,8 +10,7 @@ databases, secure password storage, code execution, and AI integration.
 
 The desired workflow on the features is
 
-$$
-\text{Visitor}
+$$\text{Visitor}
 \rightarrow
 \text{Sign Up}
 \rightarrow
@@ -39,8 +38,7 @@ $$
 \rightarrow
 \text{Ask miniHelper for a Hint}
 \rightarrow
-\text{Admin Manages Challenges}
-$$
+\text{Admin Manages Challenges}$$
 The project will be built using the following technologies:
 - Frontend: Vue.js, HTML, Vuetify, Vue Bits and Typescript
 - Backend: Spring Boot, Java, Rest APIs, Spring Security, JWT
