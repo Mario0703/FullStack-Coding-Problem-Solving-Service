@@ -1,7 +1,7 @@
-<script setup>
-import UserSignup from './components/UserSignup.vue'
-</script>
-
 <template>
-  <UserSignup />
+  <v-app>
+    <v-main>
+      <RouterView />
+    </v-main>
+  </v-app>
 </template>
