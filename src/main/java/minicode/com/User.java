@@ -5,6 +5,13 @@ import jakarta.persistence.*;
 @Entity // This class should be tracked as a table
 @Table(name = "users") // provides the name of the table
 public class User {
+
+    private String userName;
+    private long userId;
+    private String email;
+    private String password;
+
+
     public String getUserName() {
         return userName;
     }
@@ -30,7 +37,12 @@ public class User {
         this.email = email;
     }
 
-    private String userName;
-    private long userId;
-    private String email;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
