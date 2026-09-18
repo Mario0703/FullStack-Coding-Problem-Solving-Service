@@ -4,10 +4,10 @@
   <v-app-bar color="primary">
     <v-app-bar-title>MiniLeetCode</v-app-bar-title>
     <v-spacer />
-    <v-btn color="white" variant="text">Sign in</v-btn>
-    <v-btn color="white" variant="text">Explore coding challenges</v-btn>
-    <v-btn color="white" variant="text">About the project</v-btn>
-    <v-btn color="white" variant="text">Contact</v-btn>
-    <v-btn color="white" variant="text">Home</v-btn>
+    <v-btn color="white" variant="text" to="/CreateAccount">Sign in</v-btn>
+    <v-btn color="white" variant="text" to="/challenges">Explore coding challenges</v-btn>
+    <v-btn color="white" variant="text" to="/about">About the project</v-btn>
+    <v-btn color="white" variant="text" to="/contact">Contact</v-btn>
+    <v-btn color="white" variant="text" to="/">Home</v-btn>
   </v-app-bar>
 </template>
