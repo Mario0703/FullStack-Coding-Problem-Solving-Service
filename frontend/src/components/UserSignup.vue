@@ -17,6 +17,9 @@ type UserData = {
 
 
 async function sendUserData() {
+
+  if (!canSubmit()) return
+
   const userData: UserData = {
     userName: name.value,
     email: email.value,
@@ -24,6 +27,7 @@ async function sendUserData() {
   }
 
   const response = await fetch('http://localhost:8082/api/user/signup', {
+
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -49,15 +53,30 @@ function isValidPassword(value: string): boolean {
   return passwordRegex.test(value)
 }
 
+function canSubmit(): boolean {
+  const isValid =
+    inputsMatch(email.value, confirmEmail.value) &&
+    inputsMatch(password.value, confirmPassword.value) &&
+    isValidPassword(password.value)
+
+  if (!isValid) {
+    alert('You have invalid fields. Please check your inputs and try again.')
+    return false
+  }
+
+  return true
+}
+
+
 </script>
 
 <template>
   <v-container style="display: flex; align-items: center; justify-content: center;">
-    <v-form class="signup-form" @submit.prevent="sendUserData">
+    <v-form @submit. class="signup-form" @submit.prevent="sendUserData">
       <h1>Create your account</h1>
       <p>Sign up to start solving coding challenges.</p>
 
-      <v-text-field
+      <v-text-field class="mt-4"
         v-model="name"
         label="Name"
         name="name"
@@ -65,7 +84,7 @@ function isValidPassword(value: string): boolean {
         required
       />
 
-      <v-text-field
+      <v-text-field class="mt-4"
         v-model="email"
         label="Email"
         name="email"
@@ -74,7 +93,7 @@ function isValidPassword(value: string): boolean {
         required
       />
 
-      <v-text-field
+      <v-text-field class="mt-4"
         v-model="confirmEmail"
         label="Confirm email"
         name="confirm-email"
@@ -83,12 +102,11 @@ function isValidPassword(value: string): boolean {
         required
       />
 
-      <p v-if="confirmEmail && !inputsMatch(email, confirmEmail)" class="text-error">
-        Email addresses must match.
-      </p>
+      <v-alert title="Email mismatch" text="Email addresses must match." type="error" style="margin-top: 10px;" v-if="confirmEmail && !inputsMatch(email, confirmEmail)">
+      </v-alert>
 
 
-      <v-text-field
+      <v-text-field class="mt-4"
         v-model="password"
         label="Password"
         name="password"
@@ -97,16 +115,19 @@ function isValidPassword(value: string): boolean {
         required
       />
 
-      <p v-if="password && !isValidPassword(password)" class="text-error">
-        Passwords must be at least 8 characters long and contain an uppercase letter,
-        lowercase letter, and number.
-      </p>
+      <v-alert title="Invalid password" text="  Passwords must be at least 8 characters long and contain an uppercase letter,
+        lowercase letter, and number." type ="error" v-if="password && !isValidPassword(password)">
 
-      <p v-if="confirmPassword && !inputsMatch(password, confirmPassword)" class="text-error">
-        Passwords must match.
-      </p>
+      </v-alert>
 
-      <v-text-field
+      <v-alert
+        text="Passwords must match."
+        title="Passwords don't match" type="error"
+        style="margin-top: 10px; margin-bottom: 10px;"
+        v-if="confirmPassword && !inputsMatch(password, confirmPassword)">
+      </v-alert>
+
+      <v-text-field class="mt-4"
         v-model="confirmPassword"
         label="Confirm password"
         name="confirm-password"
