@@ -12,11 +12,17 @@ public class User {
     private String password;
     private UUID userId;
 
+    protected User() {
+    }
+
     public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.userId = UUID.randomUUID();
     }
+
+
 
     public String getUserName() {
 
@@ -42,19 +48,5 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
 
-        this.email = email;
-    }
-
-
-    public String getPassword() {
-
-        return password;
-    }
-
-    public void setPassword(String password) {
-
-        this.password = password;
-    }
 }
