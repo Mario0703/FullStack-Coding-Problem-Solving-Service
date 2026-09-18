@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import {computed } from 'vue'
 
+defineOptions({
+  name: 'AppFooter',
+})
+
 const currentYear = computed(() => new Date().getFullYear())
 </script>
 

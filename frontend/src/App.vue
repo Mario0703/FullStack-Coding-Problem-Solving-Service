@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import LandingPage from "@/components/landingPage.vue";
 </script>
 <template>
   <v-app>
