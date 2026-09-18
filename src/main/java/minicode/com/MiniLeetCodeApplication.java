@@ -1,5 +1,6 @@
 package minicode.com;
 
+import jakarta.validation.Valid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,11 +17,23 @@ public class MiniLeetCodeApplication {
         this.userRepo = userRepo;
     }
 
-    @PostMapping("/api/user/signup")
-    public User SignupResponse(@RequestBody User user) {
-        User savedUser = userRepo.save(user);
-        System.out.printf("Saved user: %s, email: %s, id: %d%n", savedUser.getUserName(), savedUser.getEmail(), savedUser.getUserId());
 
+    @PostMapping("/api/user/signup")
+    public User signup(@Valid @RequestBody SignupRequest request) {
+        User user = new User(
+                request.getUserName(),
+                request.getEmail(),
+                request.getPassword()
+        );
+
+        User savedUser = userRepo.save(user);
+
+        System.out.printf(
+                "Saved user: %s, email: %s, id: %s%n",
+                savedUser.getUserName(),
+                savedUser.getEmail(),
+                savedUser.getUserId()
+        );
 
         return savedUser;
     }
