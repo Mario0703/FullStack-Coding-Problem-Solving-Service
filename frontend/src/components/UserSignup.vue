@@ -7,6 +7,7 @@ const email = ref("");
 const confirmEmail = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 type UserData = {
   userName: string;
@@ -38,19 +39,13 @@ async function sendUserData() {
   console.log(savedUser)
 }
 
-function confirm_user_input(typed_input: string, confirmed_typed_input: string): boolean {
-  const is_typed_input_equal = typed_input === confirmed_typed_input;
-  const is_typed_input_not_empty = typed_input.length > 0 && confirmed_typed_input.length > 0;
-
-  if (is_typed_input_equal && is_typed_input_not_empty) {
-    return true;
-  } else {
-    return false;
-  }
+function inputsMatch(input: string, confirmation: string): boolean {
+  return input.length > 0 && input === confirmation
 }
 
-
-
+function isValidPassword(value: string): boolean {
+  return passwordRegex.test(value)
+}
 
 </script>
 
@@ -86,7 +81,10 @@ function confirm_user_input(typed_input: string, confirmed_typed_input: string):
         required
       />
 
-      <p v-if="confirm_user_input(email,confirmEmail)"> Emails must be equal to eachother.</p>
+      <p v-if="confirmEmail && !inputsMatch(email, confirmEmail)" class="text-error">
+        Email addresses must match.
+      </p>
+
 
       <v-text-field
         v-model="password"
@@ -97,8 +95,14 @@ function confirm_user_input(typed_input: string, confirmed_typed_input: string):
         required
       />
 
-      <p>Passwords must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.</p>
-      <p v-if="confirm_user_input(password,confirmPassword)">Passwords must be equal to eachother.</p>
+      <p v-if="password && !isValidPassword(password)" class="text-error">
+        Passwords must be at least 8 characters long and contain an uppercase letter,
+        lowercase letter, and number.
+      </p>
+
+      <p v-if="confirmPassword && !inputsMatch(password, confirmPassword)" class="text-error">
+        Passwords must match.
+      </p>
 
       <v-text-field
         v-model="confirmPassword"
