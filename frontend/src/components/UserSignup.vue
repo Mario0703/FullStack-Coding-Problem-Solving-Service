@@ -40,7 +40,9 @@ async function sendUserData() {
 }
 
 function inputsMatch(input: string, confirmation: string): boolean {
-  return input.length > 0 && input === confirmation
+  const input_is_not_empty = input.length > 0
+  const input_is_equal_to_confirmation = input === confirmation
+  return input_is_not_empty && input_is_equal_to_confirmation
 }
 
 function isValidPassword(value: string): boolean {
