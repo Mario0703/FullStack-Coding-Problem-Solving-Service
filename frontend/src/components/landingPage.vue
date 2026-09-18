@@ -1,22 +1,22 @@
 <script setup lang="ts">
-
-
+import MenuBar from './MenuBar.vue'
+import PlayGround from "@/components/PlayGround.vue";
+import Footer from "@/components/Footer.vue";
 </script>
 
 <template>
   <v-container>
-  <v-app-bar color="primary">
-    <v-app-bar-title>MiniLeetCode</v-app-bar-title>
-    <v-btn color="Primary">Sign in</v-btn>
-    <v-btn color="Primary">Explore coding challenges</v-btn>
-    <v-btn color="Primary">Get started</v-btn>
-  </v-app-bar>
+    <MenuBar />
     <h1>MiniLeetCode</h1>
   <span>
     MiniLeetCode is designed for anyone wanting to learn programming fundamentals through bite-sized problems.
     Build skills and practice solving common algorithmic tasks efficiently
   </span>
-      <v-btn color="Secondary">Create an account</v-btn>
+    <div style="margin-top: 20px;">
+      <RouterLink to="/Signup">
+        <v-btn color="Secondary">Create an account</v-btn>
+      </RouterLink>
+    </div>
   </v-container>
   <v-container>
     <h2>What does this service offer</h2>
@@ -25,7 +25,11 @@
       You choose your favorite programming language and start solving the challenges immediately.<br />
       You can select curated sets of diverse challenges suited perfectly for your skill level and begin practicing right away.
     </span>
-    <v-bt color="primary">Start by viewing available challenges</v-bt>
+    <div style="margin-top: 20px;">
+      <RouterLink to="/challenges">
+        <v-btn color="primary">Start by viewing available challenges</v-btn>
+      </RouterLink>
+    </div>
   </v-container>
   <v-container>
     <h2>What this service supports</h2>
@@ -49,8 +53,9 @@
         <v-list-item title="Binary Tree" />
       </v-list>
     </div>
+    <PlayGround></PlayGround>
   </v-container>
-
+<Footer></Footer>
 </template>
 
 <style scoped>
