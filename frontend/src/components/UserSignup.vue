@@ -13,6 +13,7 @@ const email = ref("");
 const confirmEmail = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const signupError = ref("");
 
 type UserData = {
   userName: string;
@@ -23,6 +24,8 @@ type UserData = {
 
 async function sendUserData() {
 
+  signupError.value = ''
+
   if (!canSubmit()) return
 
   const userData: UserData = {
@@ -31,22 +34,26 @@ async function sendUserData() {
     password: password.value,
   }
 
-  const response = await fetch('http://localhost:8082/api/user/signup', {
+  try {
+    const response = await fetch('http://localhost:8082/api/user/signup', {
 
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-  })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
 
-  if (!response.ok) {
-    throw new Error('The API failed to send the data')
+    if (!response.ok) {
+      signupError.value = 'We could not create your account. Please try again.'
+      return
+    }
+
+    await response.json()
+    router.push({ name: 'confirmSignup' })
+  } catch {
+    signupError.value = 'Unable to reach the server. Please try again later.'
   }
-
-  const savedUser = await response.json()
-  console.log(savedUser)
-  router.push({ name: 'confirmSignup' })
 }
 
 function canSubmit(): boolean {
@@ -73,6 +80,14 @@ function canSubmit(): boolean {
     <v-form class="signup-form" @submit.prevent="sendUserData">
       <h1>Create your account</h1>
       <p>Sign up to start solving coding challenges.</p>
+
+      <v-alert
+        v-if="signupError"
+        title="Signup failed"
+        :text="signupError"
+        type="error"
+        class="mb-4"
+      />
 
       <v-text-field class="mt-4"
         v-model="name"
