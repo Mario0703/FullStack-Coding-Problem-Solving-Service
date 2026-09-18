@@ -1,16 +1,16 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import vuetify from 'vite-plugin-vuetify'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
-    vueDevTools(),
+    vue({
+      template: { transformAssetUrls },
+    }),
     vuetify({ autoImport: true }),
+    vueDevTools(),
   ],
   resolve: {
     alias: {
