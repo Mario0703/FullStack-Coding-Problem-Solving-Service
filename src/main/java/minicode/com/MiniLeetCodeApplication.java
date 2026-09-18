@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootApplication
 @RestController
@@ -30,6 +31,22 @@ public class MiniLeetCodeApplication {
                 request.getEmail(),
                 encodedPassword
         );
+
+        if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Username already exists"
+            );
+        }
+
+        if (userRepo.findFirstByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Email already exists"
+            );
+        }
+
+
 
         User savedUser = userRepo.save(user);
 
