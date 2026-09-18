@@ -3,6 +3,7 @@
 import {ref} from "vue";
 import router from "@/router";
 import {
+  emailIsValid,
   hasValidSignupDetails,
   inputsMatch,
   isValidPassword,
@@ -104,6 +105,14 @@ function canSubmit(): boolean {
         type="email"
         autocomplete="email"
         required
+      />
+
+      <v-alert
+        v-if="email && !emailIsValid(email)"
+        title="Invalid email"
+        text="Enter a valid email address."
+        type="error"
+        style="margin-top: 10px;"
       />
 
       <v-text-field class="mt-4"

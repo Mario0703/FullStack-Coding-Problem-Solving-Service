@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  emailIsValid,
   hasValidSignupDetails,
   inputsMatch,
   isValidPassword,
@@ -46,5 +47,24 @@ describe('signup validation', () => {
         confirmPassword: 'Password2',
       }),
     ).toBe(false)
+  })
+
+  it('rejects signup details with an invalid email format', () => {
+    expect(
+      hasValidSignupDetails({
+        email: 'not-an-email',
+        confirmEmail: 'not-an-email',
+        password: 'Password1',
+        confirmPassword: 'Password1',
+      }),
+    ).toBe(false)
+  })
+
+  it('accepts an email with a valid format', () => {
+    expect(emailIsValid('root2112@gmail.com')).toBe(true)
+  })
+
+  it('rejects an email without a valid format', () => {
+    expect(emailIsValid('not-an-email')).toBe(false)
   })
 })
