@@ -4,7 +4,9 @@ import {ref} from "vue";
 
 const name = ref("");
 const email = ref("");
+const confirmEmail = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 
 type UserData = {
   userName: string;
@@ -39,26 +41,59 @@ async function sendUserData() {
 </script>
 
 <template>
-    <form @submit.prevent="sendUserData">
+  <v-container style="display: flex; align-items: center; justify-content: center;">
+    <v-form class="signup-form" @submit.prevent="sendUserData">
       <h1>Create your account</h1>
       <p>Sign up to start solving coding challenges.</p>
 
-      <label for="name">Name</label>
-      <input v-model="name" id="name" name="name" type="text" autocomplete="name" required />
-
-      <label for="email">Email</label>
-      <input v-model="email" id="email" name="email" type="email" autocomplete="email" required/>
-
-      <label for="password">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="new-password"
-        v-model="password"
+      <v-text-field
+        v-model="name"
+        label="Name"
+        name="name"
+        autocomplete="name"
         required
       />
 
-      <button type="submit">Sign up</button>
-      </form>
+      <v-text-field
+        v-model="email"
+        label="Email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+      />
+
+      <v-text-field
+        v-model="confirmEmail"
+        label="Confirm email"
+        name="confirm-email"
+        type="email"
+        autocomplete="email"
+        required
+      />
+
+      <v-text-field
+        v-model="password"
+        label="Password"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        required
+      />
+
+      <v-text-field
+        v-model="confirmPassword"
+        label="Confirm password"
+        name="confirm-password"
+        type="password"
+        autocomplete="new-password"
+        required
+      />
+
+      <v-btn type="submit" color="primary">Sign up</v-btn>
+    </v-form>
+  </v-container>
 </template>
+<style scoped>
+
+</style>
