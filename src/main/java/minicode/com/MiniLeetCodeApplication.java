@@ -2,7 +2,6 @@ package minicode.com;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +17,7 @@ public class MiniLeetCodeApplication {
     }
 
     @PostMapping("/api/user/signup")
-    public User hello(@RequestBody User user) {
+    public User SignupResponse(@RequestBody User user) {
         User savedUser = userRepo.save(user);
         System.out.printf("Saved user: %s, email: %s, id: %d%n", savedUser.getUserName(), savedUser.getEmail(), savedUser.getUserId());
 
