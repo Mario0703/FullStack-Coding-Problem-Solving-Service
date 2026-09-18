@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
+import router from "@/router";
 
 const name = ref("");
 const email = ref("");
@@ -41,6 +42,7 @@ async function sendUserData() {
 
   const savedUser = await response.json()
   console.log(savedUser)
+  router.push({ name: 'confirmSignup' })
 }
 
 function inputsMatch(input: string, confirmation: string): boolean {
@@ -72,7 +74,7 @@ function canSubmit(): boolean {
 
 <template>
   <v-container style="display: flex; align-items: center; justify-content: center;">
-    <v-form @submit. class="signup-form" @submit.prevent="sendUserData">
+    <v-form class="signup-form" @submit.prevent="sendUserData">
       <h1>Create your account</h1>
       <p>Sign up to start solving coding challenges.</p>
 
