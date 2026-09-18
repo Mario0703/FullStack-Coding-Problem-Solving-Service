@@ -38,6 +38,20 @@ async function sendUserData() {
   console.log(savedUser)
 }
 
+function confirm_user_input(typed_input: string, confirmed_typed_input: string): boolean {
+  const is_typed_input_equal = typed_input === confirmed_typed_input;
+  const is_typed_input_not_empty = typed_input.length > 0 && confirmed_typed_input.length > 0;
+
+  if (is_typed_input_equal && is_typed_input_not_empty) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+
+
 </script>
 
 <template>
@@ -72,6 +86,8 @@ async function sendUserData() {
         required
       />
 
+      <p v-if="confirm_user_input(email,confirmEmail)"> Emails must be equal to eachother.</p>
+
       <v-text-field
         v-model="password"
         label="Password"
@@ -80,6 +96,9 @@ async function sendUserData() {
         autocomplete="new-password"
         required
       />
+
+      <p>Passwords must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.</p>
+      <p v-if="confirm_user_input(password,confirmPassword)">Passwords must be equal to eachother.</p>
 
       <v-text-field
         v-model="confirmPassword"
