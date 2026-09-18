@@ -2,13 +2,17 @@
 
 import {ref} from "vue";
 import router from "@/router";
+import {
+  hasValidSignupDetails,
+  inputsMatch,
+  isValidPassword,
+} from '@/utils/signupValidation'
 
 const name = ref("");
 const email = ref("");
 const confirmEmail = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
 
 type UserData = {
   userName: string;
@@ -45,21 +49,13 @@ async function sendUserData() {
   router.push({ name: 'confirmSignup' })
 }
 
-function inputsMatch(input: string, confirmation: string): boolean {
-  const input_is_not_empty = input.length > 0
-  const input_is_equal_to_confirmation = input === confirmation
-  return input_is_not_empty && input_is_equal_to_confirmation
-}
-
-function isValidPassword(value: string): boolean {
-  return passwordRegex.test(value)
-}
-
 function canSubmit(): boolean {
-  const isValid =
-    inputsMatch(email.value, confirmEmail.value) &&
-    inputsMatch(password.value, confirmPassword.value) &&
-    isValidPassword(password.value)
+  const isValid = hasValidSignupDetails({
+    email: email.value,
+    confirmEmail: confirmEmail.value,
+    password: password.value,
+    confirmPassword: confirmPassword.value,
+  })
 
   if (!isValid) {
     alert('You have invalid fields. Please check your inputs and try again.')
