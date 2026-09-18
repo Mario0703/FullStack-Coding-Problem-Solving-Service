@@ -41,6 +41,22 @@ npm run dev
 npm run build
 ```
 
+### Run Frontend Tests
+
+Run the Vitest suite once:
+
+```sh
+npm test
+```
+
+Run tests in watch mode while developing:
+
+```sh
+npm run test:watch
+```
+
+The current suite covers the signup validation rules in `src/tests/`.
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
