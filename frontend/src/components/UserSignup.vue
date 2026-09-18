@@ -9,7 +9,7 @@ import {
   isValidPassword,
 } from '@/utils/signupValidation'
 
-const name = ref("");
+const userName = ref("");
 const email = ref("");
 const confirmEmail = ref("");
 const password = ref("");
@@ -30,7 +30,7 @@ async function sendUserData() {
   if (!canSubmit()) return
 
   const userData: UserData = {
-    userName: name.value,
+    userName: userName.value,
     email: email.value,
     password: password.value,
   }
@@ -91,8 +91,8 @@ function canSubmit(): boolean {
       />
 
       <v-text-field class="mt-4"
-        v-model="name"
-        label="Name"
+        v-model="userName"
+        label="username"
         name="name"
         autocomplete="name"
         required
