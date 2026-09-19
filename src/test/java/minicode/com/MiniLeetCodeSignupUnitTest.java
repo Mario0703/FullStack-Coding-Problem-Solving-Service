@@ -1,21 +1,14 @@
 package minicode.com;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.*;
 
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
-public class MiniLeetCodeTestUserAplications {
+
+public class MiniLeetCodeSignupUnitTest {
 
     @Test
     public void testUserSignupForAValidUser() {
@@ -100,6 +93,44 @@ public class MiniLeetCodeTestUserAplications {
 
         assertEquals(400, exception.getStatusCode().value());
         assertEquals("Username already exists", exception.getReason());
+
+        verify(mockUserRepo, never()).save(any(User.class));
+    }
+    @Test
+    void testUserSignupForEmailWhichAlreadyExists() {
+        String username = "TestUser";
+        String email = "existing@example.com";
+        String password = "TestPassword123";
+
+        SignupRequest request = new SignupRequest();
+        request.setUserName(username);
+        request.setEmail(email);
+        request.setPassword(password);
+
+        User existingUser = new User(
+                "AnotherUser",
+                email,
+                "encoded-password"
+        );
+
+        UserRepo mockUserRepo = mock(UserRepo.class);
+
+        when(mockUserRepo.findFirstByUserName(username))
+                .thenReturn(Optional.empty());
+
+        when(mockUserRepo.findFirstByEmail(email))
+                .thenReturn(Optional.of(existingUser));
+
+        MiniLeetCodeApplication application =
+                new MiniLeetCodeApplication(mockUserRepo);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> application.signup(request)
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
+        assertEquals("Email already exists", exception.getReason());
 
         verify(mockUserRepo, never()).save(any(User.class));
     }
