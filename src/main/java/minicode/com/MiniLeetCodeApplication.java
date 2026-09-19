@@ -1,6 +1,8 @@
 package minicode.com;
 
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class MiniLeetCodeApplication {
 
+    private static final Validator VALIDATOR =
+            Validation.buildDefaultValidatorFactory().getValidator();
+
     private final UserRepo userRepo;
 
     public MiniLeetCodeApplication(UserRepo userRepo) {
@@ -22,6 +27,13 @@ public class MiniLeetCodeApplication {
 
     @PostMapping("/api/user/signup")
     public User signup(@Valid @RequestBody SignupRequest request) {
+
+        if (!VALIDATOR.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Signup request is invalid"
+            );
+        }
 
         BcryptPasswordEncoder passwordEncoder = new BcryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(request.getPassword());
