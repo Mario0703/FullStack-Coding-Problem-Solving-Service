@@ -16,7 +16,7 @@ public class MiniLeetCodeApplication {
     public FilterRegistrationBean<UserSignUpRateLimiter> rateLimiterFilerForUserSignUp() {
         FilterRegistrationBean<UserSignUpRateLimiter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new UserSignUpRateLimiter());
-        registration.addUrlPatterns("/api/users/sign-up");
+        registration.addUrlPatterns("/api/user/signup");
         return registration;
     }
 }
