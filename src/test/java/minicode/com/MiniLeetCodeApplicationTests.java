@@ -5,13 +5,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -30,7 +35,13 @@ class MiniLeetCodeApplicationTests {
     void blocksSignupAfterTenRequestsFromTheSameIp()
             throws ServletException, IOException {
 
-        UserSignUpRateLimiter rateLimiter = new UserSignUpRateLimiter();
+        StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
+        RateLimitingFilterTestSupport testSupport = new RateLimitingFilterTestSupport(redisTemplate);
+        int MAX_REQUESTS_PER_MINUTE = 10;
+        String WINDOW_SECONDS = "60";
+
+
+        RateLimitingFilter rateLimiter = new RateLimitingFilter(redisTemplate, WINDOW_SECONDS, MAX_REQUESTS_PER_MINUTE);
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
@@ -38,6 +49,7 @@ class MiniLeetCodeApplicationTests {
 
         when(request.getRemoteAddr()).thenReturn("192.0.2.10");
         when(response.getWriter()).thenReturn(new PrintWriter(responseBody));
+        testSupport.returnIncrementingCounts("rate-limit:signup:192.0.2.10");
 
         for (int requestNumber = 0; requestNumber < 11; requestNumber++) {
             rateLimiter.doFilter(request, response, chain);
@@ -52,26 +64,27 @@ class MiniLeetCodeApplicationTests {
     }
 
     @Test
-    void allowsSignupAgainAfterOneMinute()
-            throws ServletException, IOException {
+    void registersLimiterForSignupEndpoint() {
+        int MAX_REQUESTS_PER_MINUTE = 10;
+        String WINDOW_SECONDS = "60";
+        StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
 
-        AtomicLong currentTime = new AtomicLong(0);
-        UserSignUpRateLimiter rateLimiter =
-                new UserSignUpRateLimiter(currentTime::get);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
+        FilterRegistrationBean<RateLimitingFilter> registration =
+                new MiniLeetCodeApplication()
+                        .rateLimiterFilterForUserSignup(redisTemplate);
 
-        when(request.getRemoteAddr()).thenReturn("192.0.2.20");
-
-        for (int requestNumber = 0; requestNumber < 10; requestNumber++) {
-            rateLimiter.doFilter(request, response, chain);
-        }
-
-        currentTime.addAndGet(Duration.ofMinutes(1).toMillis());
-        rateLimiter.doFilter(request, response, chain);
-
-        verify(chain, times(11)).doFilter(request, response);
+        assertEquals(Set.of("/api/user/signup"), registration.getUrlPatterns());
     }
 
+    private record RateLimitingFilterTestSupport(StringRedisTemplate redisTemplate) {
+
+        private void returnIncrementingCounts(String key) {
+                AtomicInteger count = new AtomicInteger();
+                when(redisTemplate.execute(
+                        ArgumentMatchers.any(RedisScript.class),
+                        ArgumentMatchers.eq(List.of(key)),
+                        ArgumentMatchers.eq("60")
+                )).thenAnswer(invocation -> (long) count.incrementAndGet());
+            }
+        }
 }
