@@ -2,6 +2,7 @@ package minicode.com;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,9 +38,9 @@ public class MiniLeetCodeSignupUnitTest {
         MiniLeetCodeApplication application = new MiniLeetCodeApplication(mockUserRepo);
         User savedUser = application.signup(signupRequest);
         // Verify that the user was saved correctly
-        assert savedUser.getUserName().equals(username);
-        assert savedUser.getEmail().equals(email);
-        assert passwordEncoder.matches(password, savedUser.getPassword());
+        assertEquals(username, savedUser.getUserName());
+        assertEquals(email, savedUser.getEmail());
+        assertTrue(passwordEncoder.matches(password, savedUser.getPassword()));
     }
 
     @Test
@@ -159,6 +160,25 @@ public class MiniLeetCodeSignupUnitTest {
         request.setUserName("");
         request.setEmail("");
         request.setPassword("");
+
+        UserRepo mockUserRepo = mock(UserRepo.class);
+        MiniLeetCodeApplication application =
+                new MiniLeetCodeApplication(mockUserRepo);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> application.signup(request)
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
+        verify(mockUserRepo, never()).save(any(User.class));
+    }
+    @Test
+    public void testUserSignUpisInvalidForMaximumLengthOfUserNameEmailAndPassword() {
+        SignupRequest request = new SignupRequest();
+        request.setUserName("a".repeat(101));
+        request.setEmail("a".repeat(101) + "@example.com");
+        request.setPassword("A1" + "a".repeat(70));
 
         UserRepo mockUserRepo = mock(UserRepo.class);
         MiniLeetCodeApplication application =
