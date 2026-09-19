@@ -1,31 +1,51 @@
 package minicode.com;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity // This class should be tracked as a table
 @Table(name = "users") // provides the name of the table
 public class User {
 
+    @Column(nullable = false, unique = true)
     private String userName;
-    private long userId;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID userId;
+
+    protected User() {
+    }
+
+    public User(String userName, String email, String password) {
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
+
 
 
     public String getUserName() {
+
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    @Id // This is the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // This is auto incremented
-    public long getUserId() {
+
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
@@ -37,7 +57,7 @@ public class User {
         this.email = email;
     }
 
-
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
