@@ -1,6 +1,9 @@
 package minicode.com;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -10,6 +13,12 @@ import java.util.*;
 
 
 public class MiniLeetCodeSignupUnitTest {
+
+    private UserService createUserService(UserRepo userRepo) {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        PasswordEncoder passwordEncoder = new BcryptPasswordEncoder();
+        return new UserService(userRepo, validator, passwordEncoder);
+    }
 
     @Test
     public void testUserSignupForAValidUser() {
@@ -35,8 +44,8 @@ public class MiniLeetCodeSignupUnitTest {
                     return userToSave;
                 }
         );
-        MiniLeetCodeApplication application = new MiniLeetCodeApplication(mockUserRepo);
-        User savedUser = application.signup(signupRequest);
+        UserService userService = createUserService(mockUserRepo);
+        User savedUser = userService.signup(signupRequest);
         // Verify that the user was saved correctly
         assertEquals(username, savedUser.getUserName());
         assertEquals(email, savedUser.getEmail());
@@ -53,11 +62,11 @@ public class MiniLeetCodeSignupUnitTest {
         signupRequest.setEmail(email);
         signupRequest.setPassword(password);
         UserRepo mockUserRepo = mock(UserRepo.class);
-        MiniLeetCodeApplication application = new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
         // Test the signup method with the invalid user
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(signupRequest)
+                () -> userService.signup(signupRequest)
         );
         assertEquals(400, exception.getStatusCode().value());
     }
@@ -84,12 +93,11 @@ public class MiniLeetCodeSignupUnitTest {
         when(mockUserRepo.findFirstByUserName(userName))
                 .thenReturn(Optional.of(existingUser));
 
-        MiniLeetCodeApplication application =
-                new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(signupRequest)
+                () -> userService.signup(signupRequest)
         );
 
         assertEquals(400, exception.getStatusCode().value());
@@ -122,12 +130,11 @@ public class MiniLeetCodeSignupUnitTest {
         when(mockUserRepo.findFirstByEmail(email))
                 .thenReturn(Optional.of(existingUser));
 
-        MiniLeetCodeApplication application =
-                new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(request)
+                () -> userService.signup(request)
         );
 
         assertEquals(400, exception.getStatusCode().value());
@@ -143,12 +150,11 @@ public class MiniLeetCodeSignupUnitTest {
         request.setPassword("weak");
 
         UserRepo mockUserRepo = mock(UserRepo.class);
-        MiniLeetCodeApplication application =
-                new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(request)
+                () -> userService.signup(request)
         );
 
         assertEquals(400, exception.getStatusCode().value());
@@ -162,12 +168,11 @@ public class MiniLeetCodeSignupUnitTest {
         request.setPassword("");
 
         UserRepo mockUserRepo = mock(UserRepo.class);
-        MiniLeetCodeApplication application =
-                new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(request)
+                () -> userService.signup(request)
         );
 
         assertEquals(400, exception.getStatusCode().value());
@@ -181,12 +186,11 @@ public class MiniLeetCodeSignupUnitTest {
         request.setPassword("A1" + "a".repeat(70));
 
         UserRepo mockUserRepo = mock(UserRepo.class);
-        MiniLeetCodeApplication application =
-                new MiniLeetCodeApplication(mockUserRepo);
+        UserService userService = createUserService(mockUserRepo);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> application.signup(request)
+                () -> userService.signup(request)
         );
 
         assertEquals(400, exception.getStatusCode().value());
