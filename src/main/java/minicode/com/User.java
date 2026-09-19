@@ -8,9 +8,17 @@ import java.util.UUID;
 @Table(name = "users") // provides the name of the table
 public class User {
 
+    @Column(nullable = false, unique = true)
     private String userName;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
 
     protected User() {
@@ -33,8 +41,6 @@ public class User {
         this.userName = userName;
     }
 
-    @Id // This is the primary key
-    @GeneratedValue(strategy = GenerationType.UUID)
     public UUID getUserId() {
         return userId;
     }
