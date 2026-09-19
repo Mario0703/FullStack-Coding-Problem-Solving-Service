@@ -97,7 +97,7 @@ public class MiniLeetCodeSignupUnitTest {
         verify(mockUserRepo, never()).save(any(User.class));
     }
     @Test
-    void testUserSignupForEmailWhichAlreadyExists() {
+    public void testUserSignupForEmailWhichAlreadyExists() {
         String username = "TestUser";
         String email = "existing@example.com";
         String password = "TestPassword123";
@@ -132,6 +132,44 @@ public class MiniLeetCodeSignupUnitTest {
         assertEquals(400, exception.getStatusCode().value());
         assertEquals("Email already exists", exception.getReason());
 
+        verify(mockUserRepo, never()).save(any(User.class));
+    }
+    @Test
+    public void testUserSignupWithInvalidPassword() {
+        SignupRequest request = new SignupRequest();
+        request.setUserName("TestUser");
+        request.setEmail("test@example.com");
+        request.setPassword("weak");
+
+        UserRepo mockUserRepo = mock(UserRepo.class);
+        MiniLeetCodeApplication application =
+                new MiniLeetCodeApplication(mockUserRepo);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> application.signup(request)
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
+        verify(mockUserRepo, never()).save(any(User.class));
+    }
+    @Test
+    public void testUserSignupInvalidWithBlacnkUserNameEmailAndPassword() {
+        SignupRequest request = new SignupRequest();
+        request.setUserName("");
+        request.setEmail("");
+        request.setPassword("");
+
+        UserRepo mockUserRepo = mock(UserRepo.class);
+        MiniLeetCodeApplication application =
+                new MiniLeetCodeApplication(mockUserRepo);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> application.signup(request)
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
         verify(mockUserRepo, never()).save(any(User.class));
     }
 }
