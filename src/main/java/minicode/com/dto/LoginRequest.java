@@ -4,8 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 
-    @NotBlank(message = "All users must have a username")
     private String userName;
+
+    private String email;
 
     @NotBlank(message = "All users must have a password")
     private String password;
@@ -16,6 +17,14 @@ public class LoginRequest {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
