@@ -26,11 +26,20 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public User login(@Valid @RequestBody LoginRequest request, HttpSession session, HttpServletRequest httprequest) {
-        session.invalidate(); // clea session then login in
-        session = httprequest.getSession();
-        User user = userService.login(request);
-        session.setAttribute("user_name", user.getUserName());
+    public User login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        User user = userService.login(request); // authenticate the user
+        HttpSession oldSession = httpRequest.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+
+        HttpSession newSession = httpRequest.getSession(true);
+        String session = newSession.getId();
+        
+
+        newSession.setAttribute("user_id", user.getUserId());
+
+
         return user;
 
     }

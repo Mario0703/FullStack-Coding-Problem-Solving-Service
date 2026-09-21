@@ -67,6 +67,8 @@ public class UserService {
         String email = request.getEmail();
         String userName = request.getUserName();
         String password = request.getPassword();
+        User user;
+
 
         if (isBlank(email) && isBlank(userName)) {
             throw new ResponseStatusException(
@@ -89,8 +91,6 @@ public class UserService {
             );
         }
 
-        User user;
-        
         if (!isBlank(email)) {
             user = findUserByEmail(email);
         } else {
