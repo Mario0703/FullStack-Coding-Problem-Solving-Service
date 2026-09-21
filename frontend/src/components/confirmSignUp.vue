@@ -2,8 +2,8 @@
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-function SenderUserToChallenge() {
-  router.push({ name: 'challenges' })
+function SendUserToLogin() {
+  router.push({ name: 'login' })
 }
 
 </script>
@@ -21,9 +21,9 @@ function SenderUserToChallenge() {
     <v-btn
       color="primary"
       class="mt-4"
-      @click="SenderUserToChallenge"
+      @click="SendUserToLogin"
     >
-      Click me to go on and solve some challenges
+      Click me to login and start solving challenges
     </v-btn>
   </v-container>
 </template>

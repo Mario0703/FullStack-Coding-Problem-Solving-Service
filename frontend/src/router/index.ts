@@ -3,6 +3,7 @@ import UserSignup from '../components/UserSignup.vue'
 import LandingPage from "@/components/landingPage.vue";
 import ChallangePage from "@/components/ChallangePage.vue";
 import ConfirmSignUp from "@/components/confirmSignUp.vue";
+import LoginPage from "@/components/LoginPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,10 @@ const router = createRouter({
       path: '/confirm-signup',
       name: 'confirmSignup',
       component: ConfirmSignUp,
+    },{
+      path: '/Login',
+      name: 'login',
+      component: LoginPage,
     }
   ],
 })
