@@ -7,10 +7,13 @@ export type UserData = {
 };
 
 export const currentUser = ref<UserData | null>(null);
-export const isLoadingUser = ref(false);
+export const isLoadingUser = ref(true);
+export const hasCheckedUser = ref(false);
+export const authError = ref("");
 
 export async function loadCurrentUser(): Promise<UserData | null> {
   isLoadingUser.value = true;
+  authError.value = "";
 
   try {
     const response = await fetch("http://localhost:8082/api/auth/me", {
@@ -29,11 +32,17 @@ export async function loadCurrentUser(): Promise<UserData | null> {
 
     currentUser.value = (await response.json()) as UserData;
     return currentUser.value;
+  } catch (error) {
+    currentUser.value = null;
+    authError.value = "Unable to check your login status. Please try again later.";
+    throw error;
   } finally {
+    hasCheckedUser.value = true;
     isLoadingUser.value = false;
   }
 }
 
 export function clearCurrentUser(): void {
   currentUser.value = null;
+  hasCheckedUser.value = true;
 }

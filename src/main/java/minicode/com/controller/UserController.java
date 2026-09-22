@@ -34,9 +34,6 @@ public class UserController {
         }
 
         HttpSession newSession = httpRequest.getSession(true);
-        String session = newSession.getId();
-        
-
         newSession.setAttribute("user_id", user.getUserId());
 
 
