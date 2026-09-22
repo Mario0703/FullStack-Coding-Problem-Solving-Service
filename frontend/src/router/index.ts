@@ -7,6 +7,7 @@ import LoginPage from "@/components/authentication/LoginPage.vue";
 import UserLoginConfirmed from "@/components/authentication/UserLoginConfirmed.vue";
 import UserPage from "@/components/user/UserPage.vue";
 import ForgotPassword from "@/components/user/ForgotPassword.vue";
+import Playground from "@/components/code-execution/Playground.vue";
 import {
   currentUser,
   hasCheckedUser,
@@ -28,6 +29,10 @@ const router = createRouter({
       path: '/challenges',
       name: 'challenges',
       component: ChallengePage,
+    }, {
+      path: '/playground',
+      name: 'playground',
+      component: Playground,
     }, {
       path: '/confirm-signup',
       name: 'confirmSignup',
