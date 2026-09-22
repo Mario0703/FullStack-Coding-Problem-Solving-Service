@@ -1,4 +1,5 @@
-package minicode.com;
+package minicode.com.security;
+
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

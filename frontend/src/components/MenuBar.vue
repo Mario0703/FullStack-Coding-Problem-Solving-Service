@@ -9,5 +9,6 @@
     <v-btn color="white" variant="text" to="/about">About the project</v-btn>
     <v-btn color="white" variant="text" to="/contact">Contact</v-btn>
     <v-btn color="white" variant="text" to="/">Home</v-btn>
+    <v-btn color="white" variant="text" to="/login">Login</v-btn>
   </v-app-bar>
 </template>

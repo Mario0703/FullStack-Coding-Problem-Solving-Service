@@ -1,5 +1,6 @@
 package minicode.com;
 
+import minicode.com.security.RateLimitingFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -18,7 +19,7 @@ public class MiniLeetCodeApplication {
             StringRedisTemplate redisTemplate
     ) {
         FilterRegistrationBean<RateLimitingFilter> registration = new FilterRegistrationBean<>();
-        int MAX_REQUESTS_PER_MINUTE = 10;
+        int MAX_REQUESTS_PER_MINUTE = 1000;
         String WINDOW_SECONDS = "60";
         registration.setFilter(new RateLimitingFilter(redisTemplate, WINDOW_SECONDS, MAX_REQUESTS_PER_MINUTE));
         registration.addUrlPatterns("/api/user/signup");

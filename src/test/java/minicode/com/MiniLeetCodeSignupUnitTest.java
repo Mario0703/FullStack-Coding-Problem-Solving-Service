@@ -1,5 +1,10 @@
 package minicode.com;
 
+import minicode.com.dto.SignupRequest;
+import minicode.com.entity.User;
+import minicode.com.repository.UserRepo;
+import minicode.com.security.BcryptPasswordEncoder;
+import minicode.com.service.UserService;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

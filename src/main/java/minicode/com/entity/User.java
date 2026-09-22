@@ -1,11 +1,11 @@
-package minicode.com;
+package minicode.com.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity // This class should be tracked as a table
-@Table(name = "users") // provides the name of the table
+@Table(name = "users", schema = "public") // provides the name of the table
 public class User {
 
     @Column(nullable = false, unique = true)
