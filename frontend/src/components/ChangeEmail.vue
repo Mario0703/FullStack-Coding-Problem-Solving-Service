@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
 import { inputsMatch, isblank, isValidEmail } from "@/utils/UserInputCheck";
 
+const emit = defineEmits<{ abort: [] }>();
 const newEmail = ref("");
 const confirmNewEmail = ref("");
 const validationError = ref("");
@@ -23,6 +24,10 @@ function changeEmail() {
   if (!inputsMatch(newEmail.value, confirmNewEmail.value)) {
     validationError.value = "New email and confirmation do not match.";
   }
+}
+
+function abortChange() {
+  emit("abort");
 }
 </script>
 
@@ -50,6 +55,9 @@ function changeEmail() {
       type="email"
       autocomplete="email"
     />
-    <v-btn type="submit" color="primary">Save</v-btn>
+    <v-card-actions class="justify-center ga-2 px-0">
+      <v-btn type="submit" color="primary">Save</v-btn>
+      <v-btn type="button" variant="text" @click="abortChange">Abort</v-btn>
+    </v-card-actions>
   </v-form>
 </template>

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
 import {inputsMatch, isblank} from "@/utils/UserInputCheck";
 
+const emit = defineEmits<{ abort: [] }>();
 const newUserName = ref("");
 const confirmNewUserName = ref("");
 const validationError = ref("");
@@ -10,13 +11,18 @@ const validationError = ref("");
 function changeUserName() {
   validationError.value = "";
 
-  if (!isblank(newUserName.value)) {
+  if (isblank(newUserName.value)) {
     validationError.value = "New user name cannot be blank.";
+    return;
   }
 
   if (!inputsMatch(newUserName.value, confirmNewUserName.value)) {
     validationError.value = "New user name and confirmation do not match.";
   }
+}
+
+function abortChange() {
+  emit("abort");
 }
 </script>
 
@@ -39,6 +45,9 @@ function changeUserName() {
       placeholder="Confirm new user name"
       label="Confirm new user name"
     />
-    <v-btn type="submit" color="primary">Save</v-btn>
+    <v-card-actions class="justify-center ga-2 px-0">
+      <v-btn type="submit" color="primary">Save</v-btn>
+      <v-btn type="button" variant="text" @click="abortChange">Abort</v-btn>
+    </v-card-actions>
   </v-form>
 </template>
