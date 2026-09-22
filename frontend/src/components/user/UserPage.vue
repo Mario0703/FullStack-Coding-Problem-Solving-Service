@@ -71,6 +71,7 @@ function abortForm() {
             </v-col>
           </v-row>
         </v-card-text>
+        <v-btn to="/change-password">Want to change password, click here</v-btn>
       </v-card>
 
       <div class="d-flex justify-center mt-6">
