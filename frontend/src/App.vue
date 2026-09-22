@@ -6,7 +6,7 @@ import {
   isLoadingUser,
   loadCurrentUser,
 } from "./authenticator/auth";
-import MenuBar from "./components/MenuBar.vue";
+import MenuBar from "./components/navigation/MenuBar.vue";
 
 onMounted(() => {
   if (!hasCheckedUser.value) {

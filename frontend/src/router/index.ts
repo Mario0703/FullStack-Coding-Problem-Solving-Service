@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import UserSignup from '../components/UserSignup.vue'
-import LandingPage from "@/components/landingPage.vue";
-import ChallangePage from "@/components/ChallangePage.vue";
-import ConfirmSignUp from "@/components/confirmSignUp.vue";
-import LoginPage from "@/components/LoginPage.vue";
-import UserLoginConfirmed from "@/components/UserLoginConfirmed.vue";
-import UserPage from "@/components/UserPage.vue";
+import UserSignup from '@/components/authentication/UserSignup.vue'
+import LandingPage from "@/components/home/LandingPage.vue";
+import ChallengePage from "@/components/challenges/ChallengePage.vue";
+import ConfirmSignUp from "@/components/authentication/ConfirmSignUp.vue";
+import LoginPage from "@/components/authentication/LoginPage.vue";
+import UserLoginConfirmed from "@/components/authentication/UserLoginConfirmed.vue";
+import UserPage from "@/components/user/UserPage.vue";
 import {
   currentUser,
   hasCheckedUser,
@@ -26,7 +26,7 @@ const router = createRouter({
     }, {
       path: '/challenges',
       name: 'challenges',
-      component: ChallangePage,
+      component: ChallengePage,
     }, {
       path: '/confirm-signup',
       name: 'confirmSignup',
