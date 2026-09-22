@@ -5,6 +5,7 @@ const code = ref("");
 const language = ref("python");
 const output = ref("");
 const isExecuting = ref(false);
+const supportedLanagues = ref(["python", "C++", "Java", "c#"]);
 
 async function executeCode() {
   if (!code.value.trim()) {
@@ -49,10 +50,11 @@ async function executeCode() {
       label="Python code"
       rows="10"
       auto-grow
+      lin
     ></v-textarea>
     <v-select
       v-model="language"
-      :items="['python']"
+      :items="supportedLanagues"
       label="Language"
     ></v-select>
     <v-btn color="primary" :loading="isExecuting" @click="executeCode">
