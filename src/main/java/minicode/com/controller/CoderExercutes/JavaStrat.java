@@ -1,22 +1,30 @@
 package minicode.com.controller.CoderExercutes;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class JavaStrat implements CodeExercuteStrat {
-    private static final Path JAVA_FILE = Path.of(
-            "F:\\FullStackProjects\\MiniLeetCode\\CodeEnv\\java\\Main.java"
+public class JavaStrat extends DockerCodeStrategy {
+    private static final Path JAVA_FOLDER = Path.of(
+            "F:\\FullStackProjects\\MiniLeetCode\\CodeEnv\\java"
     );
+    private static final Path JAVA_FILE = JAVA_FOLDER.resolve("Main.java");
 
     @Override
-    public String execute(String code) throws IOException {
-        Files.writeString(
-                JAVA_FILE,
-                code,
-                StandardCharsets.UTF_8
-        );
-        return "Code saved for java";
+    protected Path sourceFile() {
+        return JAVA_FILE;
+    }
+
+    @Override
+    protected Path dockerFolder() {
+        return JAVA_FOLDER;
+    }
+
+    @Override
+    protected String imageName() {
+        return "minileetcode-java";
+    }
+
+    @Override
+    protected String containerNamePrefix() {
+        return "minicode-java";
     }
 }
