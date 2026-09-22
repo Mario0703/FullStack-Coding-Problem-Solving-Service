@@ -2,6 +2,8 @@ package minicode.com.service;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
+import minicode.com.dto.ChangeEmailRequest;
+import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
 import minicode.com.entity.User;
@@ -65,13 +67,16 @@ public class UserService {
     }
 
     @Transactional
-    public User changeUserName(UUID userId, String userName) {
-        if (userName == null || userName.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+    public User changeUserName(UUID userId, ChangeUserNameRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username change request is invalid"
+            );
         }
 
         User user = findUserById(userId);
-        String normalizedUserName = userName.trim();
+        String normalizedUserName = request.newUserName().trim();
 
         Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
         if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
@@ -86,13 +91,16 @@ public class UserService {
     }
 
     @Transactional
-    public User changeUserEmail(UUID userId, String email) {
-        if (email == null || email.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+    public User changeUserEmail(UUID userId, ChangeEmailRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email change request is invalid"
+            );
         }
 
         User user = findUserById(userId);
-        String normalizedEmail = email.trim();
+        String normalizedEmail = request.newEmail().trim();
 
         Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
         if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {

@@ -57,7 +57,7 @@ public class UserController {
             @Valid @RequestBody ChangeUserNameRequest request,
             HttpServletRequest httpRequest
     ) {
-        return userService.changeUserName(getAuthenticatedUserId(httpRequest), request.getNewUserName());
+        return userService.changeUserName(getAuthenticatedUserId(httpRequest), request);
     }
 
     @PostMapping("/change-email")
@@ -65,7 +65,7 @@ public class UserController {
             @Valid @RequestBody ChangeEmailRequest request,
             HttpServletRequest httpRequest
     ) {
-        return userService.changeUserEmail(getAuthenticatedUserId(httpRequest), request.getNewEmail());
+        return userService.changeUserEmail(getAuthenticatedUserId(httpRequest), request);
     }
 
     private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {
