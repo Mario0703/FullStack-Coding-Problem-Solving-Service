@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { currentUser, type UserData } from "../authenticator/auth";
+import { getLoginValidationErrors } from "@/utils/UserInputCheck";
 
 const router = useRouter();
 const email = ref("");
@@ -12,9 +13,6 @@ const isSubmitting = ref(false);
 const loginWithEmail = ref(false);
 
 const loginWithUsername = computed(() => !loginWithEmail.value);
-const emailIsNotEmpty = computed(() => email.value.trim().length > 0);
-const userNameIsNotEmpty = computed(() => userName.value.trim().length > 0);
-const passwordIsNotEmpty = computed(() => password.value.trim().length > 0);
 
 type LoginData = {
   email?: string;
@@ -24,21 +22,11 @@ type LoginData = {
 
 async function LogIn() {
   loginError.value = "";
-  const validationErrors: string[] = [];
-
-  const identifierIsNotEmpty = loginWithEmail.value
-    ? emailIsNotEmpty.value
-    : userNameIsNotEmpty.value;
-
-  if (!identifierIsNotEmpty) {
-    validationErrors.push(loginWithEmail.value
-      ? "Email is required"
-      : "Username is required");
-  }
-
-  if (!passwordIsNotEmpty.value) {
-    validationErrors.push("Password is required");
-  }
+  const validationErrors = getLoginValidationErrors({
+    identifier: loginWithEmail.value ? email.value : userName.value,
+    password: password.value,
+    identifierType: loginWithEmail.value ? "email" : "username",
+  });
 
   if (validationErrors.length > 0) {
     loginError.value = validationErrors.join(" ");

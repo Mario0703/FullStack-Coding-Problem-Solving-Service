@@ -3,11 +3,11 @@
 import {ref} from "vue";
 import router from "@/router";
 import {
-  emailIsValid,
   hasValidSignupDetails,
   inputsMatch,
+  isValidEmail,
   isValidPassword,
-} from '@/utils/signupValidation'
+} from '@/utils/UserInputCheck'
 
 const userName = ref("");
 const email = ref("");
@@ -59,6 +59,7 @@ async function sendUserData() {
 
 function canSubmit(): boolean {
   const isValid = hasValidSignupDetails({
+    userName: userName.value,
     email: email.value,
     confirmEmail: confirmEmail.value,
     password: password.value,
@@ -108,7 +109,7 @@ function canSubmit(): boolean {
       />
 
       <v-alert
-        v-if="email && !emailIsValid(email)"
+      v-if="email && !isValidEmail(email)"
         title="Invalid email"
         text="Enter a valid email address."
         type="error"

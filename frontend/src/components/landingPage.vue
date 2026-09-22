@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import MenuBar from './MenuBar.vue'
 import PlayGround from "@/components/PlayGround.vue";
 import Footer from "@/components/Footer.vue";
 </script>
 
 <template>
   <v-container>
-    <MenuBar />
     <h1>MiniLeetCode</h1>
   <span>
     MiniLeetCode is designed for anyone wanting to learn programming fundamentals through bite-sized problems.
