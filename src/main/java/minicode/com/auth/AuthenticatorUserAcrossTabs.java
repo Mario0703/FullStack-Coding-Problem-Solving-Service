@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import minicode.com.entity.User;
 import minicode.com.repository.UserRepo;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,7 +24,7 @@ public class AuthenticatorUserAcrossTabs {
         this.userRepo = userRepo;
     }
 
-    @PostMapping
+    @GetMapping
     public User authenticateUserAcrossTabs(HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
         if(session == null){
@@ -43,11 +43,11 @@ public class AuthenticatorUserAcrossTabs {
             );
 
         }
-        Optional<User> user = userRepo.findUserById(userId);
+        Optional<User> user = userRepo.findById(userId);
         if(!user.isPresent()){
             throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.NOT_FOUND,
-                    "User not found"
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
             );
         }
 
