@@ -21,7 +21,6 @@ function SendUserToUser() {
         type="success"
       />
     </v-card>
-
     <v-btn color="primary" class="mt-4" @click="SendUserToUser">
       Go to my user page
     </v-btn>
