@@ -43,5 +43,12 @@ public class UserController {
         return user;
 
     }
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
 
 }
