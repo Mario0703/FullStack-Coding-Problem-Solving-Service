@@ -64,32 +64,46 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public void changeUserName(String userName, UUID userId){
-        Optional<User> userOptional = userRepo.findById(userId);
-        if (userOptional.isEmpty()) {
+    @Transactional
+    public User changeUserName(UUID userId, String userName) {
+        if (userName == null || userName.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+        }
+
+        User user = findUserById(userId);
+        String normalizedUserName = userName.trim();
+
+        Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
+        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found"
+                    HttpStatus.BAD_REQUEST,
+                    "Username already exists"
             );
         }
 
-        User user = userOptional.get();
-        user.setUserName(userName);
-        userRepo.save(user);
+        user.setUserName(normalizedUserName);
+        return userRepo.save(user);
     }
 
-    public void changeUserEmail(String email, UUID userId){
-        Optional<User> userOptional = userRepo.findById(userId);
-        if (userOptional.isEmpty()) {
+    @Transactional
+    public User changeUserEmail(UUID userId, String email) {
+        if (email == null || email.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+
+        User user = findUserById(userId);
+        String normalizedEmail = email.trim();
+
+        Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
+        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found"
+                    HttpStatus.BAD_REQUEST,
+                    "Email already exists"
             );
         }
 
-        User user = userOptional.get();
-        user.setEmail(email);
-        userRepo.save(user);
+        user.setEmail(normalizedEmail);
+        return userRepo.save(user);
     }
 
 
@@ -147,6 +161,18 @@ public class UserService {
         }
 
         return userByEmail.get();
+    }
+
+    private User findUserById(UUID userId) {
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found"
+            );
+        }
+
+        return user.get();
     }
 
     private User findUserByUserName(String userName) {

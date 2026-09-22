@@ -2,12 +2,17 @@ package minicode.com.controller;
 
 import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
+import minicode.com.dto.ChangeEmailRequest;
+import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.entity.User;
 import minicode.com.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -46,6 +51,41 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
+    }
+    @PostMapping("/change-username")
+    public User changeUserName(
+            @Valid @RequestBody ChangeUserNameRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return userService.changeUserName(getAuthenticatedUserId(httpRequest), request.getNewUserName());
+    }
+
+    @PostMapping("/change-email")
+    public User changeUserEmail(
+            @Valid @RequestBody ChangeEmailRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return userService.changeUserEmail(getAuthenticatedUserId(httpRequest), request.getNewEmail());
+    }
+
+    private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
+        }
+
+        Object userId = session.getAttribute("user_id");
+        if (!(userId instanceof UUID)) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
+        }
+
+        return (UUID) userId;
     }
 
 }
