@@ -8,10 +8,13 @@ const currentPassword = ref("");
 const newPassword = ref("");
 const confirmNewPassword = ref("");
 const validationError = ref("");
+const saveError = ref("");
 const validationSuccess = ref("");
+const isSubmitting = ref(false);
 
-function changePassword() {
+async function changePassword() {
   validationError.value = "";
+  saveError.value = "";
   validationSuccess.value = "";
 
   if (isblank(currentPassword.value)) {
@@ -35,7 +38,34 @@ function changePassword() {
     return;
   }
 
-  validationSuccess.value = "Password fields are valid and ready to be saved.";
+  isSubmitting.value = true;
+
+  try {
+    const response = await fetch("http://localhost:8082/api/user/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        currentPassword: currentPassword.value,
+        newPassword: newPassword.value,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      saveError.value = error?.detail ?? error?.message ?? "Unable to change password.";
+      return;
+    }
+
+    validationSuccess.value = "Password changed successfully.";
+    currentPassword.value = "";
+    newPassword.value = "";
+    confirmNewPassword.value = "";
+  } catch {
+    saveError.value = "Unable to reach the server. Please try again later.";
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function abortChange() {
@@ -45,6 +75,7 @@ function abortChange() {
 
 <template>
   <v-alert v-if="validationError" type="error" :text="validationError" />
+  <v-alert v-if="saveError" type="error" :text="saveError" />
   <v-alert v-if="validationSuccess" type="success" :text="validationSuccess" />
 
   <v-form @submit.prevent="changePassword">
@@ -67,8 +98,12 @@ function abortChange() {
       autocomplete="new-password"
     />
     <v-card-actions class="justify-center ga-2 px-0">
-      <v-btn type="submit" color="primary">Validate password</v-btn>
-      <v-btn type="button" variant="text" @click="abortChange">Abort</v-btn>
+      <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+        Save
+      </v-btn>
+      <v-btn type="button" variant="text" :disabled="isSubmitting" @click="abortChange">
+        Abort
+      </v-btn>
     </v-card-actions>
   </v-form>
 </template>

@@ -3,6 +3,7 @@ package minicode.com.controller;
 import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
 import minicode.com.dto.ChangeEmailRequest;
+import minicode.com.dto.ChangePasswordRequest;
 import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.entity.User;
 import minicode.com.service.UserService;
@@ -66,6 +67,14 @@ public class UserController {
             HttpServletRequest httpRequest
     ) {
         return userService.changeUserEmail(getAuthenticatedUserId(httpRequest), request);
+    }
+
+    @PostMapping("/change-password")
+    public User changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return userService.changePassword(getAuthenticatedUserId(httpRequest), request);
     }
 
     private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {

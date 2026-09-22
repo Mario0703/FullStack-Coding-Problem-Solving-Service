@@ -3,6 +3,7 @@ package minicode.com.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
 import minicode.com.dto.ChangeEmailRequest;
+import minicode.com.dto.ChangePasswordRequest;
 import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
@@ -111,6 +112,27 @@ public class UserService {
         }
 
         user.setEmail(normalizedEmail);
+        return userRepo.save(user);
+    }
+
+    @Transactional
+    public User changePassword(UUID userId, ChangePasswordRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Password change request is invalid"
+            );
+        }
+
+        User user = findUserById(userId);
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Current password is incorrect"
+            );
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
         return userRepo.save(user);
     }
 

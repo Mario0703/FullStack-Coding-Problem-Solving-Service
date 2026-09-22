@@ -6,6 +6,7 @@ import ConfirmSignUp from "@/components/authentication/ConfirmSignUp.vue";
 import LoginPage from "@/components/authentication/LoginPage.vue";
 import UserLoginConfirmed from "@/components/authentication/UserLoginConfirmed.vue";
 import UserPage from "@/components/user/UserPage.vue";
+import ForgotPassword from "@/components/user/ForgotPassword.vue";
 import {
   currentUser,
   hasCheckedUser,
@@ -35,6 +36,10 @@ const router = createRouter({
       path: '/Login',
       name: 'login',
       component: LoginPage,
+    }, {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: ForgotPassword,
     }, {
       path: '/login-confirmed',
       name: 'loginConfirmed',

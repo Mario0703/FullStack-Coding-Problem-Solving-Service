@@ -119,6 +119,9 @@ async function LogIn() {
         type="password"
         autocomplete="current-password"
       />
+      <RouterLink class="text-primary text-decoration-none" :to="{ name: 'forgotPassword' }">
+        Forgot password?
+      </RouterLink>
       <v-btn
         type="submit"
         color="primary"
