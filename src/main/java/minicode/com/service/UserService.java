@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -62,6 +63,35 @@ public class UserService {
 
         return userRepo.save(user);
     }
+
+    public void changeUserName(String userName, UUID userId){
+        Optional<User> userOptional = userRepo.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found"
+            );
+        }
+
+        User user = userOptional.get();
+        user.setUserName(userName);
+        userRepo.save(user);
+    }
+
+    public void changeUserEmail(String email, UUID userId){
+        Optional<User> userOptional = userRepo.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found"
+            );
+        }
+
+        User user = userOptional.get();
+        user.setEmail(email);
+        userRepo.save(user);
+    }
+
 
     public User login(LoginRequest request) {
         String email = request.getEmail();
