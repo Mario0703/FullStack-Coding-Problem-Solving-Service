@@ -3,6 +3,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { clearCurrentUser } from "@/authenticator/auth";
 
+defineOptions({
+  name: "UserLogout",
+});
+
 const router = useRouter();
 const logoutError = ref("");
 

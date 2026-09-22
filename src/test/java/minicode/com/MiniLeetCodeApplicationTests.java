@@ -6,16 +6,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,8 +64,6 @@ class MiniLeetCodeApplicationTests {
 
     @Test
     void registersLimiterForSignupEndpoint() {
-        int MAX_REQUESTS_PER_MINUTE = 10;
-        String WINDOW_SECONDS = "60";
         StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
 
         FilterRegistrationBean<RateLimitingFilter> registration =
@@ -81,11 +77,9 @@ class MiniLeetCodeApplicationTests {
 
         private void returnIncrementingCounts(String key) {
                 AtomicInteger count = new AtomicInteger();
-                when(redisTemplate.execute(
-                        ArgumentMatchers.any(RedisScript.class),
-                        ArgumentMatchers.eq(List.of(key)),
-                        ArgumentMatchers.eq("60")
-                )).thenAnswer(invocation -> (long) count.incrementAndGet());
+                ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+                when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+                when(valueOperations.increment(key, 1)).thenAnswer(invocation -> (long) count.incrementAndGet());
             }
         }
 }
