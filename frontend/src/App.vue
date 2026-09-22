@@ -6,6 +6,7 @@ import {
   isLoadingUser,
   loadCurrentUser,
 } from "./authenticator/auth";
+import MenuBar from "./components/navigation/MenuBar.vue";
 
 onMounted(() => {
   if (!hasCheckedUser.value) {
@@ -18,6 +19,8 @@ onMounted(() => {
 
 <template>
   <v-app>
+    <MenuBar v-if="!isLoadingUser" />
+
     <v-main v-if="isLoadingUser" class="d-flex align-center justify-center">
       <v-progress-circular indeterminate color="primary" />
     </v-main>

@@ -9,22 +9,11 @@ const currentYear = computed(() => new Date().getFullYear())
 </script>
 
 <template>
-  <v-footer app border class="footer text-center py-6">
-    <div class="footer__content">
+  <v-footer app border class="text-white text-center py-6">
+    <v-sheet class="w-100 mx-auto bg-transparent" max-width="800">
       <p>This is a mini LeetCode project</p>
-      <v-divider class="footer__divider my-4" />
+      <v-divider class="my-4" />
       <p>&copy; {{ currentYear }} MiniLeetCode | All rights reserved</p>
-    </div>
+    </v-sheet>
   </v-footer>
 </template>
-
-<style scoped>
-.footer {
-  color: white;
-}
-
-.footer__content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-</style>

@@ -35,10 +35,6 @@ async function logout() {
 
 <template>
   <v-alert v-if="logoutError" type="error" :text="logoutError" />
-  <v-btn @click="logout">Logout</v-btn>
+  <v-btn color="red" @click="logout">Logout</v-btn>
 
 </template>
-
-<style scoped>
-
-</style>

@@ -7,7 +7,3 @@
     <input placeholder="Enter your code here..." />
   </div>
 </template>
-
-<style scoped>
-
-</style>

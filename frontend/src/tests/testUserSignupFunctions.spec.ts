@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
-  emailIsValid,
+  getLoginValidationErrors,
   hasValidSignupDetails,
   inputsMatch,
+  isValidEmail,
   isValidPassword,
-} from '@/utils/signupValidation'
+} from '@/utils/UserInputCheck'
 
 describe('signup validation', () => {
   it('accepts matching non-empty confirmation values', () => {
@@ -61,10 +62,24 @@ describe('signup validation', () => {
   })
 
   it('accepts an email with a valid format', () => {
-    expect(emailIsValid('root2112@gmail.com')).toBe(true)
+    expect(isValidEmail('root2112@gmail.com')).toBe(true)
   })
 
   it('rejects an email without a valid format', () => {
-    expect(emailIsValid('not-an-email')).toBe(false)
+    expect(isValidEmail('not-an-email')).toBe(false)
+  })
+
+  it('returns shared login validation errors', () => {
+    expect(getLoginValidationErrors({
+      identifier: '',
+      password: '',
+      identifierType: 'email',
+    })).toEqual(['Email is required', 'Password is required'])
+
+    expect(getLoginValidationErrors({
+      identifier: 'not-an-email',
+      password: 'Password1',
+      identifierType: 'email',
+    })).toEqual(['Email is invalid'])
   })
 })

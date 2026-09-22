@@ -2,6 +2,9 @@ package minicode.com.service;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
+import minicode.com.dto.ChangeEmailRequest;
+import minicode.com.dto.ChangePasswordRequest;
+import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
 import minicode.com.entity.User;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -62,6 +66,76 @@ public class UserService {
 
         return userRepo.save(user);
     }
+
+    @Transactional
+    public User changeUserName(UUID userId, ChangeUserNameRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username change request is invalid"
+            );
+        }
+
+        User user = findUserById(userId);
+        String normalizedUserName = request.newUserName().trim();
+
+        Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
+        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username already exists"
+            );
+        }
+
+        user.setUserName(normalizedUserName);
+        return userRepo.save(user);
+    }
+
+    @Transactional
+    public User changeUserEmail(UUID userId, ChangeEmailRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email change request is invalid"
+            );
+        }
+
+        User user = findUserById(userId);
+        String normalizedEmail = request.newEmail().trim();
+
+        Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
+        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email already exists"
+            );
+        }
+
+        user.setEmail(normalizedEmail);
+        return userRepo.save(user);
+    }
+
+    @Transactional
+    public User changePassword(UUID userId, ChangePasswordRequest request) {
+        if (!validator.validate(request).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Password change request is invalid"
+            );
+        }
+
+        User user = findUserById(userId);
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Current password is incorrect"
+            );
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        return userRepo.save(user);
+    }
+
 
     public User login(LoginRequest request) {
         String email = request.getEmail();
@@ -117,6 +191,18 @@ public class UserService {
         }
 
         return userByEmail.get();
+    }
+
+    private User findUserById(UUID userId) {
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found"
+            );
+        }
+
+        return user.get();
     }
 
     private User findUserByUserName(String userName) {

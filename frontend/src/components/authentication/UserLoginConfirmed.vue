@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { currentUser } from "../authenticator/auth";
+import { currentUser } from "@/authenticator/auth";
 
 const router = useRouter();
 const userName = computed(() => currentUser.value?.userName || "user");
@@ -12,7 +12,7 @@ function SendUserToUser() {
 </script>
 
 <template>
-  <v-container class="d-flex flex-column align-center justify-center" style="min-height: 100vh;">
+  <v-container class="d-flex flex-column align-center justify-center h-screen">
     <v-card class="pa-4 text-center">
       <v-alert
         title="Login successful"
@@ -25,6 +25,3 @@ function SendUserToUser() {
     </v-btn>
   </v-container>
 </template>
-
-<style scoped>
-</style>

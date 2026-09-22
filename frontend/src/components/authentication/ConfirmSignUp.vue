@@ -9,7 +9,7 @@ function SendUserToLogin() {
 </script>
 
 <template>
-  <v-container class="d-flex flex-column align-center justify-center" style="min-height: 100vh;">
+  <v-container class="d-flex flex-column align-center justify-center h-screen">
     <v-card class="pa-4 text-center">
       <v-alert
         title="You can now go on to solve challenges"
@@ -27,7 +27,3 @@ function SendUserToLogin() {
     </v-btn>
   </v-container>
 </template>
-
-<style scoped>
-
-</style>
