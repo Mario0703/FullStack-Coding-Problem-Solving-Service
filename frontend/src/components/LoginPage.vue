@@ -8,6 +8,7 @@ const email = ref("");
 const userName = ref("");
 const password = ref("");
 const loginError = ref("");
+const isSubmitting = ref(false);
 const loginWithEmail = ref(false);
 
 const loginWithUsername = computed(() => !loginWithEmail.value);
@@ -23,22 +24,24 @@ type LoginData = {
 
 async function LogIn() {
   loginError.value = "";
+  const validationErrors: string[] = [];
 
   const identifierIsNotEmpty = loginWithEmail.value
     ? emailIsNotEmpty.value
     : userNameIsNotEmpty.value;
 
   if (!identifierIsNotEmpty) {
-    loginError.value = loginWithEmail.value
+    validationErrors.push(loginWithEmail.value
       ? "Email is required"
-      : "Username is required";
+      : "Username is required");
   }
 
   if (!passwordIsNotEmpty.value) {
-    loginError.value = "Password is required";
+    validationErrors.push("Password is required");
   }
 
-  if (!identifierIsNotEmpty || !passwordIsNotEmpty.value) {
+  if (validationErrors.length > 0) {
+    loginError.value = validationErrors.join(" ");
     return;
   }
 
@@ -49,31 +52,49 @@ async function LogIn() {
       : { userName: userName.value.trim() }),
   };
 
-  const response = await fetch("http://localhost:8082/api/user/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(loginData),
-  });
+  isSubmitting.value = true;
 
-  if (!response.ok) {
-    loginError.value = "Invalid email/username or password";
-    return;
+  try {
+    const response = await fetch("http://localhost:8082/api/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(loginData),
+    });
+
+    if (response.status === 400 || response.status === 401) {
+      loginError.value = "Invalid email/username or password.";
+      return;
+    }
+
+    if (!response.ok) {
+      loginError.value = "The server could not log you in. Please try again later.";
+      return;
+    }
+
+    const loggedInUser = (await response.json()) as UserData;
+    currentUser.value = loggedInUser;
+    await router.push({ name: "loginConfirmed" });
+  } catch {
+    loginError.value = "Unable to reach the server. Please try again later.";
+  } finally {
+    isSubmitting.value = false;
   }
-
-  const loggedInUser = (await response.json()) as UserData;
-  currentUser.value = loggedInUser;
-  await router.push({ name: "loginConfirmed" });
 }
 </script>
 
 <template>
   <v-container style="display: flex; align-items: center; justify-content: center;">
-    <v-alert v-if="loginError" color="error">
-      {{ loginError }}
-    </v-alert>
+    <v-alert
+      v-if="loginError"
+      title="Login failed"
+      :text="loginError"
+      type="error"
+      variant="tonal"
+      class="mb-4"
+    />
 
     <v-form class="signup-form" @submit.prevent="LogIn">
       <h1>Login to your account</h1>
@@ -110,7 +131,14 @@ async function LogIn() {
         type="password"
         autocomplete="current-password"
       />
-      <v-btn type="submit" color="primary">Login</v-btn>
+      <v-btn
+        type="submit"
+        color="primary"
+        :loading="isSubmitting"
+        :disabled="isSubmitting"
+      >
+        Login
+      </v-btn>
     </v-form>
   </v-container>
 </template>
