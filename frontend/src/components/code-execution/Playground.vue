@@ -1,15 +1,60 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref, watch } from "vue";
 
-const code = ref("");
-const language = ref("python");
+type Language = "python" | "java" | "cpp" | "csharp";
+
+const templates: Record<Language, string> = {
+  python: `def main():
+    # Write your Python code here
+    pass
+
+
+if __name__ == "__main__":
+    main()
+`,
+  java: `public class Main {
+    public static void main(String[] args) {
+        // Write your Java code here
+    }
+}
+`,
+  cpp: `#include <iostream>
+
+int main() {
+    // Write your C++ code here
+    return 0;
+}
+`,
+  csharp: `using System;
+
+public class Main {
+    public static void Main(string[] args) {
+        // Write your C# code here
+    }
+}
+`,
+};
+
+const languageOptions = [
+  { title: "Python", value: "python" },
+  { title: "Java", value: "java" },
+  { title: "C++", value: "cpp" },
+  { title: "C#", value: "csharp" },
+];
+
+const language = ref<Language>("python");
+const code = ref(templates.python);
 const output = ref("");
 const isExecuting = ref(false);
-const supportedLanagues = ref(["python", "C++", "Java", "c#"]);
+
+watch(language, (selectedLanguage) => {
+  code.value = templates[selectedLanguage];
+  output.value = "";
+});
 
 async function executeCode() {
   if (!code.value.trim()) {
-    output.value = "Please enter Python code first.";
+    output.value = "Please enter code first.";
     return;
   }
 
@@ -36,30 +81,27 @@ async function executeCode() {
     isExecuting.value = false;
   }
 }
-
-
-
-
-
 </script>
 
 <template>
   <v-container>
     <v-textarea
       v-model="code"
-      label="Python code"
+      :label="`${language} code`"
       rows="10"
       auto-grow
-      lin
-    ></v-textarea>
+    />
+
     <v-select
       v-model="language"
-      :items="supportedLanagues"
+      :items="languageOptions"
       label="Language"
-    ></v-select>
+    />
+
     <v-btn color="primary" :loading="isExecuting" @click="executeCode">
       Execute
     </v-btn>
+
     <v-card v-if="output" class="mt-4">
       <v-card-title>Output</v-card-title>
       <v-card-text>{{ output }}</v-card-text>
