@@ -5,8 +5,9 @@ import Logout from "@/components/authentication/Logout.vue";
 import UserDashBoard from "@/components/user/UserDashBoard.vue";
 import ChangeEmail from "@/components/user/ChangeEmail.vue";
 import ChangeUserName from "@/components/user/ChangeUserName.vue";
+import ChangePassword from "@/components/user/ChangePassword.vue";
 
-type ActiveForm = "username" | "email" | null;
+type ActiveForm = "username" | "email" | "password" | null;
 
 const activeForm = ref<ActiveForm>(null);
 
@@ -71,7 +72,14 @@ function abortForm() {
             </v-col>
           </v-row>
         </v-card-text>
-        <v-btn to="/change-password">Want to change password, click here</v-btn>
+        <v-card-actions v-if="activeForm !== 'password'" class="justify-center pb-6">
+          <v-btn color="primary" @click="openForm('password')">
+            Change password
+          </v-btn>
+        </v-card-actions>
+        <v-card-text v-else class="pa-6 pt-0">
+          <ChangePassword @abort="abortForm" />
+        </v-card-text>
       </v-card>
 
       <div class="d-flex justify-center mt-6">
