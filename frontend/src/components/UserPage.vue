@@ -47,10 +47,7 @@ import UserDashBoard from "@/components/UserDashBoard.vue";
       <div class="d-flex justify-center mt-6">
         <Logout />
       </div>
-
-      <v-sheet class="w-100 mx-auto">
         <UserDashBoard />
-      </v-sheet>
     </div>
     <p v-else class="text-body-1">No user data available.</p>
   </v-container>
