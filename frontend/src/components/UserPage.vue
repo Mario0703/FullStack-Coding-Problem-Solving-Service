@@ -1,17 +1,13 @@
 <script setup lang="ts">
-type UserData = {
-  email?: string;
-  userName?: string;
-  password?: string;
-};
-
-const storedUser = sessionStorage.getItem("loggedInUser");
-const user: UserData = storedUser ? JSON.parse(storedUser) : {};
+import { currentUser } from "../authenticator/auth";
 </script>
 
 <template>
   <v-container class="d-flex flex-column align-center">
-    <h1>User page</h1>
-    <span>Username: {{ user.userName || "Not available" }}</span>
+    <div v-if="currentUser">
+      <p>Username: {{ currentUser.userName }}</p>
+      <p>Email: {{ currentUser.email }}</p>
+    </div>
+    <p v-else>No user data available.</p>
   </v-container>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { currentUser, type UserData } from "../authenticator/auth";
 
 const router = useRouter();
 const email = ref("");
@@ -18,12 +19,6 @@ type LoginData = {
   email?: string;
   userName?: string;
   password: string;
-};
-
-type SessionUser = {
-  userId: string;
-  userName: string;
-  email: string;
 };
 
 async function LogIn() {
@@ -59,6 +54,7 @@ async function LogIn() {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(loginData),
   });
 
@@ -67,8 +63,8 @@ async function LogIn() {
     return;
   }
 
-  const loggedInUser = (await response.json()) as SessionUser;
-  sessionStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+  const loggedInUser = (await response.json()) as UserData;
+  currentUser.value = loggedInUser;
   await router.push({ name: "loginConfirmed" });
 }
 </script>

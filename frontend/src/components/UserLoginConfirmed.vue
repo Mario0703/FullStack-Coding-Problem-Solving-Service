@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { currentUser } from "../authenticator/auth";
 
 const router = useRouter();
-const storedUser = sessionStorage.getItem("loggedInUser");
-const user = storedUser ? JSON.parse(storedUser) : undefined;
-const userName = computed(() => user?.userName || "user");
+const userName = computed(() => currentUser.value?.userName || "user");
 
 function SendUserToUser() {
   router.push({ name: "user" });
