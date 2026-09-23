@@ -8,6 +8,7 @@ import UserLoginConfirmed from "@/components/authentication/UserLoginConfirmed.v
 import UserPage from "@/components/user/UserPage.vue";
 import ForgotPassword from "@/components/user/ForgotPassword.vue";
 import Playground from "@/components/code-execution/Playground.vue";
+import AdminDashBoard from "@/components/AdminPages/AdminDashBoard.vue";
 import {
   currentUser,
   hasCheckedUser,
@@ -54,6 +55,11 @@ const router = createRouter({
       path: '/User',
       name: 'user',
       component: UserPage,
+      meta: { requiresAuth: true },
+    }, {
+      path: '/admin/dashboard',
+      name: 'adminDashboard',
+      component: AdminDashBoard,
       meta: { requiresAuth: true },
     }
   ],

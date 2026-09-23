@@ -3,8 +3,8 @@ package minicode.com.controller;
 
 import minicode.com.dto.CreateChallangeRequest;
 import minicode.com.entity.Challenge;
-import minicode.com.entity.Difficulty;
 import minicode.com.service.ChallengeService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +22,8 @@ public class ChallengeController {
     }
 
     @PostMapping("/create")
-    public void createChallenge(@RequestBody CreateChallangeRequest request) {
-        challangeService.createChallenge(request);
+    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request) {
+        return challangeService.createChallenge(request);
     }
 
 

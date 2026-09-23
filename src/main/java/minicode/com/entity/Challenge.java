@@ -9,6 +9,9 @@ import java.util.UUID;
 @Table(name = "Challenges", schema = "public") // provides the name of the table
 
 public class Challenge {
+    protected Challenge() {
+    }
+
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -58,8 +61,10 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Catagory catagory;
 
     public Challenge(String name, String description, Difficulty difficulty, Catagory catagory) {

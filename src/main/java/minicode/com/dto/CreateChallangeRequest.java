@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import minicode.com.entity.Catagory;
 import minicode.com.entity.Difficulty;
@@ -51,8 +52,8 @@ public class CreateChallangeRequest {
     @Size(min = 3, max = 500, message = "Description must be between 3 and 500 characters")
     private String description;
 
-    @NotBlank(message = "Difficulty is required")
+    @NotNull(message = "Difficulty is required")
     private Difficulty difficulty;
-    @NotBlank(message = "Catagory is required")
+    @NotNull(message = "Catagory is required")
     private Catagory catagory;
 }
