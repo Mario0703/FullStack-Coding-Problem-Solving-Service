@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChallengeController {
     private final ChallengeService challangeService;
 
-    public ChallengeController(ChallengeService challangeService) {
-        this.challangeService = challangeService;
+    public ChallengeController(ChallengeService challengeService) {
+        this.challangeService = challengeService;
     }
 
     @GetMapping("/ListChallanges")
