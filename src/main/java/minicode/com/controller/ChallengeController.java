@@ -52,7 +52,7 @@ public class ChallengeController {
 
             for (int i = 0; i < request.getTestCases().size(); i++) {
                 String testCase = request.getTestCases().get(i);
-                File testCaseFile = new File(testCasesFolder, "testcase" + (i + 1) + ".txt");
+                File testCaseFile = new File(testCasesFolder, "test" + (i + 1) + ".txt");
                 try (FileWriter writer = new FileWriter(testCaseFile)) {
                     writer.write(testCase);
                 }
