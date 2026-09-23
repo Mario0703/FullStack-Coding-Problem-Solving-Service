@@ -11,6 +11,47 @@ import java.util.UUID;
 public class Challenge {
     @Column(nullable = false, unique = true)
     private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Catagory getCatagory() {
+        return catagory;
+    }
+
+    public void setCatagory(Catagory catagory) {
+        this.catagory = catagory;
+    }
+
     @Column(nullable = false)
     private String description;
     @Id
@@ -20,6 +61,13 @@ public class Challenge {
     private Difficulty difficulty;
     @Column(nullable = false)
     private Catagory catagory;
+
+    public Challenge(String name, String description, Difficulty difficulty, Catagory catagory) {
+        this.name = name;
+        this.description = description;
+        this.difficulty = difficulty;
+        this.catagory = catagory;
+    }
 
 
 }

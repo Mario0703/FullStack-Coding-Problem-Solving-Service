@@ -12,6 +12,38 @@ import minicode.com.entity.Difficulty;
 import java.util.UUID;
 
 public class CreateChallangeRequest {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Catagory getCatagory() {
+        return catagory;
+    }
+
+    public void setCatagory(Catagory catagory) {
+        this.catagory = catagory;
+    }
+
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name;
