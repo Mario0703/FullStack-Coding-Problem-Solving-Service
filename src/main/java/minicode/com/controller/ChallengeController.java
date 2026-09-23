@@ -2,26 +2,23 @@ package minicode.com.controller;
 
 
 import minicode.com.entity.Challenge;
-import minicode.com.repository.ChallengeRepo;
+import minicode.com.service.ChallengeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/challenge")
 public class ChallengeController {
+    private final ChallengeService challangeService;
 
-    private final ChallengeRepo ChallangeRepo;
-
-    public ChallengeController(ChallengeRepo challengeRepository) {
-        this.ChallangeRepo = challengeRepository;
+    public ChallengeController(ChallengeService challangeService) {
+        this.challangeService = challangeService;
     }
 
     @GetMapping("/ListChallanges")
-    public List<Challenge> listChallanges() {
-        return ChallangeRepo.findAll();
+    public Iterable<Challenge> listChallenges() {
+        return challangeService.listChallenges();
     }
 
 
