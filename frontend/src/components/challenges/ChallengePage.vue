@@ -60,7 +60,12 @@ onMounted(loadChallengeList);
         sm="6"
         lg="4"
       >
-        <v-card class="h-100" variant="outlined">
+        <v-card
+          class="h-100"
+          variant="outlined"
+          link
+          :to="{ name: 'solveChallenge', params: { id: challenge.id } }"
+        >
           <v-card-title class="d-flex align-center justify-space-between">
             <span>{{ challenge.name }}</span>
             <v-chip size="small" color="primary">
@@ -71,6 +76,9 @@ onMounted(loadChallengeList);
             {{ formatChallengeValue(challenge.catagory) }}
           </v-card-subtitle>
           <v-card-text>{{ challenge.description }}</v-card-text>
+          <v-card-actions>
+            <v-btn color="primary">Solve challenge</v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
