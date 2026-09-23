@@ -3,9 +3,11 @@ import { ref } from "vue";
 import {
   categoryOptions,
   difficultyOptions,
+  languageOptions,
   type Challenge,
   type ChallengeCategory,
   type ChallengeDifficulty,
+  type Language
 } from "@/utils/AdminUtils";
 
 
@@ -17,20 +19,45 @@ const name = ref("");
 const description = ref("");
 const difficulty = ref<ChallengeDifficulty | null>(null);
 const catagory = ref<ChallengeCategory | null>(null);
+const language = ref<Language | null>(null);
 const formError = ref("");
+const solution = ref("");
 const isSubmitting = ref(false);
+const numberOfTestCases = ref(0);
+const testCases = ref<string[]>([]);
 
 function resetForm() {
   name.value = "";
   description.value = "";
   difficulty.value = null;
   catagory.value = null;
+  language.value = null;
+  solution.value = "";
+  numberOfTestCases.value = 0;
+  testCases.value = [];
+}
+
+function resizeTestCases(count: number | null) {
+  const nextCount = Math.max(0, count ?? 0);
+  testCases.value = Array.from(
+    { length: nextCount },
+    (_, index) => testCases.value[index] ?? "",
+  );
 }
 
 async function createChallenge() {
   formError.value = "";
 
-  if (!name.value.trim() || !description.value.trim() || !difficulty.value || !catagory.value) {
+  if (
+    !name.value.trim() ||
+    !description.value.trim() ||
+    !difficulty.value ||
+    !catagory.value ||
+    !language.value ||
+    !solution.value.trim() ||
+    testCases.value.length === 0 ||
+    testCases.value.some((testCase) => !testCase.trim())
+  ) {
     formError.value = "Please complete all fields before creating the challenge.";
     return;
   }
@@ -47,6 +74,9 @@ async function createChallenge() {
         description: description.value.trim(),
         difficulty: difficulty.value,
         catagory: catagory.value,
+        solution: solution.value.trim(),
+        language: language.value,
+        testCases: testCases.value.map((testCase) => testCase.trim()),
       }),
     });
 
@@ -99,6 +129,39 @@ async function createChallenge() {
         />
         <v-select v-model="difficulty" label="Difficulty" :items="difficultyOptions" required />
         <v-select v-model="catagory" label="Category" :items="categoryOptions" required />
+        <v-select v-model="language" label="Language" :items="languageOptions" required />
+        <v-textarea
+          v-model="solution"
+          label="Solution"
+          placeholder="Type the solution function"
+          rows="12"
+          cols="80"
+          auto-grow
+          :max-rows="24"
+        />
+        <v-number-input v-model="numberOfTestCases"
+          @update:model-value="resizeTestCases"
+          :reverse="false"
+          controlVariant="default"
+          label=""
+          :hideInput="false"
+          :inset="false"
+                        :min="0"
+          placeholder="Number of test cases"
+
+        ></v-number-input>
+        <v-textarea
+          v-for="i in numberOfTestCases"
+          :key="i"
+          v-model="testCases[i - 1]"
+          :label="`Test Case ${i}`"
+          placeholder="Enter test case details"
+          rows="8"
+          cols="80"
+          auto-grow
+          :max-rows="16"
+        />
+
         <v-btn
           type="submit"
           color="primary"

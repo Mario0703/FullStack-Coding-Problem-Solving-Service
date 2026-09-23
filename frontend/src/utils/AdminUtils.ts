@@ -2,6 +2,8 @@ export type ChallengeDifficulty = "EASY" | "MEDIUM" | "HARD";
 
 export type ChallengeCategory = "GENERAL" | "ARRAYS" | "STRINGS" | "TREES";
 
+export type Language = "PYTHON" | "JAVA" | "C++" | "C#";
+
 export type Challenge = {
   id: string;
   name: string;
@@ -14,6 +16,13 @@ export type ChallengeOption<T extends string> = {
   title: string;
   value: T;
 };
+
+export const languageOptions: ChallengeOption<Language>[] = [
+  { title: "Python", value: "PYTHON" },
+  { title: "Java", value: "JAVA" },
+  { title: "C++", value: "C++" },
+  { title: "C#", value: "C#" },
+]
 
 export const difficultyOptions: ChallengeOption<ChallengeDifficulty>[] = [
   { title: "Easy", value: "EASY" },

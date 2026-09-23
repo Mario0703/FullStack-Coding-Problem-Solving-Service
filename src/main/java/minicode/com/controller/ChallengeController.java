@@ -7,6 +7,10 @@ import minicode.com.service.ChallengeService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/challenge")
 public class ChallengeController {
@@ -23,7 +27,42 @@ public class ChallengeController {
 
     @PostMapping("/create")
     public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request) {
-        return challangeService.createChallenge(request);
+        Challenge challenge = challangeService.createChallenge(request);
+        UUID challengeId = challenge.getId();
+        File challengeFolder = new File("CodeEnv/Challenges/" + challengeId);
+
+        File solutionFolder = new File(challengeFolder, "Solution");
+        File testCasesFolder = new File(challengeFolder, "TestCases");
+
+        try {
+            if (!challengeFolder.exists()) {
+                challengeFolder.mkdirs();
+            }
+            if (!solutionFolder.exists()) {
+                solutionFolder.mkdirs();
+            }
+            if (!testCasesFolder.exists()) {
+                testCasesFolder.mkdirs();
+            }
+
+            File solutionFile = new File(solutionFolder, "solution." + request.getLanguage());
+            try (FileWriter writer = new FileWriter(solutionFile)) {
+                writer.write(request.getSolution());
+            }
+
+            for (int i = 0; i < request.getTestCases().size(); i++) {
+                String testCase = request.getTestCases().get(i);
+                File testCaseFile = new File(testCasesFolder, "testcase" + (i + 1) + ".txt");
+                try (FileWriter writer = new FileWriter(testCaseFile)) {
+                    writer.write(testCase);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return challenge;
     }
 
 

@@ -5,12 +5,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import minicode.com.entity.Catagory;
 import minicode.com.entity.Difficulty;
 
-import java.util.UUID;
+import java.util.List;
 
 public class CreateChallangeRequest {
     public String getName() {
@@ -45,6 +46,30 @@ public class CreateChallangeRequest {
         this.catagory = catagory;
     }
 
+    public String getSolution() {
+        return solution;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public List<String> getTestCases() {
+        return testCases;
+    }
+
+    public void setTestCases(List<String> testCases) {
+        this.testCases = testCases;
+    }
+
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name;
@@ -56,4 +81,13 @@ public class CreateChallangeRequest {
     private Difficulty difficulty;
     @NotNull(message = "Catagory is required")
     private Catagory catagory;
+
+    @NotBlank(message = "Solution is required")
+    private String solution;
+
+    @NotBlank(message = "Language is required")
+    private String language;
+
+    @NotEmpty(message = "At least one test case is required")
+    private List<String> testCases;
 }
