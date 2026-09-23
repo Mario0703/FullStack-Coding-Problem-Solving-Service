@@ -1,8 +1,8 @@
 package minicode.com.controller;
 
 
-import minicode.com.entity.Challange;
-import minicode.com.repository.ChallangeRepo;
+import minicode.com.entity.Challenge;
+import minicode.com.repository.ChallengeRepo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/challange")
-public class ChallangeController {
+@RequestMapping("/api/challenge")
+public class ChallengeController {
 
-    private final ChallangeRepo ChallangeRepo;
+    private final ChallengeRepo ChallangeRepo;
 
-    public ChallangeController(ChallangeRepo challengeRepository) {
+    public ChallengeController(ChallengeRepo challengeRepository) {
         this.ChallangeRepo = challengeRepository;
     }
 
     @GetMapping("/ListChallanges")
-    public List<Challange> listChallanges() {
+    public List<Challenge> listChallanges() {
         return ChallangeRepo.findAll();
     }
 

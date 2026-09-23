@@ -1,19 +1,21 @@
 package minicode.com.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-public class Challange {
+import java.util.UUID;
+
+@Entity
+@Table(name = "Challenges", schema = "public") // provides the name of the table
+
+public class Challenge {
     @Column(nullable = false, unique = true)
-    private String Name;
+    private String name;
     @Column(nullable = false)
-    private String Description;
+    private String description;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String Id;
+    private UUID id;
     @Column(nullable = false)
     private Difficulty difficulty;
     @Column(nullable = false)
