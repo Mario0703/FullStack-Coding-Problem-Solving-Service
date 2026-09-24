@@ -2,6 +2,9 @@ package minicode.com.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity // This class should be tracked as a table
@@ -29,6 +32,9 @@ public class User {
         this.email = email;
         this.password = password;
     }
+
+    @Column(nullable = false)
+    List<Challenge> SolvedChallenges = new ArrayList();
 
 
 
