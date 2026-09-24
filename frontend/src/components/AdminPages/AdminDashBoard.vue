@@ -33,10 +33,17 @@ onMounted(loadChallenges);
 
 <template>
   <v-container class="py-8">
-    <div class="mb-8">
-      <h1 class="text-h4 font-weight-bold">Admin dashboard</h1>
-      <p class="text-body-1 mt-2">Create and review coding challenges.</p>
-    </div>
+    <v-container class="mb-8">
+      <v-card variant="text">
+        <v-card-title class="text-h4 font-weight-bold px-0">
+          Admin dashboard
+        </v-card-title>
+
+        <v-card-subtitle class="text-body-1 mt-2 px-0">
+          Create and review coding challenges.
+        </v-card-subtitle>
+      </v-card>
+    </v-container>
 
     <AddChallange @created="addChallenge" />
 
@@ -50,10 +57,12 @@ onMounted(loadChallenges);
 
     <v-divider class="my-8" />
 
-    <div class="d-flex align-center justify-space-between mb-4">
-      <h2 class="text-h5 font-weight-bold">Challenges</h2>
-      <v-btn variant="text" @click="loadChallenges">Refresh</v-btn>
-    </div>
+    <v-card class="d-flex align-center justify-space-between mb-4" variant="text">
+      <v-card-title class="text-h5 font-weight-bold px-0">Challenges</v-card-title>
+      <v-card-actions class="pa-0">
+        <v-btn variant="text" @click="loadChallenges">Refresh</v-btn>
+      </v-card-actions>
+    </v-card>
 
     <v-alert
       v-if="loadError"
@@ -64,9 +73,9 @@ onMounted(loadChallenges);
       class="mb-4"
     />
 
-    <div v-if="isLoading" class="d-flex justify-center pa-8">
+    <v-container v-if="isLoading" class="d-flex justify-center pa-8">
       <v-progress-circular indeterminate color="primary" />
-    </div>
+    </v-container>
 
     <v-alert
       v-else-if="challenges.length === 0"

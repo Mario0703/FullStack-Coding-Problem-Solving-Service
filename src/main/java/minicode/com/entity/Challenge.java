@@ -63,7 +63,7 @@ public class Challenge {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
-    @Column(nullable = false)
+    @Column(name = "catagory", nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
