@@ -50,15 +50,24 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
             ProcessBuilder runBuilder = new ProcessBuilder(
                     "docker", "run", "--rm",
                     "--name", containerName,
+
+                    // Network Isolation
                     "--network=none",
+
+                    // Filesystem Security
                     "--read-only",
-                    "--cap-drop=ALL",
-                    "--security-opt=no-new-privileges",
                     "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m",
+
+                    // Privilege Restriction
+                    "--cap-drop=ALL",
+                    "--security-opt=no-new-privileges:true",
+                    "--user=1000:1000",
+
+                    // Resource Limits
                     "--memory=256m",
                     "--cpus=0.5",
                     "--pids-limit=64",
-                    "--user=65532:65532",
+
                     executionImage
             );
             runBuilder.redirectErrorStream(true);
