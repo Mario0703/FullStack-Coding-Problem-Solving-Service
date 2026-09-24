@@ -1,6 +1,10 @@
 def add(a, b):
-    # Write your Python code here
+    # Your function write your soltuions here
     return a + b
+
+
+
+#Dont tough this code
 
 a, b = map(int, input().split())
 print(add(a, b))

@@ -1,110 +1,130 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch } from 'vue'
 
-type Language = "python" | "java" | "cpp" | "csharp";
-
-const templates: Record<Language, string> = {
-  python: `def main():
-    # Write your Python code here
-    pass
-
-
-if __name__ == "__main__":
-    main()
-`,
-  java: `public class Main {
-    public static void main(String[] args) {
-        // Write your Java code here
-    }
+type ChallengeTemplateResponse = {
+  language: string
+  template: string
+  explanation: string
 }
-`,
-  cpp: `#include <iostream>
 
-int main() {
-    // Write your C++ code here
-    return 0;
-}
-`,
-  csharp: `using System;
+const props = defineProps<{
+  challengeId?: string
+}>()
 
-public class Main {
-    public static void Main(string[] args) {
-        // Write your C# code here
-    }
-}
-`,
-};
+defineOptions({ name: 'ChallengePlayground' })
 
-const languageOptions = [
-  { title: "Python", value: "python" },
-  { title: "Java", value: "java" },
-  { title: "C++", value: "cpp" },
-  { title: "C#", value: "csharp" },
-];
+const language = ref('')
+const code = ref('')
+const explanation = ref('')
+const output = ref('')
+const loadError = ref('')
+const isLoading = ref(false)
+const isExecuting = ref(false)
 
-const language = ref<Language>("python");
-const code = ref(templates.python);
-const output = ref("");
-const isExecuting = ref(false);
-
-watch(language, (selectedLanguage) => {
-  code.value = templates[selectedLanguage];
-  output.value = "";
-});
-
-async function executeCode() {
-  if (!code.value.trim()) {
-    output.value = "Please enter code first.";
-    return;
+function languageLabel(value: string) {
+  const labels: Record<string, string> = {
+    PYTHON: 'Python',
+    JAVA: 'Java',
+    'C++': 'C++',
+    'C#': 'C#',
   }
 
-  isExecuting.value = true;
-  output.value = "";
+  return labels[value] ?? value
+}
+
+async function loadTemplate(challengeId: string | undefined) {
+  language.value = ''
+  code.value = ''
+  explanation.value = ''
+  output.value = ''
+  loadError.value = ''
+
+  if (!challengeId) {
+    loadError.value = 'Open a challenge to load its coding template.'
+    return
+  }
+
+  isLoading.value = true
 
   try {
-    const response = await fetch("http://localhost:8082/api/code/playground/submit", {
-      method: "POST",
+    const response = await fetch(`http://localhost:8082/api/challenge/${challengeId}/template`, {
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error('The challenge template could not be loaded.')
+    }
+
+    const result = (await response.json()) as ChallengeTemplateResponse
+    language.value = result.language
+    code.value = result.template
+    explanation.value = result.explanation
+  } catch (error) {
+    loadError.value =
+      error instanceof Error ? error.message : 'The challenge template could not be loaded.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+watch(
+  () => props.challengeId,
+  (challengeId) => loadTemplate(challengeId),
+  { immediate: true },
+)
+
+async function executeCode() {
+  if (!code.value.trim() || !language.value) {
+    output.value = 'Please load a challenge and enter code first.'
+    return
+  }
+
+  isExecuting.value = true
+  output.value = ''
+
+  try {
+    const response = await fetch('http://localhost:8082/api/code/playground/submit', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        language: language.value,
+        language: language.value.toLowerCase(),
         code: code.value,
       }),
-    });
+    })
 
-    const result = await response.text();
-    output.value = response.ok ? result : `Error: ${result}`;
+    const result = await response.text()
+    output.value = response.ok ? result : `Error: ${result}`
   } catch (error) {
-    output.value = `Could not connect to the backend: ${String(error)}`;
+    output.value = `Could not connect to the backend: ${String(error)}`
   } finally {
-    isExecuting.value = false;
+    isExecuting.value = false
   }
 }
 </script>
 
 <template>
-  <v-container>
-    <v-textarea
-      v-model="code"
-      :label="`${language} code`"
-      rows="10"
-      auto-grow
-    />
+  <v-container class="py-8">
+    <div v-if="isLoading" class="d-flex justify-center pa-8">
+      <v-progress-circular indeterminate color="primary" />
+    </div>
 
-    <v-select
-      v-model="language"
-      :items="languageOptions"
-      label="Language"
-    />
+    <v-alert v-else-if="loadError" :text="loadError" type="error" variant="tonal" />
 
-    <v-btn color="primary" :loading="isExecuting" @click="executeCode">
-      Execute
-    </v-btn>
+    <template v-else>
+      <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
 
-    <v-card v-if="output" class="mt-4">
-      <v-card-title>Output</v-card-title>
-      <v-card-text>{{ output }}</v-card-text>
-    </v-card>
+      <v-textarea v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
+
+      <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Execute </v-btn>
+
+      <v-card v-if="output" class="mt-4">
+        <v-card-title>Output</v-card-title>
+        <v-card-text>{{ output }}</v-card-text>
+      </v-card>
+    </template>
   </v-container>
 </template>
+
+<style scoped></style>

@@ -15,42 +15,102 @@ type TestCase = {
   expectedOutput: string
 }
 
-const languageTemplates: Record<Language, string> = {
-  PYTHON: `import sys
+type LanguageSetup = {
+  userTemplate: string
+  userTemplateExplanation: string
+  runner: string
+  runnerExplanation: string
+}
 
-
-def solve():
-    # Read the input and write the expected output here.
-    data = sys.stdin.read().split()
-
-
-if __name__ == "__main__":
-    solve()
+const languageSetups: Record<Language, LanguageSetup> = {
+  PYTHON: {
+    userTemplate: `def add(a, b):
+    # Write your solution here.
+    pass
 `,
-  JAVA: `import java.util.Scanner;
+    userTemplateExplanation:
+      'The user only changes the function body. The function name and arguments must stay compatible with the runner.',
+    runner: `a, b = map(int, input().split())
+print(add(a, b))
+`,
+    runnerExplanation:
+      'The runner reads two integers from standard input, calls add(a, b), and prints the returned value. It is appended by the server when the submission runs.',
+  },
+  JAVA: {
+    userTemplate: `class Solution {
+    public static int add(int a, int b) {
+        // Write your solution here.
+        return 0;
+    }
+}
+`,
+    userTemplateExplanation:
+      'The user implements Solution.add. The class name, method name, and argument types must stay compatible with the runner.',
+    runner: `import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        // Read the input and print the expected output here.
+        int a = scanner.nextInt();
+        int b = scanner.nextInt();
+        System.out.println(Solution.add(a, b));
     }
 }
 `,
-  'C++': `#include <iostream>
+    runnerExplanation:
+      'The runner reads two integers, calls Solution.add(a, b), and prints the result. The server combines it with the user template before compiling.',
+  },
+  'C++': {
+    userTemplate: `class Solution {
+public:
+    int add(int a, int b) {
+        // Write your solution here.
+        return 0;
+    }
+};
+`,
+    userTemplateExplanation:
+      'The user implements Solution::add. The class name, method name, and argument types must stay compatible with the runner.',
+    runner: `#include <iostream>
 
 int main() {
-    // Read the input and print the expected output here.
+    int a, b;
+    std::cin >> a >> b;
+
+    Solution solution;
+    std::cout << solution.add(a, b) << '\\n';
     return 0;
 }
 `,
-  'C#': `using System;
-
-public class Main {
-    public static void Main(string[] args) {
-        // Read the input and print the expected output here.
+    runnerExplanation:
+      'The runner reads two integers, calls Solution::add, and prints the result. The server combines it with the user template before compiling.',
+  },
+  'C#': {
+    userTemplate: `public class Solution {
+    public int Add(int a, int b) {
+        // Write your solution here.
+        return 0;
     }
 }
 `,
+    userTemplateExplanation:
+      'The user implements Solution.Add. The class name, method name, and argument types must stay compatible with the runner.',
+    runner: `using System;
+
+public class Main {
+    public static void Main(string[] args) {
+        string[] values = Console.ReadLine()!.Split();
+        int a = int.Parse(values[0]);
+        int b = int.Parse(values[1]);
+
+        Solution solution = new Solution();
+        Console.WriteLine(solution.Add(a, b));
+    }
+}
+`,
+    runnerExplanation:
+      'The runner reads two integers, calls Solution.Add, and prints the result. The server combines it with the user template before compiling.',
+  },
 }
 
 const emit = defineEmits<{
@@ -65,13 +125,20 @@ const language = ref<Language | null>(null)
 const formError = ref('')
 const solution = ref('')
 const template = ref('')
+const templateExplanation = ref('')
+const runner = ref('')
+const runnerExplanation = ref('')
 const isSubmitting = ref(false)
 const numberOfTestCases = ref(1)
 const testCases = ref<TestCase[]>([{ input: '', expectedOutput: '' }])
 
 watch(language, (selectedLanguage) => {
   if (selectedLanguage) {
-    template.value = languageTemplates[selectedLanguage]
+    const setup = languageSetups[selectedLanguage]
+    template.value = setup.userTemplate
+    templateExplanation.value = setup.userTemplateExplanation
+    runner.value = setup.runner
+    runnerExplanation.value = setup.runnerExplanation
   }
 })
 
@@ -83,6 +150,9 @@ function resetForm() {
   language.value = null
   solution.value = ''
   template.value = ''
+  templateExplanation.value = ''
+  runner.value = ''
+  runnerExplanation.value = ''
   numberOfTestCases.value = 1
   testCases.value = [{ input: '', expectedOutput: '' }]
 }
@@ -106,11 +176,14 @@ async function createChallenge() {
     !language.value ||
     !solution.value.trim() ||
     !template.value.trim() ||
+    !templateExplanation.value.trim() ||
+    !runner.value.trim() ||
+    !runnerExplanation.value.trim() ||
     testCases.value.length === 0 ||
     testCases.value.some((testCase) => !testCase.input.trim() || !testCase.expectedOutput.trim())
   ) {
     formError.value =
-      'Please complete the solution, template, and every test case before creating the challenge.'
+      'Please complete the solution, template, explanations, runner, and every test case before creating the challenge.'
     return
   }
 
@@ -128,6 +201,9 @@ async function createChallenge() {
         catagory: catagory.value,
         solution: solution.value.trim(),
         template: template.value.trim(),
+        templateExplanation: templateExplanation.value.trim(),
+        runner: runner.value.trim(),
+        runnerExplanation: runnerExplanation.value.trim(),
         language: language.value,
         testCases: testCases.value.map((testCase) => ({
           input: testCase.input.trim(),
@@ -209,6 +285,34 @@ async function createChallenge() {
           cols="80"
           auto-grow
           :max-rows="24"
+          class="mb-3"
+        />
+        <v-textarea
+          v-model="templateExplanation"
+          label="User template explanation"
+          placeholder="Explain what the user should implement and which names or arguments must stay unchanged."
+          rows="3"
+          auto-grow
+          :max-rows="8"
+          class="mb-6"
+        />
+        <v-textarea
+          v-model="runner"
+          label="Runner"
+          hint="The server uses this code to read test input, call the user's function, and print its result."
+          persistent-hint
+          rows="12"
+          auto-grow
+          :max-rows="24"
+          class="mb-3"
+        />
+        <v-textarea
+          v-model="runnerExplanation"
+          label="Runner explanation"
+          placeholder="Explain how input is parsed, how the user function is called, and what is printed."
+          rows="3"
+          auto-grow
+          :max-rows="8"
           class="mb-6"
         />
         <v-number-input

@@ -2,14 +2,19 @@ package minicode.com.controller;
 
 
 import minicode.com.dto.CreateChallangeRequest;
+import minicode.com.dto.ChallengeTemplateResponse;
 import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
 import minicode.com.service.ChallengeService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.UUID;
 
 @RestController
@@ -24,6 +29,36 @@ public class ChallengeController {
     @GetMapping("/ListChallanges")
     public Iterable<Challenge> listChallenges() {
         return challangeService.listChallenges();
+    }
+
+    @GetMapping("/{challengeId}/template")
+    public ChallengeTemplateResponse getChallengeTemplate(@PathVariable UUID challengeId) {
+        File templateFolder = new File("CodeEnv/Challenges/" + challengeId + "/Template");
+        File[] templateFiles = templateFolder.listFiles((directory, fileName) ->
+                fileName.startsWith("template.") && !fileName.equals("template-explanation.txt"));
+
+        if (templateFiles == null || templateFiles.length == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge template not found");
+        }
+
+        File templateFile = templateFiles[0];
+        String fileName = templateFile.getName();
+        String language = fileName.substring("template.".length());
+        File explanationFile = new File(templateFolder, "template-explanation.txt");
+
+        try {
+            String template = Files.readString(templateFile.toPath(), StandardCharsets.UTF_8);
+            String explanation = explanationFile.exists()
+                    ? Files.readString(explanationFile.toPath(), StandardCharsets.UTF_8)
+                    : "";
+            return new ChallengeTemplateResponse(language, template, explanation);
+        } catch (Exception exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Could not read challenge template",
+                    exception
+            );
+        }
     }
 
     @PostMapping("/create")
@@ -58,6 +93,21 @@ public class ChallengeController {
             File templateFile = new File(templateFolder, "template." + request.getLanguage());
             try (FileWriter writer = new FileWriter(templateFile)) {
                 writer.write(request.getTemplate());
+            }
+            try (FileWriter writer = new FileWriter(new File(templateFolder, "template-explanation.txt"))) {
+                writer.write(request.getTemplateExplanation());
+            }
+
+            File runnerFolder = new File(challengeFolder, "Runner");
+            if (!runnerFolder.exists()) {
+                runnerFolder.mkdirs();
+            }
+            File runnerFile = new File(runnerFolder, "runner." + request.getLanguage());
+            try (FileWriter writer = new FileWriter(runnerFile)) {
+                writer.write(request.getRunner());
+            }
+            try (FileWriter writer = new FileWriter(new File(runnerFolder, "runner-explanation.txt"))) {
+                writer.write(request.getRunnerExplanation());
             }
 
             for (int i = 0; i < request.getTestCases().size(); i++) {

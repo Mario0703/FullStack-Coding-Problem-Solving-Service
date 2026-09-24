@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 import minicode.com.entity.Catagory;
 import minicode.com.entity.Difficulty;
 
@@ -62,6 +63,30 @@ public class CreateChallangeRequest {
         this.template = template;
     }
 
+    public String getTemplateExplanation() {
+        return templateExplanation;
+    }
+
+    public void setTemplateExplanation(String templateExplanation) {
+        this.templateExplanation = templateExplanation;
+    }
+
+    public String getRunner() {
+        return runner;
+    }
+
+    public void setRunner(String runner) {
+        this.runner = runner;
+    }
+
+    public String getRunnerExplanation() {
+        return runnerExplanation;
+    }
+
+    public void setRunnerExplanation(String runnerExplanation) {
+        this.runnerExplanation = runnerExplanation;
+    }
+
     public String getLanguage() {
         return language;
     }
@@ -96,9 +121,19 @@ public class CreateChallangeRequest {
     @NotBlank(message = "Template is required")
     private String template;
 
+    @NotBlank(message = "Template explanation is required")
+    private String templateExplanation;
+
+    @NotBlank(message = "Runner is required")
+    private String runner;
+
+    @NotBlank(message = "Runner explanation is required")
+    private String runnerExplanation;
+
     @NotBlank(message = "Language is required")
     private String language;
 
     @NotEmpty(message = "At least one test case is required")
+    @Valid
     private List<CreateTestCaseRequest> testCases;
 }

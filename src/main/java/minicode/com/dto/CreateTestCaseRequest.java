@@ -1,8 +1,13 @@
 package minicode.com.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class CreateTestCaseRequest {
 
+    @NotBlank(message = "Test input is required")
     private String input;
+
+    @NotBlank(message = "Expected output is required")
     private String expectedOutput;
 
     public String getInput() {

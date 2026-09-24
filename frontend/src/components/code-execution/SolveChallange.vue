@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import type { Challenge } from "@/utils/AdminUtils";
-import { formatChallengeValue } from "@/utils/AdminUtils";
-import { listChallenges } from "@/utils/ChallangeUtil";
-import Playground from "@/components/code-execution/Playground.vue";
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Challenge } from '@/utils/AdminUtils'
+import { formatChallengeValue } from '@/utils/AdminUtils'
+import { listChallenges } from '@/utils/ChallangeUtil'
+import Playground from '@/components/code-execution/Playground.vue'
 
-const route = useRoute();
-const challenge = ref<Challenge | null>(null);
-const loadError = ref("");
-const isLoading = ref(true);
+const route = useRoute()
+const challenge = ref<Challenge | null>(null)
+const loadError = ref('')
+const isLoading = ref(true)
 
 async function loadChallenge() {
   try {
-    const challengeId = String(route.params.id);
-    const challenges = await listChallenges();
-    challenge.value = challenges.find((item) => item.id === challengeId) ?? null;
+    const challengeId = String(route.params.id)
+    const challenges = await listChallenges()
+    challenge.value = challenges.find((item) => item.id === challengeId) ?? null
 
     if (!challenge.value) {
-      loadError.value = "The requested challenge could not be found.";
+      loadError.value = 'The requested challenge could not be found.'
     }
   } catch {
-    loadError.value = "Unable to load the challenge. Please try again later.";
+    loadError.value = 'Unable to load the challenge. Please try again later.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
-onMounted(loadChallenge);
+onMounted(loadChallenge)
 </script>
 
 <template>
@@ -55,9 +55,8 @@ onMounted(loadChallenge);
         <v-btn to="/challenges" variant="text">Back to challenges</v-btn>
       </v-card-actions>
     </v-card>
+    <Playground v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
-  <Playground></Playground>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
