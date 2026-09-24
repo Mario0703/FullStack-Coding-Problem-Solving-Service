@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from 'vue'
 import {
   categoryOptions,
   difficultyOptions,
@@ -7,46 +7,96 @@ import {
   type Challenge,
   type ChallengeCategory,
   type ChallengeDifficulty,
-  type Language
-} from "@/utils/AdminUtils";
+  type Language,
+} from '@/utils/AdminUtils'
 
+type TestCase = {
+  input: string
+  expectedOutput: string
+}
+
+const languageTemplates: Record<Language, string> = {
+  PYTHON: `import sys
+
+
+def solve():
+    # Read the input and write the expected output here.
+    data = sys.stdin.read().split()
+
+
+if __name__ == "__main__":
+    solve()
+`,
+  JAVA: `import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // Read the input and print the expected output here.
+    }
+}
+`,
+  'C++': `#include <iostream>
+
+int main() {
+    // Read the input and print the expected output here.
+    return 0;
+}
+`,
+  'C#': `using System;
+
+public class Main {
+    public static void Main(string[] args) {
+        // Read the input and print the expected output here.
+    }
+}
+`,
+}
 
 const emit = defineEmits<{
-  created: [challenge: Challenge];
-}>();
+  created: [challenge: Challenge]
+}>()
 
-const name = ref("");
-const description = ref("");
-const difficulty = ref<ChallengeDifficulty | null>(null);
-const catagory = ref<ChallengeCategory | null>(null);
-const language = ref<Language | null>(null);
-const formError = ref("");
-const solution = ref("");
-const isSubmitting = ref(false);
-const numberOfTestCases = ref(0);
-const testCases = ref<string[]>([]);
+const name = ref('')
+const description = ref('')
+const difficulty = ref<ChallengeDifficulty | null>(null)
+const catagory = ref<ChallengeCategory | null>(null)
+const language = ref<Language | null>(null)
+const formError = ref('')
+const solution = ref('')
+const template = ref('')
+const isSubmitting = ref(false)
+const numberOfTestCases = ref(1)
+const testCases = ref<TestCase[]>([{ input: '', expectedOutput: '' }])
+
+watch(language, (selectedLanguage) => {
+  if (selectedLanguage) {
+    template.value = languageTemplates[selectedLanguage]
+  }
+})
 
 function resetForm() {
-  name.value = "";
-  description.value = "";
-  difficulty.value = null;
-  catagory.value = null;
-  language.value = null;
-  solution.value = "";
-  numberOfTestCases.value = 0;
-  testCases.value = [];
+  name.value = ''
+  description.value = ''
+  difficulty.value = null
+  catagory.value = null
+  language.value = null
+  solution.value = ''
+  template.value = ''
+  numberOfTestCases.value = 1
+  testCases.value = [{ input: '', expectedOutput: '' }]
 }
 
 function resizeTestCases(count: number | null) {
-  const nextCount = Math.max(0, count ?? 0);
+  const nextCount = Math.max(0, count ?? 0)
   testCases.value = Array.from(
     { length: nextCount },
-    (_, index) => testCases.value[index] ?? "",
-  );
+    (_, index) => testCases.value[index] ?? { input: '', expectedOutput: '' },
+  )
 }
 
 async function createChallenge() {
-  formError.value = "";
+  formError.value = ''
 
   if (
     !name.value.trim() ||
@@ -55,43 +105,49 @@ async function createChallenge() {
     !catagory.value ||
     !language.value ||
     !solution.value.trim() ||
+    !template.value.trim() ||
     testCases.value.length === 0 ||
-    testCases.value.some((testCase) => !testCase.trim())
+    testCases.value.some((testCase) => !testCase.input.trim() || !testCase.expectedOutput.trim())
   ) {
-    formError.value = "Please complete all fields before creating the challenge.";
-    return;
+    formError.value =
+      'Please complete the solution, template, and every test case before creating the challenge.'
+    return
   }
 
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   try {
-    const response = await fetch("http://localhost:8082/api/challenge/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+    const response = await fetch('http://localhost:8082/api/challenge/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         name: name.value.trim(),
         description: description.value.trim(),
         difficulty: difficulty.value,
         catagory: catagory.value,
         solution: solution.value.trim(),
+        template: template.value.trim(),
         language: language.value,
-        testCases: testCases.value.map((testCase) => testCase.trim()),
+        testCases: testCases.value.map((testCase) => ({
+          input: testCase.input.trim(),
+          expectedOutput: testCase.expectedOutput.trim(),
+        })),
       }),
-    });
+    })
 
     if (!response.ok) {
-      formError.value = "The challenge could not be created. Please check the fields and try again.";
-      return;
+      formError.value = 'The challenge could not be created. Please check the fields and try again.'
+      return
     }
 
-    const createdChallenge = (await response.json()) as Challenge;
-    emit("created", createdChallenge);
-    resetForm();
+    const createdChallenge = (await response.json()) as Challenge
+    emit('created', createdChallenge)
+    resetForm()
   } catch {
-    formError.value = "Unable to reach the server. Please try again later.";
+    formError.value = 'Unable to reach the server. Please try again later.'
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
 </script>
@@ -132,42 +188,67 @@ async function createChallenge() {
         <v-select v-model="language" label="Language" :items="languageOptions" required />
         <v-textarea
           v-model="solution"
-          label="Solution"
-          placeholder="Type the solution function"
+          label="Reference solution"
+          placeholder="Enter the complete solution used to validate the challenge."
           rows="12"
           cols="80"
           auto-grow
           :max-rows="24"
+          class="mb-6"
         />
-        <v-number-input v-model="numberOfTestCases"
-          @update:model-value="resizeTestCases"
-          :reverse="false"
-          controlVariant="default"
-          label=""
-          :hideInput="false"
-          :inset="false"
-                        :min="0"
-          placeholder="Number of test cases"
-
-        ></v-number-input>
         <v-textarea
-          v-for="i in numberOfTestCases"
-          :key="i"
-          v-model="testCases[i - 1]"
-          :label="`Test Case ${i}`"
-          placeholder="Enter test case details"
-          rows="8"
+          v-model="template"
+          label="User starter template"
+          :hint="
+            language
+              ? `Template shown to users for ${language}`
+              : 'Select a language to load a starter template'
+          "
+          persistent-hint
+          rows="12"
           cols="80"
           auto-grow
-          :max-rows="16"
+          :max-rows="24"
+          class="mb-6"
+        />
+        <v-number-input
+          v-model="numberOfTestCases"
+          @update:model-value="resizeTestCases"
+          label="Number of test cases"
+          :min="1"
+          :max="50"
+          control-variant="default"
+          required
+          class="mb-4"
         />
 
-        <v-btn
-          type="submit"
-          color="primary"
-          :loading="isSubmitting"
-          :disabled="isSubmitting"
+        <v-card
+          v-for="(testCase, index) in testCases"
+          :key="index"
+          variant="tonal"
+          class="mb-4 pa-4"
         >
+          <v-card-title class="px-0 pt-0 text-subtitle-1"> Test case {{ index + 1 }} </v-card-title>
+          <v-textarea
+            v-model="testCase.input"
+            label="Input"
+            placeholder="Enter the exact contents passed to the user's program."
+            rows="4"
+            auto-grow
+            :max-rows="10"
+            class="mb-3"
+          />
+          <v-textarea
+            v-model="testCase.expectedOutput"
+            label="Expected output"
+            placeholder="Enter the exact output the program should produce."
+            rows="4"
+            auto-grow
+            :max-rows="10"
+          />
+        </v-card>
+
+        <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
           Create challenge
         </v-btn>
       </v-form>
@@ -175,5 +256,4 @@ async function createChallenge() {
   </v-card>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

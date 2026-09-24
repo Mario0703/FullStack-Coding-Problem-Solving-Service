@@ -1,7 +1,11 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 COPY main.py .
+COPY runTestSub.bs .
+COPY *.in .
+COPY *.out .
 
-CMD ["python", "main.py"]
+
+CMD ["bash", "./runTestSub.bs", "./main.py"]

@@ -54,6 +54,14 @@ public class CreateChallangeRequest {
         this.solution = solution;
     }
 
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
     public String getLanguage() {
         return language;
     }
@@ -62,11 +70,11 @@ public class CreateChallangeRequest {
         this.language = language;
     }
 
-    public List<String> getTestCases() {
+    public List<CreateTestCaseRequest> getTestCases() {
         return testCases;
     }
 
-    public void setTestCases(List<String> testCases) {
+    public void setTestCases(List<CreateTestCaseRequest> testCases) {
         this.testCases = testCases;
     }
 
@@ -85,9 +93,12 @@ public class CreateChallangeRequest {
     @NotBlank(message = "Solution is required")
     private String solution;
 
+    @NotBlank(message = "Template is required")
+    private String template;
+
     @NotBlank(message = "Language is required")
     private String language;
 
     @NotEmpty(message = "At least one test case is required")
-    private List<String> testCases;
+    private List<CreateTestCaseRequest> testCases;
 }

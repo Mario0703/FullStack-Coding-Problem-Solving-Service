@@ -2,6 +2,7 @@ package minicode.com.controller;
 
 
 import minicode.com.dto.CreateChallangeRequest;
+import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
 import minicode.com.service.ChallengeService;
 import jakarta.validation.Valid;
@@ -50,11 +51,24 @@ public class ChallengeController {
                 writer.write(request.getSolution());
             }
 
+            File templateFolder = new File(challengeFolder, "Template");
+            if (!templateFolder.exists()) {
+                templateFolder.mkdirs();
+            }
+            File templateFile = new File(templateFolder, "template." + request.getLanguage());
+            try (FileWriter writer = new FileWriter(templateFile)) {
+                writer.write(request.getTemplate());
+            }
+
             for (int i = 0; i < request.getTestCases().size(); i++) {
-                String testCase = request.getTestCases().get(i);
-                File testCaseFile = new File(testCasesFolder, "test" + (i + 1) + ".txt");
-                try (FileWriter writer = new FileWriter(testCaseFile)) {
-                    writer.write(testCase);
+                CreateTestCaseRequest testCase = request.getTestCases().get(i);
+                File inputFile = new File(testCasesFolder, "test-case" + (i + 1) + ".in");
+                File outputFile = new File(testCasesFolder, "test-case" + (i + 1) + ".out");
+                try (FileWriter writer = new FileWriter(inputFile)) {
+                    writer.write(testCase.getInput());
+                }
+                try (FileWriter writer = new FileWriter(outputFile)) {
+                    writer.write(testCase.getExpectedOutput());
                 }
             }
         } catch (Exception e) {

@@ -1,7 +1,6 @@
-def main():
+def add(a, b):
     # Write your Python code here
-    print("hello")
+    return a + b
 
-
-if __name__ == "__main__":
-    main()
+a, b = map(int, input().split())
+print(add(a, b))
