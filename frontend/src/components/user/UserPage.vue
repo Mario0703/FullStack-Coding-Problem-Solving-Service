@@ -5,7 +5,7 @@ import Logout from "@/components/authentication/Logout.vue";
 import UserDashBoard from "@/components/user/UserDashBoard.vue";
 import ChangeEmail from "@/components/user/ChangeEmail.vue";
 import ChangeUserName from "@/components/user/ChangeUserName.vue";
-import ChangePassword from "@/components/user/ChangePassword.vue";
+import ChangePassword from "@/components/user/changePassword.vue";
 
 type ActiveForm = "username" | "email" | "password" | null;
 
