@@ -65,17 +65,24 @@ function updateChallengesBySearch(){
       class="mb-4"
       v-model="search"
       label="Search"
-      prepend-inner-icon="mdi-magnify"
       variant="outlined"
       hide-details
       single-line
-    ></v-text-field>
+    >
+      <template #prepend-inner>
+        <v-icon icon="mdi-magnify" />
+      </template>
+    </v-text-field>
     <v-select
       v-model="selectedDifficulty"
       label="Filter by difficulty"
       :items="['EASY', 'MEDIUM', 'HARD']"
       clearable
-    />
+    >
+      <template #prepend-inner>
+        <v-icon icon="mdi-filter-variant" />
+      </template>
+    </v-select>
     <v-btn v-model="selectedDifficulty" @click="selectedDifficulty = null">remove filter</v-btn>
     <v-card class="mb-8" variant="text">
       <v-card-title class="text-h4 font-weight-bold px-0">Coding challenges</v-card-title>
