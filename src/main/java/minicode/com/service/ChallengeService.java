@@ -1,7 +1,7 @@
 package minicode.com.service;
 
 import minicode.com.dto.CreateChallangeRequest;
-import minicode.com.entity.Catagory;
+import minicode.com.entity.Category;
 import minicode.com.entity.Challenge;
 import minicode.com.entity.Difficulty;
 import minicode.com.repository.ChallengeRepo;
@@ -23,9 +23,9 @@ public class ChallengeService {
         String name = request.getName();
         String description = request.getDescription();
         Difficulty difficulty = request.getDifficulty();
-        Catagory catagory = request.getCatagory();
+        Category category = request.getCategory();
 
-        Challenge challenge = new Challenge(name, description, difficulty, catagory);
+        Challenge challenge = new Challenge(name, description, difficulty, category);
 
         return challengeRepo.save(challenge);
     }

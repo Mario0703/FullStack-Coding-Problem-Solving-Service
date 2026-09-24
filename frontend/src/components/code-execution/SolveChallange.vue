@@ -48,7 +48,7 @@ onMounted(loadChallenge)
       <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
       <v-card-subtitle>
         {{ formatChallengeValue(challenge.difficulty) }} ·
-        {{ formatChallengeValue(challenge.catagory) }}
+        {{ formatChallengeValue(challenge.category) }}
       </v-card-subtitle>
       <v-card-text class="text-body-1">{{ challenge.description }}</v-card-text>
       <v-card-actions>

@@ -84,7 +84,7 @@ onMounted(loadChallenges);
               {{ formatChallengeValue(challenge.difficulty) }}
             </v-chip>
           </v-card-title>
-          <v-card-subtitle>{{ formatChallengeValue(challenge.catagory) }}</v-card-subtitle>
+          <v-card-subtitle>{{ formatChallengeValue(challenge.category) }}</v-card-subtitle>
           <v-card-text>{{ challenge.description }}</v-card-text>
         </v-card>
       </v-col>

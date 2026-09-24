@@ -20,7 +20,7 @@ export type challangeForm = {
   name: string
   description: string
   difficulty: ChallengeDifficulty | null
-  catagory: ChallengeCategory | null
+  category: ChallengeCategory | null
   language: Language | null
   solution: string
   template: string

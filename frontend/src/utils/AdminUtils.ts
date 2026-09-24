@@ -9,7 +9,7 @@ export type Challenge = {
   name: string;
   description: string;
   difficulty: ChallengeDifficulty;
-  catagory: ChallengeCategory;
+  category: ChallengeCategory;
 };
 
 export type ChallengeOption<T extends string> = {

@@ -1,133 +1,44 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { languageSetups } from '@/components/AdminPages/LanguageTemplet.ts'
-import type { challangeForm, TestCase } from '@/components/AdminPages/LanguageType'
+import { ref } from 'vue'
+import { createChallenge as createChallengeRequest } from '@/utils/ChallangeUtil'
+import { isChallengeFormValid } from '@/utils/ChallengeValidation'
+import { useChallengeForm } from '@/components/AdminPages/useChallengeForm'
 import {
   categoryOptions,
   difficultyOptions,
   languageOptions,
   type Challenge,
-  type ChallengeCategory,
-  type ChallengeDifficulty,
-  type Language,
 } from '@/utils/AdminUtils'
 
 const emit = defineEmits<{
   created: [challenge: Challenge]
 }>()
 
-
-const name = ref('')
-const description = ref('')
-const difficulty = ref<ChallengeDifficulty | null>(null)
-const catagory = ref<ChallengeCategory | null>(null)
-const language = ref<Language | null>(null)
 const formError = ref('')
-const solution = ref('')
-const template = ref('')
-const templateExplanation = ref('')
-const runner = ref('')
-const runnerExplanation = ref('')
 const isSubmitting = ref(false)
-const numberOfTestCases = ref(1)
-const testCases = ref<TestCase[]>([{ input: '', expectedOutput: '' }])
 
-
-
-watch(language, (selectedLanguage) => {
-  if (selectedLanguage) {
-    const setup = languageSetups[selectedLanguage]
-    template.value = setup.userTemplate
-    templateExplanation.value = setup.userTemplateExplanation
-    runner.value = setup.runner
-    runnerExplanation.value = setup.runnerExplanation
-  }
-})
-
-function resetForm() {
-  name.value = ''
-  description.value = ''
-  difficulty.value = null
-  catagory.value = null
-  language.value = null
-  solution.value = ''
-  template.value = ''
-  templateExplanation.value = ''
-  runner.value = ''
-  runnerExplanation.value = ''
-  numberOfTestCases.value = 1
-  testCases.value = [{ input: '', expectedOutput: '' }]
-}
-
-function resizeTestCases(count: number | null) {
-  const nextCount = Math.max(0, count ?? 0)
-  testCases.value = Array.from(
-    { length: nextCount },
-    (_, index) => testCases.value[index] ?? { input: '', expectedOutput: '' },
-  )
-}
-
-
-
-
-function isChallengeFormValid(challengeData: challangeForm): boolean {
-  const hasRequiredFields = Boolean(
-    challengeData.name.trim() &&
-      challengeData.description.trim() &&
-      challengeData.difficulty &&
-      challengeData.catagory &&
-      challengeData.language &&
-      challengeData.solution.trim() &&
-      challengeData.template.trim() &&
-      challengeData.templateExplanation.trim() &&
-      challengeData.runner.trim() &&
-      challengeData.runnerExplanation.trim(),
-  )
-
-  const hasCompleteTestCases =
-    challengeData.testCases.length > 0 &&
-    challengeData.testCases.every(
-      (testCase) =>
-        testCase.input.trim() !== '' && testCase.expectedOutput.trim() !== '',
-    )
-
-  return hasRequiredFields && hasCompleteTestCases
-}
-
-async function sendChallenge(challengeData: challangeForm): Promise<Challenge | null> {
-  const response = await fetch('http://localhost:8082/api/challenge/create', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(challengeData),
-  })
-
-  if (!response.ok) {
-    return null
-  }
-
-  return (await response.json()) as Challenge
-}
+const {
+  name,
+  description,
+  difficulty,
+  category,
+  language,
+  solution,
+  template,
+  templateExplanation,
+  runner,
+  runnerExplanation,
+  numberOfTestCases,
+  testCases,
+  resetForm,
+  resizeTestCases,
+  toChallengeForm,
+} = useChallengeForm()
 
 async function createChallenge() {
   formError.value = ''
 
-  const challengeData: challangeForm = {
-    name: name.value.trim(),
-    description: description.value.trim(),
-    difficulty: difficulty.value,
-    catagory: catagory.value,
-    solution: solution.value.trim(),
-    template: template.value.trim(),
-    templateExplanation: templateExplanation.value.trim(),
-    runner: runner.value.trim(),
-    runnerExplanation: runnerExplanation.value.trim(),
-    language: language.value,
-    testCases: testCases.value.map((testCase) => ({
-      input: testCase.input.trim(),
-      expectedOutput: testCase.expectedOutput.trim(),
-    })),
-  }
+  const challengeData = toChallengeForm()
 
   if (!isChallengeFormValid(challengeData)) {
     formError.value =
@@ -138,7 +49,7 @@ async function createChallenge() {
   isSubmitting.value = true
 
   try {
-    const createdChallenge = await sendChallenge(challengeData)
+    const createdChallenge = await createChallengeRequest(challengeData)
 
     if (!createdChallenge) {
       formError.value = 'The challenge could not be created. Please check the fields and try again.'
@@ -187,7 +98,7 @@ async function createChallenge() {
           required
         />
         <v-select v-model="difficulty" label="Difficulty" :items="difficultyOptions" required />
-        <v-select v-model="catagory" label="Category" :items="categoryOptions" required />
+        <v-select v-model="category" label="Category" :items="categoryOptions" required />
         <v-select v-model="language" label="Language" :items="languageOptions" required />
         <v-textarea
           v-model="solution"

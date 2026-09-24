@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
-import minicode.com.entity.Catagory;
+import minicode.com.entity.Category;
 import minicode.com.entity.Difficulty;
 
 import java.util.List;
@@ -39,12 +39,12 @@ public class CreateChallangeRequest {
         this.difficulty = difficulty;
     }
 
-    public Catagory getCatagory() {
-        return catagory;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCatagory(Catagory catagory) {
-        this.catagory = catagory;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public String getSolution() {
@@ -112,8 +112,8 @@ public class CreateChallangeRequest {
 
     @NotNull(message = "Difficulty is required")
     private Difficulty difficulty;
-    @NotNull(message = "Catagory is required")
-    private Catagory catagory;
+    @NotNull(message = "Category is required")
+    private Category category;
 
     @NotBlank(message = "Solution is required")
     private String solution;

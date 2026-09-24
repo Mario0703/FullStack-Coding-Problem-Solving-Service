@@ -47,12 +47,12 @@ public class Challenge {
         this.difficulty = difficulty;
     }
 
-    public Catagory getCatagory() {
-        return catagory;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCatagory(Catagory catagory) {
-        this.catagory = catagory;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Column(nullable = false)
@@ -65,13 +65,13 @@ public class Challenge {
     private Difficulty difficulty;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Catagory catagory;
+    private Category category;
 
-    public Challenge(String name, String description, Difficulty difficulty, Catagory catagory) {
+    public Challenge(String name, String description, Difficulty difficulty, Category category) {
         this.name = name;
         this.description = description;
         this.difficulty = difficulty;
-        this.catagory = catagory;
+        this.category = category;
     }
 
 
