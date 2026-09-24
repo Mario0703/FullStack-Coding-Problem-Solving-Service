@@ -31,3 +31,28 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Runtime challenge data ###
+# Created by the challenge and submission endpoints.
+/submissions/
+/CodeEnv/Challenges/
+
+# Temporary Docker build contexts created for code execution.
+/CodeEnv/*/execution-*/
+
+# Language source files generated or used as local execution boilerplate.
+/CodeEnv/python/main.py
+/CodeEnv/python/Requirments.txt
+/CodeEnv/python/submission.py
+/CodeEnv/java/Main.java
+/CodeEnv/java/submission.java
+/CodeEnv/c++/main.cpp
+/CodeEnv/c++/submission.cpp
+/CodeEnv/c#/Main.cs
+/CodeEnv/c#/submission.cs
+
+# Compiled language output.
+*.class
+/CodeEnv/java/out/
+/CodeEnv/c#/bin/
+/CodeEnv/c#/obj/
