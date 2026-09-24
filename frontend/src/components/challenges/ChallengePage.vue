@@ -43,13 +43,33 @@ const filteredChallenges = computed(() =>
     challenges.value
   )
 )
+const search = ref("");
 
+
+function updateChallengesBySearch(){
+  if (search.value.trim() === "") {
+    return filteredChallenges.value;
+  }
+
+  return filteredChallenges.value.filter(challenge =>
+    challenge.name.toLowerCase().includes(search.value.toLowerCase())
+  );
+}
 
 
 </script>
 
 <template>
   <v-container class="py-8">
+    <v-text-field
+      class="mb-4"
+      v-model="search"
+      label="Search"
+      prepend-inner-icon="mdi-magnify"
+      variant="outlined"
+      hide-details
+      single-line
+    ></v-text-field>
     <v-select
       v-model="selectedDifficulty"
       label="Filter by difficulty"
@@ -86,7 +106,7 @@ const filteredChallenges = computed(() =>
 
     <v-row v-else align="stretch">
       <v-col
-        v-for="challenge in filteredChallenges"
+        v-for="challenge in updateChallengesBySearch()"
         :key="challenge.id"
         cols="12"
         sm="6"
