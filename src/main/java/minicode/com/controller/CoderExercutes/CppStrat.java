@@ -6,13 +6,6 @@ public class CppStrat extends DockerCodeStrategy {
     private static final Path CPP_FOLDER = Path.of(
             "F:\\FullStackProjects\\MiniLeetCode\\CodeEnv\\c++"
     );
-    private static final Path CPP_FILE = CPP_FOLDER.resolve("main.cpp");
-
-    @Override
-    protected Path sourceFile() {
-        return CPP_FILE;
-    }
-
     @Override
     protected Path dockerFolder() {
         return CPP_FOLDER;
@@ -26,5 +19,15 @@ public class CppStrat extends DockerCodeStrategy {
     @Override
     protected String containerNamePrefix() {
         return "minicode-cpp";
+    }
+
+    @Override
+    protected String submissionFileName() {
+        return "submission.cpp";
+    }
+
+    @Override
+    protected String combineSubmissionWithRunner(String submission, String runner) {
+        return submission + System.lineSeparator() + System.lineSeparator() + runner;
     }
 }

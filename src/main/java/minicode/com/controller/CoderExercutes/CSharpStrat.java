@@ -6,13 +6,6 @@ public class CSharpStrat extends DockerCodeStrategy {
     private static final Path CSHARP_FOLDER = Path.of(
             "F:\\FullStackProjects\\MiniLeetCode\\CodeEnv\\c#"
     );
-    private static final Path CSHARP_FILE = CSHARP_FOLDER.resolve("Main.cs");
-
-    @Override
-    protected Path sourceFile() {
-        return CSHARP_FILE;
-    }
-
     @Override
     protected Path dockerFolder() {
         return CSHARP_FOLDER;
@@ -26,5 +19,15 @@ public class CSharpStrat extends DockerCodeStrategy {
     @Override
     protected String containerNamePrefix() {
         return "minicode-csharp";
+    }
+
+    @Override
+    protected String submissionFileName() {
+        return "submission.cs";
+    }
+
+    @Override
+    protected String combineSubmissionWithRunner(String submission, String runner) {
+        return runner + System.lineSeparator() + System.lineSeparator() + submission;
     }
 }

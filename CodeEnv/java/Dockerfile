@@ -2,8 +2,10 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY Main.java .
+COPY submission.java /app/Main.java
+COPY TestSuite /app/TestSuite
+COPY TestCases /app/TestCases
 
 RUN javac Main.java
 
-CMD ["java", "Main"]
+CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "java", "-cp", "/app", "Main"]

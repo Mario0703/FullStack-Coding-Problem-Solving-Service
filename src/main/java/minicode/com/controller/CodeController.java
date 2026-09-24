@@ -66,24 +66,25 @@ public class CodeController {
                         "Challenge not found"
                 ));
 
-        saveSubmission(submission, challenge);
-
         String language = submission.language().toLowerCase(Locale.ROOT);
         CodeExercuteStrat strategy = strategies.get(language);
 
         if (strategy == null) {
-            throw new IllegalArgumentException("Unsupported language: " + language);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported language: " + language);
         }
 
+        Path challengeFolder = Path.of("CodeEnv", "Challenges", submission.challengeId().toString());
+        Path submissionFile = saveSubmission(submission, challenge);
+
         try {
-            return strategy.execute(submission.code());
+            return strategy.execute(submissionFile, challengeFolder);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Code execution was interrupted", e);
         }
     }
 
-    private void saveSubmission(CodeSubmission submission, Challenge challenge) throws IOException {
+    private Path saveSubmission(CodeSubmission submission, Challenge challenge) throws IOException {
         String challengeFolderName = sanitizeFolderName(challenge.getName());
         Path submissionFolder = Path.of(
                 "submissions",
@@ -96,6 +97,7 @@ public class CodeController {
                 "submission." + fileExtension(submission.language())
         );
         Files.writeString(submissionFile, submission.code(), StandardCharsets.UTF_8);
+        return submissionFile;
     }
 
     private String sanitizeFolderName(String name) {

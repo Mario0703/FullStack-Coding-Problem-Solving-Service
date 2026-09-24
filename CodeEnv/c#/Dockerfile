@@ -4,8 +4,10 @@ WORKDIR /app
 
 RUN dotnet new console --framework net8.0 --force
 
-COPY Main.cs Program.cs
+COPY submission.cs /app/Program.cs
+COPY TestSuite /app/TestSuite
+COPY TestCases /app/TestCases
 
 RUN dotnet build --configuration Release
 
-CMD ["dotnet", "/app/bin/Release/net8.0/app.dll"]
+CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "dotnet", "/app/bin/Release/net8.0/app.dll"]
