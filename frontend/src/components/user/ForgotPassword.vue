@@ -38,10 +38,11 @@ function returnToLogin() {
         Forgot password
       </v-card-title>
 
+      <v-card-subtitle class="text-body-1 px-6 pb-0">
+        Enter your email address to request a password reset.
+      </v-card-subtitle>
+
       <v-card-text class="pa-6 pt-0">
-        <p class="text-body-1 mb-6">
-          Enter your email address to request a password reset.
-        </p>
 
         <v-alert v-if="validationError" type="error" :text="validationError" class="mb-4" />
         <v-alert v-if="successMessage" type="success" :text="successMessage" class="mb-4" />

@@ -27,10 +27,12 @@ onMounted(loadChallengeList);
 
 <template>
   <v-container class="py-8">
-    <div class="mb-8">
-      <h1 class="text-h4 font-weight-bold">Coding challenges</h1>
-      <p class="text-body-1 mt-2">Choose a challenge and start practicing.</p>
-    </div>
+    <v-card class="mb-8" variant="text">
+      <v-card-title class="text-h4 font-weight-bold px-0">Coding challenges</v-card-title>
+      <v-card-subtitle class="text-body-1 mt-2 px-0">
+        Choose a challenge and start practicing.
+      </v-card-subtitle>
+    </v-card>
 
     <v-alert
       v-if="loadError"
@@ -41,9 +43,9 @@ onMounted(loadChallengeList);
       class="mb-4"
     />
 
-    <div v-if="isLoading" class="d-flex justify-center pa-8">
+    <v-container v-if="isLoading" class="d-flex justify-center pa-8">
       <v-progress-circular indeterminate color="primary" />
-    </div>
+    </v-container>
 
     <v-alert
       v-else-if="challenges.length === 0"
@@ -67,7 +69,7 @@ onMounted(loadChallengeList);
           :to="{ name: 'solveChallenge', params: { id: challenge.id } }"
         >
           <v-card-title class="d-flex align-center justify-space-between">
-            <span>{{ challenge.name }}</span>
+            {{ challenge.name }}
             <v-chip size="small" color="primary">
               {{ formatChallengeValue(challenge.difficulty) }}
             </v-chip>

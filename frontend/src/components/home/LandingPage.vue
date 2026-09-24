@@ -20,9 +20,13 @@ import Footer from '@/components/navigation/Footer.vue'
   <v-container>
     <v-card variant="text">
       <v-card-title class="px-0">What does this service offer</v-card-title>
-      <v-card-text class="px-0">
-        This service offers a variety of coding challenges you can solve.<br />
-        You choose your favorite programming language and start solving the challenges immediately.<br />
+      <v-card-text class="px-0 py-0">
+        This service offers a variety of coding challenges you can solve.
+      </v-card-text>
+      <v-card-text class="px-0 py-0">
+        You choose your favorite programming language and start solving the challenges immediately.
+      </v-card-text>
+      <v-card-text class="px-0 py-0">
         You can select curated sets of diverse challenges suited perfectly for your skill level and
         begin practicing right away.
       </v-card-text>
@@ -36,9 +40,11 @@ import Footer from '@/components/navigation/Footer.vue'
   <v-container>
     <v-card variant="text">
       <v-card-title class="px-0">What this service supports</v-card-title>
-      <v-card-text class="text-body-1 px-0 mb-7">
+      <v-card-text class="text-body-1 px-0 py-0">
         This platform provides a wide selection of coding challenges to enhance your programming
-        skills.<br />
+        skills.
+      </v-card-text>
+      <v-card-text class="text-body-1 px-0 mb-7 py-0">
         You can choose from supported languages (Python, C#, Java, and C++) and use the challenge
         editor to write and test your solution.
       </v-card-text>
@@ -51,5 +57,5 @@ import Footer from '@/components/navigation/Footer.vue'
       </v-list>
     </v-card>
   </v-container>
-  <Footer></Footer>
+  <Footer />
 </template>

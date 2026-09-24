@@ -22,7 +22,7 @@ function abortForm() {
 
 <template>
   <v-container class="d-flex flex-column align-center py-8 px-4">
-    <div v-if="currentUser" class="w-100">
+    <v-sheet v-if="currentUser" class="w-100" color="transparent">
       <v-card class="w-100 mx-auto bg-grey-lighten-4" border="primary" max-width="720" variant="outlined">
         <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
           User Information
@@ -82,11 +82,11 @@ function abortForm() {
         </v-card-text>
       </v-card>
 
-      <div class="d-flex justify-center mt-6">
+      <v-card-actions class="d-flex justify-center mt-6 pa-0">
         <Logout />
-      </div>
+      </v-card-actions>
       <UserDashBoard />
-    </div>
-    <p v-else class="text-body-1">No user data available.</p>
+    </v-sheet>
+    <v-card-text v-else class="text-body-1">No user data available.</v-card-text>
   </v-container>
 </template>

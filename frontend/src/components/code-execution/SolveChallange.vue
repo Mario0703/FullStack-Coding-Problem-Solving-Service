@@ -32,9 +32,9 @@ onMounted(loadChallenge)
 
 <template>
   <v-container class="py-8">
-    <div v-if="isLoading" class="d-flex justify-center pa-8">
+    <v-container v-if="isLoading" class="d-flex justify-center pa-8">
       <v-progress-circular indeterminate color="primary" />
-    </div>
+    </v-container>
 
     <v-alert
       v-else-if="loadError"

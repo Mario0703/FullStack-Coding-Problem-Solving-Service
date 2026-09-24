@@ -80,8 +80,8 @@ function canSubmit(): boolean {
 <template>
   <v-container class="d-flex align-center justify-center">
     <v-form class="signup-form" @submit.prevent="sendUserData">
-      <h1>Create your account</h1>
-      <p>Sign up to start solving coding challenges.</p>
+      <v-card-title class="text-h5 font-weight-bold px-0">Create your account</v-card-title>
+      <v-card-subtitle class="px-0">Sign up to start solving coding challenges.</v-card-subtitle>
 
       <v-alert
         v-if="signupError"

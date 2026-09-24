@@ -88,7 +88,7 @@ onMounted(loadChallenges);
       <v-col v-for="challenge in challenges" :key="challenge.id" cols="12" md="6">
         <v-card class="h-100" variant="outlined">
           <v-card-title class="d-flex align-center justify-space-between">
-            <span>{{ challenge.name }}</span>
+            {{ challenge.name }}
             <v-chip size="small" color="primary">
               {{ formatChallengeValue(challenge.difficulty) }}
             </v-chip>

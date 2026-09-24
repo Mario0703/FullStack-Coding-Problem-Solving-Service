@@ -85,7 +85,7 @@ async function LogIn() {
     />
 
     <v-form class="signup-form" @submit.prevent="LogIn">
-      <h1>Login to your account</h1>
+      <v-card-title class="text-h5 font-weight-bold px-0">Login to your account</v-card-title>
 
       <v-switch
         v-model="loginWithEmail"
@@ -93,24 +93,22 @@ async function LogIn() {
         color="primary"
       />
 
-      <div v-if="loginWithEmail">
-        <v-text-field
-          v-model="email"
-          label="Email"
-          placeholder="Type your email"
-          type="email"
-          autocomplete="email"
-        />
-      </div>
+      <v-text-field
+        v-if="loginWithEmail"
+        v-model="email"
+        label="Email"
+        placeholder="Type your email"
+        type="email"
+        autocomplete="email"
+      />
 
-      <div v-if="loginWithUsername">
-        <v-text-field
-          v-model="userName"
-          label="Username"
-          placeholder="Type your username"
-          autocomplete="username"
-        />
-      </div>
+      <v-text-field
+        v-if="loginWithUsername"
+        v-model="userName"
+        label="Username"
+        placeholder="Type your username"
+        autocomplete="username"
+      />
 
       <v-text-field
         v-model="password"
