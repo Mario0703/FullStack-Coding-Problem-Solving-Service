@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { Challenge } from "@/utils/AdminUtils";
+import {computed, onMounted, ref, watch} from "vue";
+import type {Challenge, ChallengeDifficulty} from "@/utils/AdminUtils";
 import { formatChallengeValue } from "@/utils/AdminUtils";
 import { listChallenges } from "@/utils/ChallangeUtil";
 
 const challenges = ref<Challenge[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
+const selectedDifficulty = ref<ChallengeDifficulty | null>(null);
 
 async function loadChallengeList() {
   loadError.value = "";
@@ -23,10 +24,39 @@ async function loadChallengeList() {
 
 onMounted(loadChallengeList);
 
+function filterByDifficulty(
+  difficulty: ChallengeDifficulty | null,
+  challenges: Challenge[]
+): Challenge[] {
+  if (!difficulty) {
+    return challenges;
+  }
+
+  return challenges.filter(
+    challenge => challenge.difficulty === difficulty
+  );
+}
+
+const filteredChallenges = computed(() =>
+  filterByDifficulty(
+    selectedDifficulty.value,
+    challenges.value
+  )
+)
+
+
+
 </script>
 
 <template>
   <v-container class="py-8">
+    <v-select
+      v-model="selectedDifficulty"
+      label="Filter by difficulty"
+      :items="['EASY', 'MEDIUM', 'HARD']"
+      clearable
+    />
+    <v-btn v-model="selectedDifficulty" @click="selectedDifficulty = null">remove filter</v-btn>
     <v-card class="mb-8" variant="text">
       <v-card-title class="text-h4 font-weight-bold px-0">Coding challenges</v-card-title>
       <v-card-subtitle class="text-body-1 mt-2 px-0">
@@ -56,7 +86,7 @@ onMounted(loadChallengeList);
 
     <v-row v-else align="stretch">
       <v-col
-        v-for="challenge in challenges"
+        v-for="challenge in filteredChallenges"
         :key="challenge.id"
         cols="12"
         sm="6"
