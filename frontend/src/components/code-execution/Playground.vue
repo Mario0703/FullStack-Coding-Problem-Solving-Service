@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { currentUser } from '@/authenticator/auth'
 
 type ChallengeTemplateResponse = {
   language: string
@@ -74,8 +75,13 @@ watch(
 )
 
 async function executeCode() {
-  if (!code.value.trim() || !language.value) {
+  if (!code.value.trim() || !language.value || !props.challengeId) {
     output.value = 'Please load a challenge and enter code first.'
+    return
+  }
+
+  if (!currentUser.value?.userId) {
+    output.value = 'You must be signed in before submitting code.'
     return
   }
 
@@ -88,7 +94,10 @@ async function executeCode() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
+        userId: currentUser.value.userId,
+        challengeId: props.challengeId,
         language: language.value.toLowerCase(),
         code: code.value,
       }),
@@ -117,7 +126,7 @@ async function executeCode() {
 
       <v-textarea v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
 
-      <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Execute </v-btn>
+      <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
       <v-card v-if="output" class="mt-4">
         <v-card-title>Output</v-card-title>
