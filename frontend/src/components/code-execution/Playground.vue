@@ -8,6 +8,11 @@ type ChallengeTemplateResponse = {
   explanation: string
 }
 
+type ExecutionResult = {
+  exitCode: number
+  output: string
+}
+
 const props = defineProps<{
   challengeId?: string
 }>()
@@ -103,8 +108,13 @@ async function executeCode() {
       }),
     })
 
-    const result = await response.text()
-    output.value = response.ok ? result : `Error: ${result}`
+    if (!response.ok) {
+      output.value = `Error: ${await response.text()}`
+      return
+    }
+
+    const result = (await response.json()) as ExecutionResult
+    output.value = `Exit code: ${result.exitCode}\n${result.output}`
   } catch (error) {
     output.value = `Could not connect to the backend: ${String(error)}`
   } finally {

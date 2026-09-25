@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+test_directory="$1"
+shift
+index=1
+total_tests=0
+passing_tests=0
+failing_tests=0
+
+for i in "$test_directory"/*.in; do
+    out_file="${i%.in}.out"
+    actual_file=$(mktemp)
+    total_tests=$((total_tests + 1))
+
+    "$@" < "$i" > "$actual_file" 2>&1
+
+    if diff --strip-trailing-cr -q "$actual_file" "$out_file" > /dev/null; then
+        printf "Test case %s passed\n" "$index"
+        passing_tests=$((passing_tests + 1))
+    else
+        printf "Test case %s failed\n" "$index"
+        failing_tests=$((failing_tests + 1))
+        printf "Actual output:\n"
+        cat "$actual_file"
+        printf "Expected output:\n"
+        cat "$out_file"
+    fi
+
+    rm "$actual_file"
+    index=$((index + 1))
+done
+
+if [ $failing_tests -eq 0 ] && [ $passing_tests -eq $total_tests ]; then
+    exit 1
+else
+    exit 0
+fi

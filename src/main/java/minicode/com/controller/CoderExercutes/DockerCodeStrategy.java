@@ -1,5 +1,7 @@
 package minicode.com.controller.CoderExercutes;
 
+import minicode.com.dto.ExecutionResult;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,8 +22,11 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
 
     protected abstract String combineSubmissionWithRunner(String submission, String runner);
 
+    private int exitCode;
+
+
     @Override
-    public final String execute(Path submissionFile, Path challengeFolder)
+    public final ExecutionResult execute(Path submissionFile, Path challengeFolder)
             throws IOException, InterruptedException {
         Path executionFolder = Files.createTempDirectory(dockerFolder(), "execution-");
         String executionImage = imageName() + "-" + UUID.randomUUID();
@@ -88,11 +93,13 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
 
             int runExitCode = runProcess.exitValue();
             String output = readProcessOutput(runProcess);
-            return "Exit code: " + runExitCode + "\n" + output;
+            return new ExecutionResult(runExitCode, output);
         } finally {
             deleteRecursively(executionFolder);
         }
     }
+
+
 
     private void prepareExecutionContext(
             Path executionFolder,

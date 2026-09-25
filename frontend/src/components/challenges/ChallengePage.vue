@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { Challenge } from "@/utils/AdminUtils";
+import {computed, onMounted, ref, watch} from "vue";
+import type {Challenge, ChallengeDifficulty} from "@/utils/AdminUtils";
 import { formatChallengeValue } from "@/utils/AdminUtils";
 import { listChallenges } from "@/utils/ChallangeUtil";
 
 const challenges = ref<Challenge[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
+const selectedDifficulty = ref<ChallengeDifficulty | null>(null);
+const solvedChallengeIds = ref<string[]>([]);
 
 async function loadChallengeList() {
   loadError.value = "";
@@ -21,12 +23,92 @@ async function loadChallengeList() {
   }
 }
 
-onMounted(loadChallengeList);
+async function loadSolvedChallenges() {
+  const response = await fetch("http://localhost:8082/api/code/playground/SolvedChallenges", {
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    solvedChallengeIds.value = [];
+    return;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch solved challenges");
+  }
+
+  solvedChallengeIds.value = (await response.json()) as string[];
+}
+
+onMounted(() => {
+  loadChallengeList();
+  loadSolvedChallenges();
+});
+
+function isChallengeSolved(challengeId: string): boolean {
+  return solvedChallengeIds.value.includes(challengeId);
+}
+
+function filterByDifficulty(
+  difficulty: ChallengeDifficulty | null,
+  challenges: Challenge[]
+): Challenge[] {
+  if (!difficulty) {
+    return challenges;
+  }
+
+  return challenges.filter(
+    challenge => challenge.difficulty === difficulty
+  );
+}
+
+const filteredChallenges = computed(() =>
+  filterByDifficulty(
+    selectedDifficulty.value,
+    challenges.value
+  )
+)
+const search = ref("");
+
+
+function updateChallengesBySearch(){
+  if (search.value.trim() === "") {
+    return filteredChallenges.value;
+  }
+
+  return filteredChallenges.value.filter(challenge =>
+    challenge.name.toLowerCase().includes(search.value.toLowerCase())
+  );
+}
+
 
 </script>
 
 <template>
   <v-container class="py-8">
+    <v-text-field
+      class="mb-4"
+      v-model="search"
+      label="Search"
+      variant="outlined"
+      hide-details
+      single-line
+    >
+      <template #prepend-inner>
+        <v-icon icon="mdi-magnify" />
+      </template>
+    </v-text-field>
+    <v-select
+      v-model="selectedDifficulty"
+      label="Filter by difficulty"
+      :items="['EASY', 'MEDIUM', 'HARD']"
+      clearable
+    >
+      <template #prepend-inner>
+        <v-icon icon="mdi-filter-variant" />
+      </template>
+    </v-select>
+    <v-btn v-model="selectedDifficulty" @click="selectedDifficulty = null">remove filter</v-btn>
     <v-card class="mb-8" variant="text">
       <v-card-title class="text-h4 font-weight-bold px-0">Coding challenges</v-card-title>
       <v-card-subtitle class="text-body-1 mt-2 px-0">
@@ -56,7 +138,7 @@ onMounted(loadChallengeList);
 
     <v-row v-else align="stretch">
       <v-col
-        v-for="challenge in challenges"
+        v-for="challenge in updateChallengesBySearch()"
         :key="challenge.id"
         cols="12"
         sm="6"
@@ -81,6 +163,16 @@ onMounted(loadChallengeList);
           <v-card-actions>
             <v-btn color="primary">Solve challenge</v-btn>
           </v-card-actions>
+          <v-card-text>
+            <template v-if="isChallengeSolved(challenge.id)">
+              <v-icon icon="mdi-check-circle" color="success" />
+              <span class="ml-2">Solved</span>
+            </template>
+            <template v-else>
+              <v-icon icon="mdi-close-circle" color="error" />
+              <span class="ml-2">Not solved</span>
+            </template>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>

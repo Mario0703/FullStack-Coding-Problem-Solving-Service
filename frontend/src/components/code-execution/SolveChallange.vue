@@ -6,6 +6,12 @@ import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
 import Playground from '@/components/code-execution/Playground.vue'
 
+
+
+
+const solvedBypeople = ref<string[]>([])
+solvedBypeople.value = ['Alice', 'Bob', 'Charlie'] // Example data, replace with actual data fetching logic
+
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
 const loadError = ref('')
@@ -56,6 +62,19 @@ onMounted(loadChallenge)
       </v-card-actions>
     </v-card>
     <Playground v-if="challenge" :challenge-id="challenge.id" />
+  </v-container>
+  <v-container>
+    <v-row v-for="person in solvedBypeople" :key="person">
+      <v-col>
+        <v-card title="Solved by" class="mb-4">
+          <v-card-text>{{ person }}</v-card-text>
+          <v-container>
+            <v-btn class="ma-4" color="primary">View profile</v-btn>
+            <v-btn class="ma-4" color="primary">View solutions</v-btn>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

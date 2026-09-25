@@ -8,7 +8,4 @@ import java.util.UUID;
 
 public interface ChallengeRepo extends JpaRepository<Challenge, UUID> {
 
-    Optional<Challenge> findByName(String name);
-
-
 }

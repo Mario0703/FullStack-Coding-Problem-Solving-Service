@@ -5,16 +5,20 @@ import minicode.com.controller.CoderExercutes.CSharpStrat;
 import minicode.com.controller.CoderExercutes.CppStrat;
 import minicode.com.controller.CoderExercutes.JavaStrat;
 import minicode.com.controller.CoderExercutes.PythonStrat;
-import minicode.com.dto.CodeSubmission;
+import minicode.com.dto.ExecutionResult;
+import minicode.com.dto.SubmissionRequest;
 import minicode.com.entity.Challenge;
+import minicode.com.entity.Submission;
+import minicode.com.entity.SubmissionStatus;
+import minicode.com.entity.User;
 import minicode.com.repository.ChallengeRepo;
+import minicode.com.repository.SubmissionRepo;
+import minicode.com.repository.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -22,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -31,9 +36,17 @@ public class CodeController {
 
     private final HashMap<String, CodeExercuteStrat> strategies = new HashMap<>();
     private final ChallengeRepo challengeRepo;
+    private final UserRepo userRepo;
+    private final SubmissionRepo submissionRepo;
 
-    public CodeController(ChallengeRepo challengeRepo) {
+    public CodeController(
+            ChallengeRepo challengeRepo,
+            UserRepo userRepo,
+            SubmissionRepo submissionRepo
+    ) {
         this.challengeRepo = challengeRepo;
+        this.userRepo = userRepo;
+        this.submissionRepo = submissionRepo;
         strategies.put("python", new PythonStrat());
         strategies.put("java", new JavaStrat());
         strategies.put("cpp", new CppStrat());
@@ -43,60 +56,81 @@ public class CodeController {
     }
 
     @PostMapping("/submit")
-    public String submitCode(
-            @RequestBody CodeSubmission submission,
+    public ExecutionResult submitCode(
+            @Valid @RequestBody SubmissionRequest codeSubmission,
             HttpServletRequest httpRequest
     ) throws IOException {
-        if (submission.userId() == null
-                || submission.challengeId() == null
-                || submission.language() == null
-                || submission.code() == null
-                || submission.code().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incomplete code submission");
-        }
-
         UUID authenticatedUserId = getAuthenticatedUserId(httpRequest);
-        if (!authenticatedUserId.equals(submission.userId())) {
+        if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
         }
 
-        Challenge challenge = challengeRepo.findById(submission.challengeId())
+        User user = userRepo.findById(authenticatedUserId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Authenticated user was not found"
+                ));
+
+        Challenge challenge = challengeRepo.findById(codeSubmission.getChallengeId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Challenge not found"
                 ));
 
-        String language = submission.language().toLowerCase(Locale.ROOT);
+        String language = codeSubmission.getLanguage().toLowerCase(Locale.ROOT);
         CodeExercuteStrat strategy = strategies.get(language);
 
         if (strategy == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported language: " + language);
         }
 
-        Path challengeFolder = Path.of("CodeEnv", "Challenges", submission.challengeId().toString());
-        Path submissionFile = saveSubmission(submission, challenge);
+        Path challengeFolder = Path.of("CodeEnv", "Challenges", codeSubmission.getChallengeId().toString());
+        Path submissionFile = saveSubmission(codeSubmission, challenge);
 
         try {
-            return strategy.execute(submissionFile, challengeFolder);
+            ExecutionResult result = strategy.execute(submissionFile, challengeFolder);
+            SubmissionStatus status = result.exitCode() == 0
+                    ? SubmissionStatus.ACCEPTED
+                    : SubmissionStatus.WRONG_ANSWER;
+
+            submissionRepo.save(new Submission(
+                    user,
+                    challenge,
+                    codeSubmission.getCode(),
+                    language,
+                    result.exitCode(),
+                    status
+            ));
+
+            return result;
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Code execution was interrupted", e);
         }
     }
+    @GetMapping("/SolvedChallenges")
+    public List<UUID> getSolvedChallenges(HttpServletRequest httpRequest) {
+        UUID userId = getAuthenticatedUserId(httpRequest);
+        return submissionRepo.findChallengeIdsByUserIdAndStatus(
+                userId,
+                SubmissionStatus.ACCEPTED
+        );
+    }
 
-    private Path saveSubmission(CodeSubmission submission, Challenge challenge) throws IOException {
+    private Path saveSubmission(SubmissionRequest submission, Challenge challenge) throws IOException {
         String challengeFolderName = sanitizeFolderName(challenge.getName());
         Path submissionFolder = Path.of(
                 "submissions",
-                submission.userId().toString(),
+                submission.getUserId().toString(),
                 challengeFolderName
         );
         Files.createDirectories(submissionFolder);
 
         Path submissionFile = submissionFolder.resolve(
-                "submission." + fileExtension(submission.language())
+                "submission." + fileExtension(submission.getLanguage())
         );
-        Files.writeString(submissionFile, submission.code(), StandardCharsets.UTF_8);
+        Files.writeString(submissionFile, submission.getCode(), StandardCharsets.UTF_8);
         return submissionFile;
     }
 
