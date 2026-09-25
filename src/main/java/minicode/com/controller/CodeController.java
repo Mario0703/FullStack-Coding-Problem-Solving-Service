@@ -18,10 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -29,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -110,6 +108,14 @@ public class CodeController {
             Thread.currentThread().interrupt();
             throw new IOException("Code execution was interrupted", e);
         }
+    }
+    @GetMapping("/SolvedChallenges")
+    public List<UUID> getSolvedChallenges(HttpServletRequest httpRequest) {
+        UUID userId = getAuthenticatedUserId(httpRequest);
+        return submissionRepo.findChallengeIdsByUserIdAndStatus(
+                userId,
+                SubmissionStatus.ACCEPTED
+        );
     }
 
     private Path saveSubmission(SubmissionRequest submission, Challenge challenge) throws IOException {

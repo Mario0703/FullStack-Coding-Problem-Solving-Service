@@ -8,6 +8,7 @@ const challenges = ref<Challenge[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null);
+const solvedChallengeIds = ref<string[]>([]);
 
 async function loadChallengeList() {
   loadError.value = "";
@@ -22,7 +23,31 @@ async function loadChallengeList() {
   }
 }
 
-onMounted(loadChallengeList);
+async function loadSolvedChallenges() {
+  const response = await fetch("http://localhost:8082/api/code/playground/SolvedChallenges", {
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    solvedChallengeIds.value = [];
+    return;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch solved challenges");
+  }
+
+  solvedChallengeIds.value = (await response.json()) as string[];
+}
+
+onMounted(() => {
+  loadChallengeList();
+  loadSolvedChallenges();
+});
+
+function isChallengeSolved(challengeId: string): boolean {
+  return solvedChallengeIds.value.includes(challengeId);
+}
 
 function filterByDifficulty(
   difficulty: ChallengeDifficulty | null,
@@ -138,6 +163,16 @@ function updateChallengesBySearch(){
           <v-card-actions>
             <v-btn color="primary">Solve challenge</v-btn>
           </v-card-actions>
+          <v-card-text>
+            <template v-if="isChallengeSolved(challenge.id)">
+              <v-icon icon="mdi-check-circle" color="success" />
+              <span class="ml-2">Solved</span>
+            </template>
+            <template v-else>
+              <v-icon icon="mdi-close-circle" color="error" />
+              <span class="ml-2">Not solved</span>
+            </template>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
