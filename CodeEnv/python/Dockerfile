@@ -8,4 +8,4 @@ COPY TestSuite /app/TestSuite
 COPY TestCases /app/TestCases
 
 
-CMD ["bash", "-c", "cp -R /app/TestCases /tmp/TestCases && cd /tmp && bash /app/TestSuite/runTestSub.bs /app/submission.py"]
+CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "python3", "/app/submission.py"]
