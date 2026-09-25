@@ -33,10 +33,6 @@ public class User {
         this.password = password;
     }
 
-    @Column(nullable = false)
-    List<Challenge> SolvedChallenges = new ArrayList();
-
-
 
     public String getUserName() {
 
