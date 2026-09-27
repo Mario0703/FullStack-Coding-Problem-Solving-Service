@@ -1,0 +1,118 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import CodeEditor from '@/components/code-execution/CodeEditor.vue'
+
+const route = useRoute()
+const submission = ref<any>(null)
+const errorMessage = ref('')
+
+onMounted(async () => {
+  const submissionId = route.params.submissionId
+
+  if (!submissionId || Array.isArray(submissionId)) {
+    errorMessage.value = 'Invalid submission ID'
+    return
+  }
+
+  const response = await fetch(
+    `http://localhost:8082/api/submission/details?submissionId=${submissionId}`,
+    { credentials: 'include' },
+  )
+
+  if (!response.ok) {
+    errorMessage.value = 'Failed to load submission'
+    return
+  }
+
+  submission.value = await response.json()
+})
+</script>
+
+<template>
+  <v-container>
+    <v-alert v-if="errorMessage" type="error" :text="errorMessage" />
+
+    <v-card v-else-if="submission" class="border-lg" border="primary" variant="outlined">
+      <v-card-title class="text-h5 font-weight-bold pa-6">
+        {{ submission.challengeName }}
+      </v-card-title>
+      <v-card-text class="pa-6 pt-0">
+        <v-row dense>
+          <v-col cols="12" sm="6">
+            <v-card class="h-100" color="blue-lighten-5" variant="tonal">
+              <v-card-text>
+                <div class="text-caption text-medium-emphasis">Language</div>
+                <div class="text-body-1 font-weight-bold">{{ submission.language }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-card class="h-100" color="purple-lighten-5" variant="tonal">
+              <v-card-text>
+                <div class="text-caption text-medium-emphasis">Created at</div>
+                <div class="text-body-1 font-weight-bold">{{ submission.createdAt }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-card class="h-100" color="orange-lighten-5" variant="tonal">
+              <v-card-text>
+                <div class="text-caption text-medium-emphasis">Exit code</div>
+                <div class="text-body-1 font-weight-bold">{{ submission.exitCode }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-card class="h-100" variant="tonal">
+              <v-card-text>
+                <div class="text-caption text-medium-emphasis">Status</div>
+                <v-chip
+                  :color="submission.status === 'ACCEPTED' ? 'success' : 'error'"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ submission.status === 'ACCEPTED' ? 'Right' : 'Wrong' }}
+                </v-chip>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <v-card class="mt-6" color="grey-lighten-4" variant="tonal">
+          <v-card-title class="text-subtitle-1">Test cases</v-card-title>
+          <v-card-text>
+            <v-row class="text-center" dense>
+              <v-col cols="4">
+                <div class="text-h6 font-weight-bold text-success">
+                  {{ submission.testCasesPassed }}
+                </div>
+                <div class="text-caption">Passed</div>
+              </v-col>
+              <v-col cols="4">
+                <div class="text-h6 font-weight-bold text-error">
+                  {{ submission.testCasesFailed }}
+                </div>
+                <div class="text-caption">Failed</div>
+              </v-col>
+              <v-col cols="4">
+                <div class="text-h6 font-weight-bold">{{ submission.totalTestCases }}</div>
+                <div class="text-caption">Total</div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+
+        <div class="text-subtitle-1 font-weight-bold mt-6 mb-2">Submitted code</div>
+        <v-card color="grey-lighten-4" variant="outlined">
+          <CodeEditor
+            :model-value="submission.code"
+            :language="submission.language"
+            readonly
+            height="320px"
+          />
+        </v-card>
+      </v-card-text>
+    </v-card>
+  </v-container>
+</template>
