@@ -6,12 +6,14 @@ import { python } from '@codemirror/lang-python'
 import { java } from '@codemirror/lang-java'
 import { cpp } from '@codemirror/lang-cpp'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { csharp } from '@replit/codemirror-lang-csharp'
 
 const extensions = computed(() => {
   const languageExtension = {
     PYTHON: python(),
     JAVA: java(),
     'C++': cpp(),
+    'C#': csharp(),
   }[language.value]
 
   return languageExtension ? [languageExtension, oneDark] : [oneDark]
