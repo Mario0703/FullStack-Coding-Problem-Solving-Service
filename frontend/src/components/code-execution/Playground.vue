@@ -107,6 +107,7 @@ async function executeCode() {
         code: code.value,
       }),
     })
+    console.log(code.value)
 
     if (!response.ok) {
       output.value = `Error: ${await response.text()}`
@@ -134,7 +135,7 @@ async function executeCode() {
     <template v-else>
       <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
 
-      <v-textarea v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
+      <v-textarea @input="console.log('Code changed:', $event.target.value)" v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
