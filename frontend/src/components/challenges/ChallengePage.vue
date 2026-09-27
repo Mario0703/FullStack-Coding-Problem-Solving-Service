@@ -1,102 +1,62 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
-import type {Challenge, ChallengeDifficulty} from "@/utils/AdminUtils";
-import { formatChallengeValue } from "@/utils/AdminUtils";
-import { listChallenges } from "@/utils/ChallangeUtil";
-import { loadSolvedChallengeIds } from "@/utils/SolvedChallengeUtil";
+import { computed, onMounted, ref } from 'vue'
+import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
+import { formatChallengeValue } from '@/utils/AdminUtils'
+import { listChallenges } from '@/utils/ChallangeUtil'
+import { loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
+import SearchComponentChallange from './SearchComponentChallange.vue'
+import FilterComponentChallange from './FilterComponentChallange.vue'
 
-const challenges = ref<Challenge[]>([]);
-const loadError = ref("");
-const isLoading = ref(true);
-const selectedDifficulty = ref<ChallengeDifficulty | null>(null);
-const solvedChallengeIds = ref<Set<string>>(new Set());
+const challenges = ref<Challenge[]>([])
+const loadError = ref('')
+const isLoading = ref(true)
+const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
+const solvedChallengeIds = ref<Set<string>>(new Set())
 
 async function loadChallengeList() {
-  loadError.value = "";
-  isLoading.value = true;
+  loadError.value = ''
+  isLoading.value = true
 
   try {
-    challenges.value = await listChallenges();
+    challenges.value = await listChallenges()
   } catch {
-    loadError.value = "Unable to load challenges. Please try again later.";
+    loadError.value = 'Unable to load challenges. Please try again later.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
 onMounted(() => {
-  loadChallengeList();
-  loadSolvedChallengeIds().then((ids) => {
-    solvedChallengeIds.value = ids;
-  }).catch(() => {
-    solvedChallengeIds.value = new Set();
-  });
-});
+  loadChallengeList()
+  loadSolvedChallengeIds()
+    .then((ids) => {
+      solvedChallengeIds.value = ids
+    })
+    .catch(() => {
+      solvedChallengeIds.value = new Set()
+    })
+})
 
 function isChallengeSolved(challengeId: string): boolean {
-  return solvedChallengeIds.value.has(challengeId);
+  return solvedChallengeIds.value.has(challengeId)
 }
 
-function filterByDifficulty(
-  difficulty: ChallengeDifficulty | null,
-  challenges: Challenge[]
-): Challenge[] {
-  if (!difficulty) {
-    return challenges;
-  }
-
-  return challenges.filter(
-    challenge => challenge.difficulty === difficulty
-  );
-}
+const search = ref('')
 
 const filteredChallenges = computed(() =>
-  filterByDifficulty(
-    selectedDifficulty.value,
-    challenges.value
-  )
+  challenges.value.filter((challenge) => {
+    const matchesDifficulty =
+      !selectedDifficulty.value || challenge.difficulty === selectedDifficulty.value
+    const matchesSearch = challenge.name.toLowerCase().includes(search.value.trim().toLowerCase())
+    return matchesDifficulty && matchesSearch
+  }),
 )
-const search = ref("");
-
-
-function updateChallengesBySearch(){
-  if (search.value.trim() === "") {
-    return filteredChallenges.value;
-  }
-
-  return filteredChallenges.value.filter(challenge =>
-    challenge.name.toLowerCase().includes(search.value.toLowerCase())
-  );
-}
-
-
 </script>
 
 <template>
   <v-container class="py-8">
-    <v-text-field
-      class="mb-4"
-      v-model="search"
-      label="Search"
-      variant="outlined"
-      hide-details
-      single-line
-    >
-      <template #prepend-inner>
-        <v-icon icon="mdi-magnify" />
-      </template>
-    </v-text-field>
-    <v-select
-      v-model="selectedDifficulty"
-      label="Filter by difficulty"
-      :items="['EASY', 'MEDIUM', 'HARD']"
-      clearable
-    >
-      <template #prepend-inner>
-        <v-icon icon="mdi-filter-variant" />
-      </template>
-    </v-select>
-    <v-btn v-model="selectedDifficulty" @click="selectedDifficulty = null">remove filter</v-btn>
+    <SearchComponentChallange v-model="search" class="mb-4" />
+    <FilterComponentChallange v-model="selectedDifficulty" class="mb-4" />
     <v-card class="mb-8" variant="text">
       <v-card-title class="text-h4 font-weight-bold px-0">Coding challenges</v-card-title>
       <v-card-subtitle class="text-body-1 mt-2 px-0">
@@ -125,13 +85,7 @@ function updateChallengesBySearch(){
     />
 
     <v-row v-else align="stretch">
-      <v-col
-        v-for="challenge in updateChallengesBySearch()"
-        :key="challenge.id"
-        cols="12"
-        sm="6"
-        lg="4"
-      >
+      <v-col v-for="challenge in filteredChallenges" :key="challenge.id" cols="12" sm="6" lg="4">
         <v-card
           class="h-100"
           variant="outlined"

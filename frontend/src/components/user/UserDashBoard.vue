@@ -6,9 +6,25 @@ import {
   loadUserSubmissions,
   type UserSubmission,
 } from '@/utils/SolvedChallengeUtil'
-import router from "@/router";
+import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
+import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
+import router from '@/router'
 
 const submissions = ref<UserSubmission[]>([])
+const search = ref('')
+const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
+
+const filteredSubmissions = computed(() =>
+  submissions.value.filter((submission) => {
+    const matchesDifficulty =
+      !selectedDifficulty.value || submission.difficulty === selectedDifficulty.value
+    const matchesSearch = submission.challengeName
+      .toLowerCase()
+      .includes(search.value.trim().toLowerCase())
+
+    return matchesDifficulty && matchesSearch
+  }),
+)
 
 function viewSubmissionDetails(submissionId: string) {
   router.push(`/submissions/${submissionId}`)
@@ -120,8 +136,16 @@ const totalPoints = computed(
     <v-card class="border-lg bg-surface" border="primary" variant="outlined">
       <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Questions </v-card-title>
       <v-card-text class="pa-6 pt-0">
+        <SearchComponentChallange v-model="search" class="mb-4" />
+        <FilterComponentChallange v-model="selectedDifficulty" class="mb-6" />
         <v-row align="stretch">
-          <v-col v-for="submission in submissions" :key="submission.id" cols="12" sm="6" md="4">
+          <v-col
+            v-for="submission in filteredSubmissions"
+            :key="submission.id"
+            cols="12"
+            sm="6"
+            md="4"
+          >
             <v-card
               class="border-lg h-100 d-flex flex-column bg-black"
               border="primary"
