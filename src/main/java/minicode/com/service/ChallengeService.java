@@ -24,8 +24,15 @@ public class ChallengeService {
         String description = request.getDescription();
         Difficulty difficulty = request.getDifficulty();
         Category category = request.getCategory();
+        int numberOfTestCases = request.getTestCases().size();
 
-        Challenge challenge = new Challenge(name, description, difficulty, category);
+        Challenge challenge = new Challenge(
+                name,
+                description,
+                difficulty,
+                category,
+                numberOfTestCases
+        );
 
         return challengeRepo.save(challenge);
     }

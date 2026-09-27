@@ -101,7 +101,8 @@ public class CodeController {
                     codeSubmission.getCode(),
                     language,
                     result.exitCode(),
-                    status
+                    status,
+                    challenge.getNumberOfTestCases()
             ));
 
             return result;

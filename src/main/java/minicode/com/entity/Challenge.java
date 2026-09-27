@@ -67,11 +67,25 @@ public class Challenge {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public Challenge(String name, String description, Difficulty difficulty, Category category) {
+    @Column(name = "number_of_test_cases", nullable = false, columnDefinition = "integer default 0")
+    private int numberOfTestCases;
+
+    public Challenge(
+            String name,
+            String description,
+            Difficulty difficulty,
+            Category category,
+            int numberOfTestCases
+    ) {
         this.name = name;
         this.description = description;
         this.difficulty = difficulty;
         this.category = category;
+        this.numberOfTestCases = numberOfTestCases;
+    }
+
+    public int getNumberOfTestCases() {
+        return numberOfTestCases;
     }
 
 

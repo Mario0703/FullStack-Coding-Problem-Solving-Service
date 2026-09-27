@@ -45,6 +45,14 @@ public class Submission {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(
+            name = "number_of_tests_cases",
+            nullable = false,
+            updatable = false,
+            columnDefinition = "integer default 0"
+    )
+    private int numberOfTestCases;
+
     protected Submission() {
     }
 
@@ -54,7 +62,8 @@ public class Submission {
             String code,
             String language,
             int exitCode,
-            SubmissionStatus status
+            SubmissionStatus status,
+            int numberOfTestsCases
     ) {
         this.user = user;
         this.challenge = challenge;
@@ -62,5 +71,6 @@ public class Submission {
         this.language = language;
         this.exitCode = exitCode;
         this.status = status;
+        this.numberOfTestCases = numberOfTestCases;
     }
 }
