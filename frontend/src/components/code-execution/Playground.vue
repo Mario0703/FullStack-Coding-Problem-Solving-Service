@@ -1,6 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { currentUser } from '@/authenticator/auth'
+import { Codemirror } from 'vue-codemirror'
+import { python } from '@codemirror/lang-python'
+import { java } from '@codemirror/lang-java'
+import { cpp } from '@codemirror/lang-cpp'
+import { oneDark } from '@codemirror/theme-one-dark'
+
+const extensions = computed(() => {
+  const languageExtension = {
+    PYTHON: python(),
+    JAVA: java(),
+    'C++': cpp(),
+  }[language.value]
+
+  return languageExtension ? [languageExtension, oneDark] : [oneDark]
+})
+
 
 type ChallengeTemplateResponse = {
   language: string
@@ -135,7 +151,12 @@ async function executeCode() {
     <template v-else>
       <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
 
-      <v-textarea @input="console.log('Code changed:', $event.target.value)" v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
+      <Codemirror
+      v-model="code"
+      :extensions="extensions"
+      :style="{ height: '400px', fontSize: '14px' }"
+      placeholder="Write your code here..."
+    />
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
