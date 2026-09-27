@@ -72,7 +72,7 @@ onMounted(async () => {
                   size="small"
                   variant="tonal"
                 >
-                  {{ submission.status === 'ACCEPTED' ? 'Right' : 'Wrong' }}
+                  {{ submission.status === 'ACCEPTED' ? 'Solved' : 'Not Solved' }}
                 </v-chip>
               </v-card-text>
             </v-card>
