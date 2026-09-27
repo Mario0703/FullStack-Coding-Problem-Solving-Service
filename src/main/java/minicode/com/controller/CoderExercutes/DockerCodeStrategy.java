@@ -10,6 +10,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class DockerCodeStrategy implements CodeExercuteStrat {
     protected abstract Path dockerFolder();
@@ -23,6 +26,9 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
     protected abstract String combineSubmissionWithRunner(String submission, String runner);
 
     private int exitCode;
+
+    private static final Pattern patteren =  Pattern.compile("\\n Passed: (\\d+), Failed: (\\d+)\\n");
+
 
 
     @Override
@@ -41,8 +47,9 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
             buildBuilder.redirectErrorStream(true);
 
             Process buildProcess = buildBuilder.start();
-            String buildOutput = readProcessOutput(buildProcess);
+            CompletableFuture<String> buildOutputReader = readProcessOutputAsync(buildProcess);
             int buildExitCode = buildProcess.waitFor();
+            String buildOutput = buildOutputReader.join();
 
             if (buildExitCode != 0) {
                 throw new IOException(
@@ -78,6 +85,7 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
             runBuilder.redirectErrorStream(true);
 
             Process runProcess = runBuilder.start();
+            CompletableFuture<String> runOutputReader = readProcessOutputAsync(runProcess);
             boolean finished = runProcess.waitFor(10, TimeUnit.SECONDS);
 
             if (!finished) {
@@ -92,8 +100,16 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
             }
 
             int runExitCode = runProcess.exitValue();
-            String output = readProcessOutput(runProcess);
-            return new ExecutionResult(runExitCode, output);
+            String output = runOutputReader.join();
+            Matcher matcher = patteren.matcher(output);
+            String passing = "0";
+            String failing = "0";
+            if (matcher.find()) {
+                passing = matcher.group(1);
+                failing = matcher.group(2);
+            }
+
+            return new ExecutionResult(runExitCode, output, Integer.parseInt(passing), Integer.parseInt(failing));
         } finally {
             deleteRecursively(executionFolder);
         }
@@ -185,5 +201,15 @@ public abstract class DockerCodeStrategy implements CodeExercuteStrat {
         try (var inputStream = process.getInputStream()) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
+    }
+
+    private CompletableFuture<String> readProcessOutputAsync(Process process) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return readProcessOutput(process);
+            } catch (IOException exception) {
+                throw new RuntimeException("Could not read Docker process output", exception);
+            }
+        });
     }
 }

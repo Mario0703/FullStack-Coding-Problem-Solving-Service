@@ -2,6 +2,8 @@ package minicode.com.dto;
 
 public record ExecutionResult(
         int exitCode,
-        String output
+        String output,
+        int passingTestCases,
+        int failingTestCases
 ) {
 }

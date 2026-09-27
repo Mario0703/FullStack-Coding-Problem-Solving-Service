@@ -1,31 +1,39 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
-import { listChallenges } from '@/utils/ChallangeUtil'
-import { loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
+import type { ChallengeDifficulty } from '@/utils/AdminUtils'
+import {
+  loadSubmissionTestCaseValues,
+  loadUserSubmissions,
+  type UserSubmission,
+} from '@/utils/SolvedChallengeUtil'
 
-const challenges = ref<Challenge[]>([])
-const solvedChallengeIds = ref<Set<string>>(new Set())
+const submissions = ref<UserSubmission[]>([])
 
 onMounted(async () => {
   try {
-    const [loadedChallenges, solvedIds] = await Promise.all([
-      listChallenges(),
-      loadSolvedChallengeIds(),
+    const [loadedSubmissions, [passed, failed, total]] = await Promise.all([
+      loadUserSubmissions(),
+      loadSubmissionTestCaseValues(),
     ])
-    challenges.value = loadedChallenges
-    solvedChallengeIds.value = solvedIds
+
+    submissions.value = loadedSubmissions.map((submission, index) => ({
+      ...submission,
+      testCasesPassed: passed[index] ?? 0,
+      testCasesFailed: failed[index] ?? 0,
+      totalTestCases: total[index] ?? 0,
+    }))
   } catch {
-    challenges.value = []
-    solvedChallengeIds.value = new Set()
+    submissions.value = []
   }
 })
 
 function solvedCount(difficulty: ChallengeDifficulty): number {
-  return challenges.value.filter(
-    (challenge) =>
-      challenge.difficulty === difficulty && solvedChallengeIds.value.has(challenge.id),
-  ).length
+  return new Set(
+    submissions.value
+      .filter((submission) => submission.status === 'ACCEPTED')
+      .filter((submission) => submission.difficulty === difficulty)
+      .map((submission) => submission.challengeId),
+  ).size
 }
 
 const easyQuestionsSolved = computed(() => solvedCount('EASY'))
@@ -35,31 +43,14 @@ const totalQuestionsSolved = computed(
   () => easyQuestionsSolved.value + mediumQuestionsSolved.value + hardQuestionsSolved.value,
 )
 const totalPoints = computed(
-  () =>
-    easyQuestionsSolved.value +
-    mediumQuestionsSolved.value * 2 +
-    hardQuestionsSolved.value * 3,
+  () => easyQuestionsSolved.value + mediumQuestionsSolved.value * 2 + hardQuestionsSolved.value * 3,
 )
-
-
-
-const dummyQuestions = [
-  { id: 1, title: "Two Sum", difficulty: "Easy" },
-  { id: 2, title: "Add Two Numbers", difficulty: "Medium" },
-  { id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Hard" },
-  { id: 4, title: "Median of Two Sorted Arrays", difficulty: "Hard" },
-  { id: 5, title: "Longest Palindromic Substring", difficulty: "Medium" },
-]
-
-
 </script>
 
 <template>
   <v-container>
     <v-card class="border-lg mb-8 bg-surface" border="primary" variant="outlined">
-      <v-card-title class="text-h4 font-weight-bold text-center pa-6">
-        Stats
-      </v-card-title>
+      <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Stats </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <v-row align="stretch">
           <v-col cols="12" sm="4">
@@ -121,25 +112,79 @@ const dummyQuestions = [
     </v-card>
   </v-container>
   <v-container class="py-8">
-    <v-card class="border-lg bg-grey-lighten-4" border="primary" variant="outlined">
-      <v-card-title class="text-h4 font-weight-bold text-center pa-6">
-        Questions
-      </v-card-title>
+    <v-card class="border-lg bg-surface" border="primary" variant="outlined">
+      <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Questions </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <v-row align="stretch">
-          <v-col
-            v-for="question in dummyQuestions"
-            :key="question.id"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-card class="border-lg h-100 bg-white" border="primary" variant="outlined">
-              <v-card-title class="text-h6 font-weight-bold">
-                {{ question.title }}
-              </v-card-title>
-              <v-card-text class="text-body-1">
-                Difficulty: {{ question.difficulty }}
+          <v-col v-for="submission in submissions" :key="submission.id" cols="12" sm="6" md="4">
+            <v-card
+              class="border-lg h-100 d-flex flex-column bg-black"
+              border="primary"
+              variant="outlined"
+            >
+              <v-card-item>
+                <v-card-title class="text-h6 font-weight-bold px-0">
+                  {{ submission.challengeName }}
+                </v-card-title>
+                <v-card-subtitle class="px-0 pt-2">
+                  <v-chip
+                    size="small"
+                    variant="tonal"
+                    :color="
+                      submission.difficulty === 'EASY'
+                        ? 'success'
+                        : submission.difficulty === 'MEDIUM'
+                          ? 'warning'
+                          : 'error'
+                    "
+                  >
+                    {{ submission.difficulty }}
+                  </v-chip>
+                </v-card-subtitle>
+              </v-card-item>
+
+              <v-divider />
+
+              <v-card-text class="flex-grow-1">
+                <v-list class="pa-0 bg-black" lines="one">
+                  <v-list-item class="px-0" title="Status">
+                    <template #append>
+                      <v-chip
+                        size="small"
+                        :color="submission.status === 'ACCEPTED' ? 'success' : 'error'"
+                        variant="tonal"
+                      >
+                        <v-icon start>
+                          {{
+                            submission.status === 'ACCEPTED'
+                              ? 'mdi-check-circle'
+                              : 'mdi-close-circle'
+                          }}
+                        </v-icon>
+                        {{ submission.status === 'ACCEPTED' ? 'Solved' : 'Not solved' }}
+                      </v-chip>
+                    </template>
+                  </v-list-item>
+                  <v-list-item class="px-0" title="TestCases passed">
+                    <template #append>
+                      <span class="font-weight-bold text-success">{{
+                        submission.testCasesPassed
+                      }}</span>
+                    </template>
+                  </v-list-item>
+                  <v-list-item class="px-0" title="TestCases failed">
+                    <template #append>
+                      <span class="font-weight-bold text-error">{{
+                        submission.testCasesFailed
+                      }}</span>
+                    </template>
+                  </v-list-item>
+                  <v-list-item class="px-0" title="Total test cases">
+                    <template #append>
+                      <span class="font-weight-bold">{{ submission.totalTestCases }}</span>
+                    </template>
+                  </v-list-item>
+                </v-list>
               </v-card-text>
             </v-card>
           </v-col>

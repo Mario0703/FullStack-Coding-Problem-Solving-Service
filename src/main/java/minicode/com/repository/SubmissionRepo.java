@@ -28,4 +28,31 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     ORDER BY s.createdAt DESC
 """)
     List<Submission> findAllByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesPassed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findPassedTestCasesByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesFailed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findFailedTestCasesByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT c.numberOfTestCases
+    FROM Submission s
+    INNER JOIN s.challenge c
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findTotalTestCasesByUserId(
+            @Param("userId") UUID userId
+    );
 }

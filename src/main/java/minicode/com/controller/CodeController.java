@@ -102,7 +102,8 @@ public class CodeController {
                     language,
                     result.exitCode(),
                     status,
-                    challenge.getNumberOfTestCases()
+                    result.passingTestCases(),
+                    result.failingTestCases()
             ));
 
             return result;
