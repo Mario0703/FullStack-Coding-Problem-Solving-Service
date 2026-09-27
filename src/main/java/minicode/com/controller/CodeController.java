@@ -17,6 +17,7 @@ import minicode.com.repository.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.message.StructuredDataMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -64,6 +65,7 @@ public class CodeController {
         if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
         }
+        System.out.println("Code: " + codeSubmission.getCode());
 
         User user = userRepo.findById(authenticatedUserId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -99,7 +101,9 @@ public class CodeController {
                     codeSubmission.getCode(),
                     language,
                     result.exitCode(),
-                    status
+                    status,
+                    result.passingTestCases(),
+                    result.failingTestCases()
             ));
 
             return result;

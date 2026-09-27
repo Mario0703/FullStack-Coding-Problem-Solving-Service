@@ -28,4 +28,5 @@ export type challangeForm = {
   runner: string
   runnerExplanation: string
   testCases: TestCase[]
+  numberOfTestCases: number
 }

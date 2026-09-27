@@ -11,6 +11,7 @@ import AdminDashBoard from '@/components/AdminPages/AdminDashBoard.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
 
 import { currentUser, hasCheckedUser, loadCurrentUser } from '@/authenticator/auth'
+import ViewSubmission from "@/components/user/ViewSubmission.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,7 +69,12 @@ const router = createRouter({
       name: 'solveChallenge',
       component: SolveChallange,
       meta: { requiresAuth: true },
-    },
+    },{
+      path: '/submissions/:submissionId',
+      name: 'submissionDetails',
+      component: ViewSubmission,
+      meta: { requiresAuth: true },
+    }
   ],
 })
 

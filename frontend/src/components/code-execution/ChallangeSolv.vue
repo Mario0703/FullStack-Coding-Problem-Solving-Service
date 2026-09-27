@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { currentUser } from '@/authenticator/auth'
+import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 
 type ChallengeTemplateResponse = {
   language: string
@@ -17,7 +18,7 @@ const props = defineProps<{
   challengeId?: string
 }>()
 
-defineOptions({ name: 'ChallengePlayground' })
+defineOptions({ name: 'ChallangeSolv' })
 
 const language = ref('')
 const code = ref('')
@@ -107,6 +108,7 @@ async function executeCode() {
         code: code.value,
       }),
     })
+    console.log(code.value)
 
     if (!response.ok) {
       output.value = `Error: ${await response.text()}`
@@ -134,7 +136,21 @@ async function executeCode() {
     <template v-else>
       <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
 
-      <v-textarea v-model="code" :label="`${languageLabel(language)} code`" rows="16" auto-grow />
+      <div class="d-flex flex-wrap align-center ga-2 mb-4">
+        <span class="text-subtitle-1 font-weight-medium">Language:</span>
+        <v-btn
+          v-for="option in ['PYTHON', 'JAVA', 'C++', 'C#']"
+          :key="option"
+          :color="language === option ? 'primary' : undefined"
+          :variant="language === option ? 'flat' : 'outlined'"
+          size="small"
+          @click="language = option"
+        >
+          {{ languageLabel(option) }}
+        </v-btn>
+      </div>
+
+      <CodeEditor v-model="code" :language="language" />
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 

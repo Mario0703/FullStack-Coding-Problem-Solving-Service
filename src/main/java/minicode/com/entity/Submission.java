@@ -45,8 +45,30 @@ public class Submission {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    public int getTestCasesPassed() {
+        return testCasesPassed;
+    }
+
+    public int getTestCasesFailed() {
+        return testCasesFailed;
+    }
+
+    @Column(updatable = false)
+    private int testCasesPassed;
+
+    @Column(updatable = false)
+    private int testCasesFailed;
+
     protected Submission() {
     }
+
+    public UUID getId() { return id; }
+    public Challenge getChallenge() { return challenge; }
+    public String getCode() { return code; }
+    public String getLanguage() { return language; }
+    public int getExitCode() { return exitCode; }
+    public SubmissionStatus getStatus() { return status; }
+    public Instant getCreatedAt() { return createdAt; }
 
     public Submission(
             User user,
@@ -54,7 +76,9 @@ public class Submission {
             String code,
             String language,
             int exitCode,
-            SubmissionStatus status
+            SubmissionStatus status,
+            int testCasesPassed,
+            int testCasesFailed
     ) {
         this.user = user;
         this.challenge = challenge;
@@ -62,5 +86,7 @@ public class Submission {
         this.language = language;
         this.exitCode = exitCode;
         this.status = status;
+        this.testCasesPassed = testCasesPassed;
+        this.testCasesFailed = testCasesFailed;
     }
 }
