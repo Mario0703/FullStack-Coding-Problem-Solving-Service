@@ -17,7 +17,6 @@ const extensions = computed(() => {
   return languageExtension ? [languageExtension, oneDark] : [oneDark]
 })
 
-
 type ChallengeTemplateResponse = {
   language: string
   template: string
@@ -151,12 +150,26 @@ async function executeCode() {
     <template v-else>
       <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
 
+      <div class="d-flex flex-wrap align-center ga-2 mb-4">
+        <span class="text-subtitle-1 font-weight-medium">Language:</span>
+        <v-btn
+          v-for="option in ['PYTHON', 'JAVA', 'C++', 'C#']"
+          :key="option"
+          :color="language === option ? 'primary' : undefined"
+          :variant="language === option ? 'flat' : 'outlined'"
+          size="small"
+          @click="language = option"
+        >
+          {{ languageLabel(option) }}
+        </v-btn>
+      </div>
+
       <Codemirror
-      v-model="code"
-      :extensions="extensions"
-      :style="{ height: '400px', fontSize: '14px' }"
-      placeholder="Write your code here..."
-    />
+        v-model="code"
+        :extensions="extensions"
+        :style="{ height: '400px', fontSize: '14px' }"
+        placeholder="Write your code here..."
+      />
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 

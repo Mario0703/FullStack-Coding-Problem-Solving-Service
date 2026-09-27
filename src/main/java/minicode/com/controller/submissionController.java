@@ -3,10 +3,9 @@ package minicode.com.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import minicode.com.dto.SubmissionResponse;
+import minicode.com.entity.Submission;
 import minicode.com.repository.SubmissionRepo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +34,23 @@ public class submissionController {
         return SubmissionRepo.findAllByUserId(userId).stream()
                 .map(SubmissionResponse::from)
                 .toList();
+    }
+
+    @GetMapping("/details")
+    @Transactional(readOnly = true)
+    public SubmissionResponse getDetailsFromSubmissionId(
+            HttpServletRequest httpRequest,
+            @RequestParam UUID submissionId
+    ) {
+        UUID userId = authenticatedUserId(httpRequest);
+
+        Submission submission = SubmissionRepo.findByIdAndUser_UserId(submissionId, userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND,
+                        "Submission not found"
+                ));
+
+        return SubmissionResponse.from(submission);
     }
 
     @GetMapping("/passed")
@@ -76,5 +92,4 @@ public class submissionController {
         }
         return (UUID) session.getAttribute("user_id");
     }
-
 }

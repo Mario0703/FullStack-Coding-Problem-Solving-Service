@@ -6,8 +6,13 @@ import {
   loadUserSubmissions,
   type UserSubmission,
 } from '@/utils/SolvedChallengeUtil'
+import router from "@/router";
 
 const submissions = ref<UserSubmission[]>([])
+
+function viewSubmissionDetails(submissionId: string) {
+  router.push(`/submissions/${submissionId}`)
+}
 
 onMounted(async () => {
   try {
@@ -183,6 +188,9 @@ const totalPoints = computed(
                     <template #append>
                       <span class="font-weight-bold">{{ submission.totalTestCases }}</span>
                     </template>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn @click="viewSubmissionDetails(submission.id)">View Details</v-btn>
                   </v-list-item>
                 </v-list>
               </v-card-text>

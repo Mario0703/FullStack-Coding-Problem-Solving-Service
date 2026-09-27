@@ -11,6 +11,8 @@ import java.util.UUID;
 
 public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
 
+    java.util.Optional<Submission> findByIdAndUser_UserId(UUID id, UUID userId);
+
     @Query("""
             SELECT DISTINCT submission.challenge.id
             FROM Submission submission
