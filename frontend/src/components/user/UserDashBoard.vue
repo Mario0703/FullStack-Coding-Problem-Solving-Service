@@ -1,7 +1,45 @@
 <script setup lang="ts">
-const easyQuestionsSolved = 10
-const mediumQuestionsSolved = 5
-const hardQuestionsSolved = 2
+import { computed, onMounted, ref } from 'vue'
+import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
+import { listChallenges } from '@/utils/ChallangeUtil'
+import { loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
+
+const challenges = ref<Challenge[]>([])
+const solvedChallengeIds = ref<Set<string>>(new Set())
+
+onMounted(async () => {
+  try {
+    const [loadedChallenges, solvedIds] = await Promise.all([
+      listChallenges(),
+      loadSolvedChallengeIds(),
+    ])
+    challenges.value = loadedChallenges
+    solvedChallengeIds.value = solvedIds
+  } catch {
+    challenges.value = []
+    solvedChallengeIds.value = new Set()
+  }
+})
+
+function solvedCount(difficulty: ChallengeDifficulty): number {
+  return challenges.value.filter(
+    (challenge) =>
+      challenge.difficulty === difficulty && solvedChallengeIds.value.has(challenge.id),
+  ).length
+}
+
+const easyQuestionsSolved = computed(() => solvedCount('EASY'))
+const mediumQuestionsSolved = computed(() => solvedCount('MEDIUM'))
+const hardQuestionsSolved = computed(() => solvedCount('HARD'))
+const totalQuestionsSolved = computed(
+  () => easyQuestionsSolved.value + mediumQuestionsSolved.value + hardQuestionsSolved.value,
+)
+const totalPoints = computed(
+  () =>
+    easyQuestionsSolved.value +
+    mediumQuestionsSolved.value * 2 +
+    hardQuestionsSolved.value * 3,
+)
 
 
 
@@ -63,7 +101,7 @@ const dummyQuestions = [
                 Total questions solved
               </v-card-title>
               <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ easyQuestionsSolved + mediumQuestionsSolved + hardQuestionsSolved }}
+                {{ totalQuestionsSolved }}
               </v-card-text>
             </v-card>
           </v-col>
@@ -74,7 +112,7 @@ const dummyQuestions = [
                 Total points earned
               </v-card-title>
               <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ easyQuestionsSolved * 1 + mediumQuestionsSolved * 2 + hardQuestionsSolved * 3 }}
+                {{ totalPoints }}
               </v-card-text>
             </v-card>
           </v-col>

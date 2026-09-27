@@ -29,6 +29,7 @@ for i in "$test_directory"/*.in; do
     rm "$actual_file"
     index=$((index + 1))
 done
+printf "\n Total tests: %d, Passed: %d, Failed: %d\n" "$total_tests" "$passing_tests" "$failing_tests"
 
 if [ $failing_tests -eq 0 ] && [ $passing_tests -eq $total_tests ]; then
     exit 1

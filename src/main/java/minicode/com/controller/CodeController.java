@@ -91,7 +91,7 @@ public class CodeController {
 
         try {
             ExecutionResult result = strategy.execute(submissionFile, challengeFolder);
-            SubmissionStatus status = result.exitCode() == 1
+            SubmissionStatus status = result.exitCode() == 0
                     ? SubmissionStatus.ACCEPTED
                     : SubmissionStatus.WRONG_ANSWER;
 
@@ -101,7 +101,8 @@ public class CodeController {
                     codeSubmission.getCode(),
                     language,
                     result.exitCode(),
-                    status
+                    status,
+                    challenge.getNumberOfTestCases()
             ));
 
             return result;

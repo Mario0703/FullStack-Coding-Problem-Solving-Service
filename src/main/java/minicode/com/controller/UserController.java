@@ -5,6 +5,7 @@ import minicode.com.dto.SignupRequest;
 import minicode.com.dto.ChangeEmailRequest;
 import minicode.com.dto.ChangePasswordRequest;
 import minicode.com.dto.ChangeUserNameRequest;
+import minicode.com.entity.Challenge;
 import minicode.com.entity.User;
 import minicode.com.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -96,5 +98,6 @@ public class UserController {
 
         return (UUID) userId;
     }
+
 
 }

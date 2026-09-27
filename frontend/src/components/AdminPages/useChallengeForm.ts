@@ -70,6 +70,7 @@ export function useChallengeForm() {
         input: testCase.input.trim(),
         expectedOutput: testCase.expectedOutput.trim(),
       })),
+      numberOfTestCases: testCases.value.length,
     }
   }
 

@@ -3,12 +3,13 @@ import {computed, onMounted, ref, watch} from "vue";
 import type {Challenge, ChallengeDifficulty} from "@/utils/AdminUtils";
 import { formatChallengeValue } from "@/utils/AdminUtils";
 import { listChallenges } from "@/utils/ChallangeUtil";
+import { loadSolvedChallengeIds } from "@/utils/SolvedChallengeUtil";
 
 const challenges = ref<Challenge[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null);
-const solvedChallengeIds = ref<string[]>([]);
+const solvedChallengeIds = ref<Set<string>>(new Set());
 
 async function loadChallengeList() {
   loadError.value = "";
@@ -23,30 +24,17 @@ async function loadChallengeList() {
   }
 }
 
-async function loadSolvedChallenges() {
-  const response = await fetch("http://localhost:8082/api/code/playground/SolvedChallenges", {
-    credentials: "include",
-  });
-
-  if (response.status === 401) {
-    solvedChallengeIds.value = [];
-    return;
-  }
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch solved challenges");
-  }
-
-  solvedChallengeIds.value = (await response.json()) as string[];
-}
-
 onMounted(() => {
   loadChallengeList();
-  loadSolvedChallenges();
+  loadSolvedChallengeIds().then((ids) => {
+    solvedChallengeIds.value = ids;
+  }).catch(() => {
+    solvedChallengeIds.value = new Set();
+  });
 });
 
 function isChallengeSolved(challengeId: string): boolean {
-  return solvedChallengeIds.value.includes(challengeId);
+  return solvedChallengeIds.value.has(challengeId);
 }
 
 function filterByDifficulty(

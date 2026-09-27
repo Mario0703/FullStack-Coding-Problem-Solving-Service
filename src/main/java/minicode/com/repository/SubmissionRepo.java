@@ -21,4 +21,11 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
             @Param("userId") UUID userId,
             @Param("status") SubmissionStatus status
     );
+    @Query("""
+    SELECT s
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Submission> findAllByUserId(@Param("userId") UUID userId);
 }

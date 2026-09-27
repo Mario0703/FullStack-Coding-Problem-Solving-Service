@@ -24,4 +24,5 @@ public class SubmissionRequest {
 
     @NotBlank(message = "Code is required")
     private String code;
+
 }
