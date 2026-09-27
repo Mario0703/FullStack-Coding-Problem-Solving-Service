@@ -13,16 +13,29 @@ import router from '@/router'
 const submissions = ref<UserSubmission[]>([])
 const search = ref('')
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
+const selectedChallengeId = ref<string | null>(null)
+
+const challengeFilterItems = computed(() =>
+  [
+    ...new Map(
+      submissions.value.map((submission) => [submission.challengeId, submission.challengeName]),
+    ),
+  ]
+    .map(([value, title]) => ({ value, title }))
+    .sort((a, b) => a.title.localeCompare(b.title)),
+)
 
 const filteredSubmissions = computed(() =>
   submissions.value.filter((submission) => {
     const matchesDifficulty =
       !selectedDifficulty.value || submission.difficulty === selectedDifficulty.value
+    const matchesChallenge =
+      !selectedChallengeId.value || submission.challengeId === selectedChallengeId.value
     const matchesSearch = submission.challengeName
       .toLowerCase()
       .includes(search.value.trim().toLowerCase())
 
-    return matchesDifficulty && matchesSearch
+    return matchesDifficulty && matchesChallenge && matchesSearch
   }),
 )
 
@@ -138,6 +151,17 @@ const totalPoints = computed(
       <v-card-text class="pa-6 pt-0">
         <SearchComponentChallange v-model="search" class="mb-4" />
         <FilterComponentChallange v-model="selectedDifficulty" class="mb-6" />
+        <v-select
+          v-model="selectedChallengeId"
+          class="mb-6"
+          label="Filter by challenge"
+          :items="challengeFilterItems"
+          item-title="title"
+          item-value="value"
+          clearable
+          hide-details
+          variant="outlined"
+        />
         <v-row align="stretch">
           <v-col
             v-for="submission in filteredSubmissions"

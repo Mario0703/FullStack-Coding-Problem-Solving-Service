@@ -4,10 +4,7 @@ import { useRoute } from 'vue-router'
 import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
-import Playground from '@/components/code-execution/Playground.vue'
-
-
-
+import ChallangeSolv from '@/components/code-execution/ChallangeSolv.vue'
 
 const solvedBypeople = ref<string[]>([])
 solvedBypeople.value = ['Alice', 'Bob', 'Charlie'] // Example data, replace with actual data fetching logic
@@ -61,7 +58,7 @@ onMounted(loadChallenge)
         <v-btn to="/challenges" variant="text">Back to challenges</v-btn>
       </v-card-actions>
     </v-card>
-    <Playground v-if="challenge" :challenge-id="challenge.id" />
+    <ChallangeSolv v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
   <v-container>
     <v-row v-for="person in solvedBypeople" :key="person">
