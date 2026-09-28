@@ -1,6 +1,7 @@
 package minicode.com.controller;
 
 
+import jakarta.servlet.http.HttpSession;
 import minicode.com.dto.CreateChallangeRequest;
 import minicode.com.dto.ChallengeTemplateResponse;
 import minicode.com.dto.CreateTestCaseRequest;
@@ -25,6 +26,8 @@ public class ChallengeController {
     public ChallengeController(ChallengeService challengeService) {
         this.challangeService = challengeService;
     }
+
+
 
     @GetMapping("/ListChallanges")
     public Iterable<Challenge> listChallenges() {
@@ -127,6 +130,14 @@ public class ChallengeController {
 
 
         return challenge;
+    }
+
+    @GetMapping
+    private void CheckIfAdmin(HttpSession session) {
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (isAdmin == null || !isAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
     }
 
 
