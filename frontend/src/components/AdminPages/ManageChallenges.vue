@@ -44,57 +44,59 @@ onMounted(loadChallenges);
 </script>
 
 <template>
-  <v-card class="d-flex align-center justify-space-between mb-4" variant="text">
-    <v-card-title class="text-h5 font-weight-bold px-0">Challenges</v-card-title>
-    <v-card-actions class="pa-0">
-      <v-btn variant="text" :loading="isLoading" @click="loadChallenges">Refresh</v-btn>
-    </v-card-actions>
-  </v-card>
+  <v-container>
+    <v-card class="d-flex align-center justify-space-between mb-4" variant="text">
+      <v-card-title class="text-h5 font-weight-bold px-0">Challenges</v-card-title>
+      <v-card-actions class="pa-0">
+        <v-btn variant="text" :loading="isLoading" @click="loadChallenges">Refresh</v-btn>
+      </v-card-actions>
+    </v-card>
 
-  <v-alert
-    v-if="loadError"
-    title="Could not load challenges"
-    :text="loadError"
-    type="error"
-    variant="tonal"
-    class="mb-4"
-  />
+    <v-alert
+      v-if="loadError"
+      title="Could not load challenges"
+      :text="loadError"
+      type="error"
+      variant="tonal"
+      class="mb-4"
+    />
 
-  <v-container v-if="isLoading" class="d-flex justify-center pa-8">
-    <v-progress-circular indeterminate color="primary" />
+    <v-container v-if="isLoading" class="d-flex justify-center pa-8">
+      <v-progress-circular indeterminate color="primary" />
+    </v-container>
+
+    <v-alert
+      v-else-if="challenges.length === 0"
+      text="No challenges have been created yet."
+      type="info"
+      variant="tonal"
+    />
+
+    <v-row v-else>
+      <v-col v-for="challenge in challenges" :key="challenge.id" cols="12" md="6">
+        <v-card class="h-100" variant="outlined">
+          <v-card-title class="d-flex align-center justify-space-between">
+            {{ challenge.name }}
+            <v-chip size="small" color="primary">
+              {{ formatChallengeValue(challenge.difficulty) }}
+            </v-chip>
+          </v-card-title>
+          <v-card-subtitle>{{ formatChallengeValue(challenge.category) }}</v-card-subtitle>
+          <v-card-text>{{ challenge.description }}</v-card-text>
+          <v-container>
+            <v-list class="d-flex">
+              <v-list-item class="flex-none">
+                <v-btn color="primary">View Details</v-btn>
+              </v-list-item>
+              <v-list-item class="flex-none">
+                <v-btn color="red">Delete Challenge</v-btn>
+              </v-list-item>
+            </v-list>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
-
-  <v-alert
-    v-else-if="challenges.length === 0"
-    text="No challenges have been created yet."
-    type="info"
-    variant="tonal"
-  />
-
-  <v-row v-else>
-    <v-col v-for="challenge in challenges" :key="challenge.id" cols="12" md="6">
-      <v-card class="h-100" variant="outlined">
-        <v-card-title class="d-flex align-center justify-space-between">
-          {{ challenge.name }}
-          <v-chip size="small" color="primary">
-            {{ formatChallengeValue(challenge.difficulty) }}
-          </v-chip>
-        </v-card-title>
-        <v-card-subtitle>{{ formatChallengeValue(challenge.category) }}</v-card-subtitle>
-        <v-card-text>{{ challenge.description }}</v-card-text>
-        <v-container>
-          <v-list class="d-flex">
-            <v-list-item class="flex-none">
-              <v-btn color="primary">View Details</v-btn>
-            </v-list-item>
-            <v-list-item class="flex-none">
-              <v-btn color="red">Delete Challenge</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-container>
-      </v-card>
-    </v-col>
-  </v-row>
 </template>
 
 <style scoped></style>
