@@ -80,7 +80,8 @@ export const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/AdminLogin',
+    path: '/admin/AdminLogin',
+    alias: '/AdminLogin',
     name: 'admin login',
     component: AdminLogin,
   }

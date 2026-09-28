@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { isAdmin } from "@/authenticator/auth";
 
 const router = useRouter();
 const adminUserName = ref("");
 const adminPassword = ref("");
 const loginError = ref("");
+
 
 async function AdminSignIn(){
   const response = await fetch("http://localhost:8082/api/admin/login", {
@@ -21,7 +23,10 @@ async function AdminSignIn(){
   }
 
   await router.push({ name: "adminLoginConfirmed" });
+  isAdmin.value = true;
+
 }
+
 
 </script>
 
