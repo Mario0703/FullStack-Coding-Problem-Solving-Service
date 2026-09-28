@@ -3,8 +3,11 @@ package minicode.com.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import minicode.com.entity.AdminUser;
 import minicode.com.entity.User;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.AdminRepo;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,17 +17,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/auth/me")
+@RequestMapping("/api/auth")
 public class AuthenticatorUserAcrossTabs {
 
 
     private final UserRepo userRepo;
+    private final AdminRepo adminUserRepo;
 
-    public AuthenticatorUserAcrossTabs(UserRepo userRepo) {
+    public AuthenticatorUserAcrossTabs(UserRepo userRepo, AdminRepo adminUserRepo) {
+        this.adminUserRepo = adminUserRepo;
         this.userRepo = userRepo;
     }
 
-    @GetMapping
+    @GetMapping("/me")
     public User authenticateUserAcrossTabs(HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
         if(session == null){
@@ -37,6 +42,12 @@ public class AuthenticatorUserAcrossTabs {
         }
         UUID userId = (UUID) session.getAttribute("user_id");
         if(userId == null){
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "User access is not permitted for an admin session"
+                );
+            }
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
@@ -52,6 +63,40 @@ public class AuthenticatorUserAcrossTabs {
         }
 
         return user.get();
+    }
+
+    @GetMapping("/admin")
+    private void checkIfAdmin(HttpSession session) {
+        if (session == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Authentication required"
+            );
+        }
+
+        Object adminId = session.getAttribute("admin_user_id");
+
+        if (adminId instanceof UUID) {
+            if (adminUserRepo.findById((UUID) adminId).isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Admin is not authenticated"
+                );
+            }
+            return;
+        }
+
+        if (session.getAttribute("user_id") != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Admin access required"
+            );
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Authentication required"
+        );
     }
 
 

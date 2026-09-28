@@ -173,8 +173,8 @@ public class UserService {
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password is incorrect"
+                        HttpStatus.UNAUTHORIZED,
+                        "Password is incorrect"
             );
         }
 
@@ -185,8 +185,8 @@ public class UserService {
         Optional<User> userByEmail = userRepo.findFirstByEmail(email);
         if (!userByEmail.isPresent()) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email does not exist"
+                        HttpStatus.UNAUTHORIZED,
+                        "Email does not exist"
             );
         }
 
@@ -209,8 +209,8 @@ public class UserService {
         Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
         if (!userByUserName.isPresent()) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Username does not exist"
+                        HttpStatus.UNAUTHORIZED,
+                        "Username does not exist"
             );
         }
 

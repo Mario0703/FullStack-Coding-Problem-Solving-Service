@@ -167,6 +167,9 @@ public class CodeController {
 
         Object userId = session.getAttribute("user_id");
         if (!(userId instanceof UUID)) {
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
+            }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
         }
 
