@@ -8,8 +8,8 @@ import UserPage from '@/components/user/UserPage.vue'
 import ForgotPassword from '@/components/user/ForgotPassword.vue'
 import AdminDashBoard from '@/components/AdminPages/AdminDashBoard.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
-import AdminLogin from '@/components/AdminPages/Admin/AdminLogin.vue'
-import AdminLoginConfirmed from '@/components/AdminPages/Admin/AdminLoginConfirmed.vue'
+import AdminLogin from '@/components/AdminPages/AdminLogin/AdminLogin.vue'
+import AdminLoginConfirmed from '@/components/AdminPages/AdminLogin/AdminLoginConfirmed.vue'
 import ViewSubmission from "@/components/user/ViewSubmission.vue";
 
 export const routes = [
