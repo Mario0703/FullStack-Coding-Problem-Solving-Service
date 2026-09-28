@@ -12,6 +12,14 @@ import java.util.UUID;
 @Setter
 public class AdminUser {
 
+    public AdminUser(String adminUserName, String adminPassword) {
+        this.adminUserName = adminUserName;
+        this.adminPassword = adminPassword;
+
+    }
+    protected AdminUser() {
+    }
+
     private String adminUserName;
     private String adminPassword;
     @Id
