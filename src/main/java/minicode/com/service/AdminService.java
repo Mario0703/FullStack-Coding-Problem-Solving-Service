@@ -2,10 +2,8 @@ package minicode.com.service;
 
 import jakarta.annotation.PostConstruct;
 import minicode.com.dto.AdminLoginRequest;
-import minicode.com.dto.AdminSignUpRequest;
 import minicode.com.entity.AdminUser;
 import minicode.com.repository.AdminRepo;
-import minicode.com.repository.UserRepo;
 import minicode.com.security.BcryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
