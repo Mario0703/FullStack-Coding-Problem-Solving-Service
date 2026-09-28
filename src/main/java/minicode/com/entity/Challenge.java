@@ -33,6 +33,9 @@ public class Challenge {
     @Column(name = "number_of_test_cases", nullable = false, columnDefinition = "integer default 0")
     private int numberOfTestCases;
 
+    @OneToMany(mappedBy="challenge", cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private java.util.List<Submission> testCases;
+
     public Challenge(
             String name,
             String description,

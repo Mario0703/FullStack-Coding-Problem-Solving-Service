@@ -7,6 +7,8 @@ import minicode.com.entity.Difficulty;
 import minicode.com.repository.ChallengeRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ChallengeService {
     private final ChallengeRepo challengeRepo;
@@ -35,6 +37,12 @@ public class ChallengeService {
         );
 
         return challengeRepo.save(challenge);
+    }
+
+    public void deleteChallenge(UUID challengeid) {
+        Challenge challenge = challengeRepo.findById(challengeid)
+                .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeid));
+        challengeRepo.deleteById(challenge.getId());
     }
 
 

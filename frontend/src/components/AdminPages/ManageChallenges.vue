@@ -40,7 +40,30 @@ watch(
   },
 );
 
+
 onMounted(loadChallenges);
+
+async function deleteChallenge(challengeId: string) {
+  try {
+    const response = await fetch(
+      `http://localhost:8082/api/challenge/delete?challengeId=${encodeURIComponent(challengeId)}`,
+      {
+        method: 'DELETE',
+        credentials: 'include',
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to delete challenge');
+    }
+
+    challenges.value = challenges.value.filter(({ id }) => id !== challengeId);
+  } catch {
+    loadError.value = 'Unable to delete challenge. Please try again.';
+  }
+}
+
+
 </script>
 
 <template>
@@ -89,7 +112,7 @@ onMounted(loadChallenges);
                 <v-btn color="primary">View Details</v-btn>
               </v-list-item>
               <v-list-item class="flex-none">
-                <v-btn color="red">Delete Challenge</v-btn>
+                <v-btn @click="deleteChallenge(challenge.id)" color="red">Delete Challenge</v-btn>
               </v-list-item>
             </v-list>
           </v-container>

@@ -157,5 +157,11 @@ public class ChallengeController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public void deleteChallenge(@RequestParam UUID challengeId, HttpSession session) {
+        checkIfAdmin(session);
+        challangeService.deleteChallenge(challengeId);
+    }
+
 
 }

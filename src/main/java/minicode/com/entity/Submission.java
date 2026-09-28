@@ -1,12 +1,17 @@
 package minicode.com.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 @Table(
         name = "submissions",
         indexes = {
@@ -26,6 +31,7 @@ public class Submission {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "challenge_id", nullable = false)
+    @JsonIgnore
     private Challenge challenge;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -45,14 +51,6 @@ public class Submission {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    public int getTestCasesPassed() {
-        return testCasesPassed;
-    }
-
-    public int getTestCasesFailed() {
-        return testCasesFailed;
-    }
-
     @Column(updatable = false)
     private int testCasesPassed;
 
@@ -62,13 +60,6 @@ public class Submission {
     protected Submission() {
     }
 
-    public UUID getId() { return id; }
-    public Challenge getChallenge() { return challenge; }
-    public String getCode() { return code; }
-    public String getLanguage() { return language; }
-    public int getExitCode() { return exitCode; }
-    public SubmissionStatus getStatus() { return status; }
-    public Instant getCreatedAt() { return createdAt; }
 
     public Submission(
             User user,
