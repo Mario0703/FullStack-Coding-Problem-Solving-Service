@@ -52,11 +52,13 @@ export async function loadCurrentAdmin(): Promise<void> {
   }
 }
 
-export function isAdminAuthenticated(): boolean {
-  if (!loadCurrentAdmin) {
+export async function isAdminAuthenticated(): Promise<boolean> {
+  try {
+    await loadCurrentAdmin();
+    return true;
+  } catch {
     return false;
   }
-  return true;
 }
 
 

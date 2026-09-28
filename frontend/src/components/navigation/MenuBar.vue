@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import {currentUser, isAdminAuthenticated} from "@/authenticator/auth";
+import { onMounted, ref } from "vue";
+import { currentUser, isAdminAuthenticated } from "@/authenticator/auth";
+
+const isAdmin = ref(false);
+
+onMounted(async () => {
+  isAdmin.value = await isAdminAuthenticated();
+});
 </script>
 
 <template>
@@ -19,7 +26,7 @@ import {currentUser, isAdminAuthenticated} from "@/authenticator/auth";
     <v-btn v-if="currentUser" color="white" variant="text" :to="{ name: 'user' }">
       View Profile
     </v-btn>
-    <v-btn v-on="isAdminAuthenticated()" color="white" variant="text" :to="{ name: 'adminDashboard' }">
+    <v-btn v-if="isAdmin" color="white" variant="text" :to="{ name: 'adminDashboard' }">
       Admin dashboard
     </v-btn>
   </v-app-bar>
