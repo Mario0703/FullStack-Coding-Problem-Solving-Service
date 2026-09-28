@@ -30,6 +30,10 @@ public class ChallengeController {
         this.adminRepo = adminRepo;
     }
 
+    @GetMapping("/list")
+    public Iterable<Challenge> listPublicChallenges() {
+        return challangeService.listChallenges();
+    }
 
 
     @GetMapping("/ListChallanges")

@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import AddChallange from "@/components/AdminPages/AddChallange.vue";
 import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
-import { listChallenges } from "@/utils/ChallangeUtil";
+import { listAdminChallenges } from "@/utils/ChallangeUtil";
 
 
 const challenges = ref<Challenge[]>([]);
@@ -15,7 +15,7 @@ async function loadChallenges() {
   isLoading.value = true;
 
   try {
-    challenges.value = await listChallenges();
+    challenges.value = await listAdminChallenges();
   } catch {
     loadError.value = "Unable to load challenges. Please try again later.";
   } finally {
