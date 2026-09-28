@@ -42,6 +42,12 @@ public class AuthenticatorUserAcrossTabs {
         }
         UUID userId = (UUID) session.getAttribute("user_id");
         if(userId == null){
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "User access is not permitted for an admin session"
+                );
+            }
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"

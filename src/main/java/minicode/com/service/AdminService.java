@@ -5,7 +5,9 @@ import minicode.com.dto.AdminLoginRequest;
 import minicode.com.entity.AdminUser;
 import minicode.com.repository.AdminRepo;
 import minicode.com.security.BcryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminService {
@@ -21,15 +23,15 @@ public class AdminService {
 
 
         if (adminUserName.isBlank() || adminPassword.isBlank()) {
-            throw new IllegalArgumentException("Admin Username and Password cannot be blank");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin Username and Password cannot be blank");
         }
 
         AdminUser adminUser = adminRepo.findByAdminUserName(adminUserName)
-                .orElseThrow(() -> new IllegalArgumentException("Admin user not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin user not found"));
 
         BcryptPasswordEncoder bcryptEncrypter = new BcryptPasswordEncoder();
         if (!bcryptEncrypter.matches(adminPassword, adminUser.getAdminPassword())) {
-            throw new IllegalArgumentException("Invalid password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
         return adminUser;

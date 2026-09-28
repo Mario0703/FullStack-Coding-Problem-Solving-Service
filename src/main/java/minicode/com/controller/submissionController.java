@@ -26,7 +26,16 @@ public class submissionController {
     @Transactional(readOnly = true)
     public List<SubmissionResponse> listUserSubmissions(HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
-        if (session == null || session.getAttribute("user_id") == null) {
+        if (session == null) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
+        if (!(session.getAttribute("user_id") instanceof UUID)) {
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "User access is not permitted for an admin session"
+                );
+            }
             throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
         }
 
@@ -84,12 +93,25 @@ public class submissionController {
 
     private UUID authenticatedUserId(HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
-        if (session == null || session.getAttribute("user_id") == null) {
+        if (session == null) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User not logged in"
             );
         }
-        return (UUID) session.getAttribute("user_id");
+        Object userId = session.getAttribute("user_id");
+        if (!(userId instanceof UUID)) {
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "User access is not permitted for an admin session"
+                );
+            }
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "User not logged in"
+            );
+        }
+        return (UUID) userId;
     }
 }

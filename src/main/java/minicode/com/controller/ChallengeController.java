@@ -136,14 +136,14 @@ public class ChallengeController {
 
     private void checkIfAdmin(HttpSession session) {
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        UUID adminUserId = (UUID) session.getAttribute("admin_user_id");
         if (session.getAttribute("user_id") != null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
-        if(adminUserId == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        Object adminUserId = session.getAttribute("admin_user_id");
+        if (!(adminUserId instanceof UUID)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
     }
 

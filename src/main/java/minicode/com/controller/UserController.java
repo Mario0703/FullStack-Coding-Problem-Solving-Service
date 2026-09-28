@@ -90,6 +90,12 @@ public class UserController {
 
         Object userId = session.getAttribute("user_id");
         if (!(userId instanceof UUID)) {
+            if (session.getAttribute("admin_user_id") != null) {
+                throw new ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "User access is not permitted for an admin session"
+                );
+            }
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
