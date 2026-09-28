@@ -7,6 +7,7 @@ import minicode.com.entity.AdminUser;
 import minicode.com.entity.User;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.AdminRepo;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,22 +60,31 @@ public class AuthenticatorUserAcrossTabs {
     }
 
     @GetMapping("/admin")
-    public AdminUser authenticateAdminUserAcrossTabs(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        UUID adminUserId = session == null ? null : (UUID) session.getAttribute("admin_user_id");
-
-        if (adminUserId == null) {
+    private void checkIfAdmin(HttpSession session) {
+        if (session == null) {
             throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "Admin User is not authenticated"
+                    HttpStatus.UNAUTHORIZED,
+                    "Authentication required"
             );
         }
 
-        return adminUserRepo.findById(adminUserId).orElseThrow(() ->
-                new ResponseStatusException(
-                        org.springframework.http.HttpStatus.UNAUTHORIZED,
-                        "Admin User is not authenticated"
-                ));
+        Object adminId = session.getAttribute("admin_user_id");
+
+        if (adminId instanceof UUID) {
+            return;
+        }
+
+        if (session.getAttribute("user_id") != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Admin access required"
+            );
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Authentication required"
+        );
     }
 
 

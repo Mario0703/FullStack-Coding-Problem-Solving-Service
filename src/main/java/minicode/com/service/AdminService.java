@@ -19,7 +19,6 @@ public class AdminService {
         String adminUserName = adminSignUpRequest.getAdminUserName();
         String adminPassword = adminSignUpRequest.getAdminPassword();
 
-        // Perform login logic here
 
         if (adminUserName.isBlank() || adminPassword.isBlank()) {
             throw new IllegalArgumentException("Admin Username and Password cannot be blank");
