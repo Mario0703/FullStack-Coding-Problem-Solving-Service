@@ -30,7 +30,8 @@ public class ChallengeController {
 
 
     @GetMapping("/ListChallanges")
-    public Iterable<Challenge> listChallenges() {
+    public Iterable<Challenge> listChallenges(HttpSession session) {
+        checkIfAdmin(session);
         return challangeService.listChallenges();
     }
 
@@ -65,7 +66,8 @@ public class ChallengeController {
     }
 
     @PostMapping("/create")
-    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request) {
+    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, HttpSession session) {
+        checkIfAdmin(session);
         Challenge challenge = challangeService.createChallenge(request);
         UUID challengeId = challenge.getId();
         File challengeFolder = new File("CodeEnv/Challenges/" + challengeId);
@@ -132,10 +134,8 @@ public class ChallengeController {
         return challenge;
     }
 
-    @GetMapping
-    private void CheckIfAdmin(HttpSession session) {
-        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-        if (isAdmin == null || !isAdmin) {
+    private void checkIfAdmin(HttpSession session) {
+        if (session == null || !(session.getAttribute("admin_user_id") instanceof UUID)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
     }

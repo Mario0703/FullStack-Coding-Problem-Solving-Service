@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { currentUser } from "@/authenticator/auth";
+import {currentUser, isAdminAuthenticated} from "@/authenticator/auth";
 </script>
 
 <template>
@@ -19,7 +19,7 @@ import { currentUser } from "@/authenticator/auth";
     <v-btn v-if="currentUser" color="white" variant="text" :to="{ name: 'user' }">
       View Profile
     </v-btn>
-    <v-btn v-if="currentUser" color="white" variant="text" :to="{ name: 'adminDashboard' }">
+    <v-btn v-on="isAdminAuthenticated()" color="white" variant="text" :to="{ name: 'adminDashboard' }">
       Admin dashboard
     </v-btn>
   </v-app-bar>

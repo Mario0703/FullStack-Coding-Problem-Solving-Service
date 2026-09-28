@@ -42,6 +42,24 @@ export async function loadCurrentUser(): Promise<UserData | null> {
   }
 }
 
+export async function loadCurrentAdmin(): Promise<void> {
+  const response = await fetch("http://localhost:8082/api/auth/admin", {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Admin is not authenticated");
+  }
+}
+
+export function isAdminAuthenticated(): boolean {
+  if (!loadCurrentAdmin) {
+    return false;
+  }
+  return true;
+}
+
+
 export function clearCurrentUser(): void {
   currentUser.value = null;
   hasCheckedUser.value = true;

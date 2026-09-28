@@ -58,7 +58,7 @@ export const routes = [
     path: '/admin/dashboard',
     name: 'adminDashboard',
     component: AdminDashBoard,
-    meta: { requiresAuth: true },
+    meta: { requiresAdmin: true },
   },
   {
     path: '/challenges/:id/solve',

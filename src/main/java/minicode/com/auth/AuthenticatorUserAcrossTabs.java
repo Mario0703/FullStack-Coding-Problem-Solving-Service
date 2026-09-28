@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/auth/me")
+@RequestMapping("/api/auth")
 public class AuthenticatorUserAcrossTabs {
 
 
@@ -28,7 +28,7 @@ public class AuthenticatorUserAcrossTabs {
         this.userRepo = userRepo;
     }
 
-    @GetMapping
+    @GetMapping("/me")
     public User authenticateUserAcrossTabs(HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
         if(session == null){
@@ -40,18 +40,6 @@ public class AuthenticatorUserAcrossTabs {
 
         }
         UUID userId = (UUID) session.getAttribute("user_id");
-        UUID adminUserId = (UUID) session.getAttribute("admin_user_id");
-
-        if(adminUserId != null){
-            Optional<AdminUser> adminUser = adminUserRepo.findById(adminUserId);
-            if(!adminUser.isPresent()){
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.UNAUTHORIZED,
-                        "Admin User is not authenticated"
-                );
-            }
-            return null;
-        }
         if(userId == null){
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
@@ -68,6 +56,25 @@ public class AuthenticatorUserAcrossTabs {
         }
 
         return user.get();
+    }
+
+    @GetMapping("/admin")
+    public AdminUser authenticateAdminUserAcrossTabs(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        UUID adminUserId = session == null ? null : (UUID) session.getAttribute("admin_user_id");
+
+        if (adminUserId == null) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "Admin User is not authenticated"
+            );
+        }
+
+        return adminUserRepo.findById(adminUserId).orElseThrow(() ->
+                new ResponseStatusException(
+                        org.springframework.http.HttpStatus.UNAUTHORIZED,
+                        "Admin User is not authenticated"
+                ));
     }
 
 

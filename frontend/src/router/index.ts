@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { currentUser, hasCheckedUser, loadCurrentUser } from '@/authenticator/auth'
+import { currentUser, hasCheckedUser, loadCurrentAdmin, loadCurrentUser } from '@/authenticator/auth'
 import {routes} from '@/router/rotes'
 
 const router = createRouter({
@@ -8,6 +8,15 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  if (to.meta.requiresAdmin) {
+    try {
+      await loadCurrentAdmin()
+      return true
+    } catch {
+      return { name: 'admin login' }
+    }
+  }
+
   if (!to.meta.requiresAuth) {
     return true
   }

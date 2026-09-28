@@ -1,12 +1,9 @@
 package minicode.com.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import minicode.com.dto.AdminLoginRequest;
-import minicode.com.dto.LoginRequest;
 import minicode.com.entity.AdminUser;
-import minicode.com.entity.User;
 import minicode.com.service.AdminService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +19,15 @@ public class AdminController {
         this.adminService = adminService;
     }
     @PostMapping("/login")
-    public AdminUser login(@Valid @RequestBody AdminLoginRequest request, HttpServletRequest httpRequest, HttpSession httpSession) {
-
-        HttpSession session = httpRequest.getSession(false);
+    public AdminUser login(@Valid @RequestBody AdminLoginRequest request, HttpServletRequest httpRequest) {
+        AdminUser admin = adminService.login(request);
+        var session = httpRequest.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-        session.setAttribute("admin_id", request.getAdminUserName());
 
-        return adminService.login(request);
+        session = httpRequest.getSession(true);
+        session.setAttribute("admin_user_id", admin.getAdminId());
+        return admin;
     }
 }
