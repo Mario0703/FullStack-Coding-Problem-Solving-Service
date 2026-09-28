@@ -6,6 +6,7 @@ import minicode.com.dto.CreateChallangeRequest;
 import minicode.com.dto.ChallengeTemplateResponse;
 import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
+import minicode.com.repository.AdminRepo;
 import minicode.com.service.ChallengeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,11 @@ import java.util.UUID;
 @RequestMapping("/api/challenge")
 public class ChallengeController {
     private final ChallengeService challangeService;
+    private final AdminRepo adminRepo;
 
-    public ChallengeController(ChallengeService challengeService) {
+    public ChallengeController(ChallengeService challengeService, AdminRepo adminRepo) {
         this.challangeService = challengeService;
+        this.adminRepo = adminRepo;
     }
 
 
@@ -144,6 +147,9 @@ public class ChallengeController {
         Object adminUserId = session.getAttribute("admin_user_id");
         if (!(adminUserId instanceof UUID)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+        if (adminRepo.findById((UUID) adminUserId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin is not authenticated");
         }
     }
 

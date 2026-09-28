@@ -77,6 +77,12 @@ public class AuthenticatorUserAcrossTabs {
         Object adminId = session.getAttribute("admin_user_id");
 
         if (adminId instanceof UUID) {
+            if (adminUserRepo.findById((UUID) adminId).isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Admin is not authenticated"
+                );
+            }
             return;
         }
 
