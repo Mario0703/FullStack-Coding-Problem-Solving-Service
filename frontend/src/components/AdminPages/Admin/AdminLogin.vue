@@ -20,7 +20,7 @@ async function AdminSignIn(){
     return;
   }
 
-  await router.push({ name: "adminDashboard" });
+  await router.push({ name: "adminLoginConfirmed" });
 }
 
 </script>

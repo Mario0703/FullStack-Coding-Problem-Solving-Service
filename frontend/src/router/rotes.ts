@@ -9,6 +9,7 @@ import ForgotPassword from '@/components/user/ForgotPassword.vue'
 import AdminDashBoard from '@/components/AdminPages/AdminDashBoard.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
 import AdminLogin from '@/components/AdminPages/Admin/AdminLogin.vue'
+import AdminLoginConfirmed from '@/components/AdminPages/Admin/AdminLoginConfirmed.vue'
 import ViewSubmission from "@/components/user/ViewSubmission.vue";
 
 export const routes = [
@@ -58,6 +59,12 @@ export const routes = [
     path: '/admin/dashboard',
     name: 'adminDashboard',
     component: AdminDashBoard,
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/admin/login-confirmed',
+    name: 'adminLoginConfirmed',
+    component: AdminLoginConfirmed,
     meta: { requiresAdmin: true },
   },
   {
