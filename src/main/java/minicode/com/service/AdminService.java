@@ -26,15 +26,15 @@ public class AdminService {
             throw new IllegalArgumentException("Admin Username and Password cannot be blank");
         }
 
-
-        AdminUser admin = adminRepo.findByAdminUserName(adminUserName)
+        AdminUser adminUser = adminRepo.findByAdminUserName(adminUserName)
                 .orElseThrow(() -> new IllegalArgumentException("Admin user not found"));
-        if (!admin.getAdminPassword().equals(adminPassword)) {
-            throw new IllegalArgumentException("Invalid admin password");
+
+        BcryptPasswordEncoder bcryptEncrypter = new BcryptPasswordEncoder();
+        if (!bcryptEncrypter.matches(adminPassword, adminUser.getAdminPassword())) {
+            throw new IllegalArgumentException("Invalid password");
         }
 
-        return admin;
-
+        return adminUser;
 
     }
 
