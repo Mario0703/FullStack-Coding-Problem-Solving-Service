@@ -32,6 +32,11 @@ build/
 ### VS Code ###
 .vscode/
 
+### Local environment secrets ###
+.env
+.env.*
+!.env.example
+
 ### Runtime challenge data ###
 # Created by the challenge and submission endpoints.
 /submissions/

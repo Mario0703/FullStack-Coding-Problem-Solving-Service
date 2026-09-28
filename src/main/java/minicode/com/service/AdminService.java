@@ -5,6 +5,7 @@ import minicode.com.dto.AdminLoginRequest;
 import minicode.com.entity.AdminUser;
 import minicode.com.repository.AdminRepo;
 import minicode.com.security.BcryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,9 +13,17 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class AdminService {
     private final AdminRepo adminRepo;
+    private final String startupAdminUsername;
+    private final String startupAdminPassword;
 
-    public AdminService(AdminRepo adminRepo) {
+    public AdminService(
+            AdminRepo adminRepo,
+            @Value("${ADMIN_USERNAME}") String startupAdminUsername,
+            @Value("${ADMIN_PASSWORD}") String startupAdminPassword
+    ) {
         this.adminRepo = adminRepo;
+        this.startupAdminUsername = startupAdminUsername;
+        this.startupAdminPassword = startupAdminPassword;
     }
 
     public AdminUser login(AdminLoginRequest adminSignUpRequest){
@@ -40,9 +49,7 @@ public class AdminService {
 
     @PostConstruct
     public void createAdminUserOnStartup() {
-        String adminUserName = "admin";
-        String adminPassword = "admin";
-        createAdminOnStartUp(adminUserName, adminPassword);
+        createAdminOnStartUp(startupAdminUsername, startupAdminPassword);
     }
 
     public void createAdminOnStartUp(String adminUserName, String adminPassword) {
