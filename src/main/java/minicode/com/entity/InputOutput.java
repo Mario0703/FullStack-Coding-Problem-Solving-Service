@@ -1,5 +1,6 @@
 package minicode.com.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class InputOutput {
     private String outputExample;
     @ManyToOne()
     @JoinColumn(name = "challenge_id", nullable = false)
+    @JsonIgnore
     private Challenge challenge;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

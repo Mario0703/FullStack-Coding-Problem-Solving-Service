@@ -10,6 +10,13 @@ const props = defineProps<{
 const challenges = ref<Challenge[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function viewChallangeDetails(challengeId: string) {
+  router.push(`/admin/challenge/${challengeId}`);
+}
 
 async function loadChallenges() {
   loadError.value = "";
@@ -109,7 +116,7 @@ async function deleteChallenge(challengeId: string) {
           <v-container>
             <v-list class="d-flex">
               <v-list-item class="flex-none">
-                <v-btn color="primary">View Details</v-btn>
+                <v-btn @click="viewChallangeDetails(challenge.id)" color="primary">View Details</v-btn>
               </v-list-item>
               <v-list-item class="flex-none">
                 <v-btn @click="deleteChallenge(challenge.id)" color="red">Delete Challenge</v-btn>

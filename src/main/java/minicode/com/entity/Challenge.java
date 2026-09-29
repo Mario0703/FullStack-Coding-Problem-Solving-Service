@@ -36,6 +36,7 @@ public class Challenge {
     private int numberOfTestCases;
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE, orphanRemoval = true)
+
     private List<Submission> submissions = new ArrayList<>();
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestCases> testCases = new ArrayList<>();

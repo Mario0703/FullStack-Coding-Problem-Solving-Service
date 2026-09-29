@@ -1,5 +1,6 @@
 package minicode.com.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,5 +22,6 @@ public class TestCases {
 
     @ManyToOne
     @JoinColumn(name = "challenge_id", nullable = false)
+    @JsonIgnore
     private Challenge challenge;
 }
