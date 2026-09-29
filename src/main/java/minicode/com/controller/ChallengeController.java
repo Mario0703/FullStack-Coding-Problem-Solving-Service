@@ -8,7 +8,6 @@ import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
 import minicode.com.repository.AdminRepo;
 import minicode.com.service.ChallengeService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -73,7 +72,7 @@ public class ChallengeController {
     }
 
     @PostMapping("/create")
-    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, HttpSession session) {
+    public Challenge createChallenge( @RequestBody CreateChallangeRequest request, HttpSession session) {
         checkIfAdmin(session);
         Challenge challenge = challangeService.createChallenge(request);
         UUID challengeId = challenge.getId();

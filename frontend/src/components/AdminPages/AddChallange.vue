@@ -160,7 +160,7 @@ async function createChallenge() {
           label="Number of test cases"
           :min="1"
           :max="50"
-          @update:model-value="createNumberOfSampels(testCases, $event, { input: '', output: '' })"
+          @update:model-value="createNumberOfSampels(testCases, $event, { input: '', expectedOutput: '' })"
           control-variant="default"
           required
           class="mb-4"
@@ -183,7 +183,7 @@ async function createChallenge() {
             class="mb-3"
           />
           <v-textarea
-            v-model="testCase.output"
+            v-model="testCase.expectedOutput"
             label="Expected output"
             placeholder="Enter the exact output the program should produce."
             rows="4"
@@ -195,15 +195,15 @@ async function createChallenge() {
           label="Number of examples"
           :min="0"
           :max="15"
-          v-model:="numberOfExamples"
-          @update:model-value="createNumberOfSampels(examples, $event, { input: '', output: '' })"
+          v-model="numberOfExamples"
+          @update:model-value="createNumberOfSampels(examples, $event, { inputExample: '', outputExample: '' })"
           control-variant="default"
           required
         />
         <v-card v-for="(example, index) in examples" :key="index" variant="tonal" class="mb-4 pa-4">
           <v-card-title class="px-0 pt-0 text-subtitle-1">Example {{ index + 1 }}</v-card-title>
-          <v-textarea v-model="example.input" label="Input" placeholder="Enter the exact contents passed to the user's program." rows="4" auto-grow :max-rows="10" class="mb-3" />
-          <v-textarea v-model="example.output" label="Expected output" placeholder="Enter the exact output the program should produce." rows="4" auto-grow :max-rows="10" />
+           <v-textarea v-model="example.inputExample" label="Input" placeholder="Enter the exact contents passed to the user's program." rows="4" auto-grow :max-rows="10" class="mb-3" />
+           <v-textarea v-model="example.outputExample" label="Expected output" placeholder="Enter the exact output the program should produce." rows="4" auto-grow :max-rows="10" />
         </v-card>
 
         <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">

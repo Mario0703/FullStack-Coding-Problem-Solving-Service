@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import { languageSetups } from '@/components/AdminPages/LanguageTemplet'
-import type { challangeForm, TestCase } from '@/components/AdminPages/LanguageType'
+import type { challangeForm, Example, TestCase } from '@/components/AdminPages/LanguageType'
 import type {
   ChallengeCategory,
   ChallengeDifficulty,
@@ -19,8 +19,8 @@ export function useChallengeForm() {
   const runner = ref('')
   const runnerExplanation = ref('')
   const numberOfTestCases = ref(1)
-  const testCases = ref<TestCase[]>([{ input: '', output: '' }])
-  const examples = ref<{ input: string; output: string }[]>([{ input: '', output: '' }])
+  const testCases = ref<TestCase[]>([{ input: '', expectedOutput: '' }])
+  const examples = ref<Example[]>([{ inputExample: '', outputExample: '' }])
   const numberOfExamples = ref(1)
 
   watch(language, (selectedLanguage) => {
@@ -45,14 +45,14 @@ export function useChallengeForm() {
     runner.value = ''
     runnerExplanation.value = ''
     numberOfTestCases.value = 1
-    testCases.value = [{ input: '', output: '' }]
-    examples.value = [{ input: '', output: '' }]
+    testCases.value = [{ input: '', expectedOutput: '' }]
+    examples.value = [{ inputExample: '', outputExample: '' }]
     numberOfExamples.value = 1
   }
 
-  function createNumberOfSampels(arr :{ input : string, output: string}[], newSize : number, defaultValue : { input : string, output: string}){
+  function createNumberOfSampels<T>(arr: T[], newSize: number, defaultValue: T) {
     while(newSize > arr.length)
-      arr.push(defaultValue);
+      arr.push({ ...defaultValue });
     arr.length = newSize;
   }
 
@@ -71,12 +71,12 @@ export function useChallengeForm() {
       language: language.value,
       testCases: testCases.value.map((testCase) => ({
         input: testCase.input.trim(),
-        output: testCase.output.trim(),
+        expectedOutput: testCase.expectedOutput.trim(),
       })),
       numberOfTestCases: testCases.value.length,
       examples: examples.value.map((example) => ({
-        input: example.input.trim(),
-        output: example.output.trim(),
+        inputExample: example.inputExample.trim(),
+        outputExample: example.outputExample.trim(),
       })),
       numberOfExamples: numberOfExamples.value,
     }

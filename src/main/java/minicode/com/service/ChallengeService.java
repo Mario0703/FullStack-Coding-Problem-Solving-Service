@@ -1,9 +1,9 @@
 package minicode.com.service;
 
 import minicode.com.dto.CreateChallangeRequest;
-import minicode.com.entity.Category;
-import minicode.com.entity.Challenge;
-import minicode.com.entity.Difficulty;
+import minicode.com.dto.CreateExamplesRequest;
+import minicode.com.dto.CreateTestCaseRequest;
+import minicode.com.entity.*;
 import minicode.com.repository.ChallengeRepo;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,6 @@ public class ChallengeService {
         Difficulty difficulty = request.getDifficulty();
         Category category = request.getCategory();
         int numberOfTestCases = request.getTestCases().size();
-
         Challenge challenge = new Challenge(
                 name,
                 description,
@@ -35,6 +34,22 @@ public class ChallengeService {
                 category,
                 numberOfTestCases
         );
+
+        for (CreateExamplesRequest example : request.getExamples()) {
+            InputOutput inputOutput = new InputOutput();
+            inputOutput.setInputExample(example.getInputExample());
+            inputOutput.setOutputExample(example.getOutputExample());
+            inputOutput.setChallenge(challenge);
+            challenge.getInputOutput().add(inputOutput);
+        }
+
+        for (CreateTestCaseRequest testCaseRequest : request.getTestCases()) {
+            TestCases testCases = new TestCases();
+            testCases.setTestInput(testCaseRequest.getInput());
+            testCases.setTestOutput(testCaseRequest.getExpectedOutput());
+            testCases.setChallenge(challenge);
+            challenge.getTestCases().add(testCases);
+        }
 
         return challengeRepo.save(challenge);
     }

@@ -51,4 +51,8 @@ public class CreateChallangeRequest {
     @NotEmpty(message = "At least one test case is required")
     @Valid
     private List<CreateTestCaseRequest> testCases;
+
+    @NotEmpty(message = "At least one example is required")
+    @Valid
+    private List<CreateExamplesRequest> examples;
 }

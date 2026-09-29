@@ -6,12 +6,12 @@ import type {
 
 export type TestCase = {
   input: string
-  output: string
+  expectedOutput: string
 }
 
 export type Example = {
-  input: string
-  output: string
+  inputExample: string
+  outputExample: string
 }
 
 export type LanguageSetup = {
