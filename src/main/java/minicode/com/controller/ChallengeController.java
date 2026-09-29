@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenge")
@@ -69,6 +70,24 @@ public class ChallengeController {
                     exception
             );
         }
+    }
+
+    @GetMapping("/{challengeId}/examples")
+    public List<minicode.com.entity.InputOutput> getChallengeExamples(
+            @PathVariable UUID challengeId,
+            HttpSession session
+    ) {
+        checkIfAdmin(session);
+        return challangeService.getChallengeExamples(challengeId);
+    }
+
+    @GetMapping("/{challengeId}/test-cases")
+    public List<minicode.com.entity.TestCases> getChallengeTestCases(
+            @PathVariable UUID challengeId,
+            HttpSession session
+    ) {
+        checkIfAdmin(session);
+        return challangeService.getChallengeTestCases(challengeId);
     }
 
     @PostMapping("/create")

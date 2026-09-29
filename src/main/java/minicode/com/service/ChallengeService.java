@@ -7,6 +7,7 @@ import minicode.com.entity.*;
 import minicode.com.repository.ChallengeRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,6 +20,16 @@ public class ChallengeService {
 
     public Iterable<Challenge> listChallenges() {
         return challengeRepo.findAll();
+    }
+
+    public List<InputOutput> getChallengeExamples(UUID challengeId) {
+        Challenge challenge = getChallenge(challengeId);
+        return challenge.getInputOutput();
+    }
+
+    public List<TestCases> getChallengeTestCases(UUID challengeId) {
+        Challenge challenge = getChallenge(challengeId);
+        return challenge.getTestCases();
     }
 
     public Challenge createChallenge(CreateChallangeRequest request) {
@@ -58,6 +69,11 @@ public class ChallengeService {
         Challenge challenge = challengeRepo.findById(challengeid)
                 .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeid));
         challengeRepo.deleteById(challenge.getId());
+    }
+
+    private Challenge getChallenge(UUID challengeId) {
+        return challengeRepo.findById(challengeId)
+                .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeId));
     }
 
 
