@@ -19,7 +19,9 @@ export function useChallengeForm() {
   const runner = ref('')
   const runnerExplanation = ref('')
   const numberOfTestCases = ref(1)
-  const testCases = ref<TestCase[]>([{ input: '', expectedOutput: '' }])
+  const testCases = ref<TestCase[]>([{ input: '', output: '' }])
+  const examples = ref<{ input: string; output: string }[]>([{ input: '', output: '' }])
+  const numberOfExamples = ref(1)
 
   watch(language, (selectedLanguage) => {
     if (selectedLanguage) {
@@ -43,16 +45,17 @@ export function useChallengeForm() {
     runner.value = ''
     runnerExplanation.value = ''
     numberOfTestCases.value = 1
-    testCases.value = [{ input: '', expectedOutput: '' }]
+    testCases.value = [{ input: '', output: '' }]
+    examples.value = [{ input: '', output: '' }]
+    numberOfExamples.value = 1
   }
 
-  function resizeTestCases(count: number | null) {
-    const nextCount = Math.max(0, count ?? 0)
-    testCases.value = Array.from(
-      { length: nextCount },
-      (_, index) => testCases.value[index] ?? { input: '', expectedOutput: '' },
-    )
+  function createNumberOfSampels(arr :{ input : string, output: string}[], newSize : number, defaultValue : { input : string, output: string}){
+    while(newSize > arr.length)
+      arr.push(defaultValue);
+    arr.length = newSize;
   }
+
 
   function toChallengeForm(): challangeForm {
     return {
@@ -68,9 +71,14 @@ export function useChallengeForm() {
       language: language.value,
       testCases: testCases.value.map((testCase) => ({
         input: testCase.input.trim(),
-        expectedOutput: testCase.expectedOutput.trim(),
+        output: testCase.output.trim(),
       })),
       numberOfTestCases: testCases.value.length,
+      examples: examples.value.map((example) => ({
+        input: example.input.trim(),
+        output: example.output.trim(),
+      })),
+      numberOfExamples: numberOfExamples.value,
     }
   }
 
@@ -88,7 +96,9 @@ export function useChallengeForm() {
     numberOfTestCases,
     testCases,
     resetForm,
-    resizeTestCases,
     toChallengeForm,
+    examples,
+    numberOfExamples,
+    createNumberOfSampels
   }
 }

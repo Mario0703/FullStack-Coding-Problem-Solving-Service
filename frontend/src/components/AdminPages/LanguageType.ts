@@ -6,7 +6,12 @@ import type {
 
 export type TestCase = {
   input: string
-  expectedOutput: string
+  output: string
+}
+
+export type Example = {
+  input: string
+  output: string
 }
 
 export type LanguageSetup = {
@@ -29,4 +34,6 @@ export type challangeForm = {
   runnerExplanation: string
   testCases: TestCase[]
   numberOfTestCases: number
+  examples: Example[]
+  numberOfExamples: number
 }
