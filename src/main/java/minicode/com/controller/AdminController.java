@@ -30,4 +30,12 @@ public class AdminController {
         session.setAttribute("admin_user_id", admin.getAdminId());
         return admin;
     }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest httpRequest) {
+        var session = httpRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
 }
