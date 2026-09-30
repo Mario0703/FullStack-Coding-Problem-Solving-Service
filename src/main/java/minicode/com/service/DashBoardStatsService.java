@@ -3,6 +3,7 @@ package minicode.com.service;
 import minicode.com.entity.Submission;
 import minicode.com.entity.SubmissionStatus;
 import minicode.com.entity.User;
+import minicode.com.dto.AdminUserStatistics;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DashBoardStatsService {
@@ -73,6 +75,21 @@ public class DashBoardStatsService {
         statistics.put("numberOfSubmittedSolutions", getNumberOfSubmittedSolutions());
         statistics.put("numberOfSolvedChallenges", getNumberOfSolvedChallenges());
         return statistics;
+    }
+
+    public List<AdminUserStatistics> getUserStatistics() {
+        return userRepository.findAll().stream()
+                .map(user -> new AdminUserStatistics(
+                        user.getUserId(),
+                        user.getUserName(),
+                        user.getEmail(),
+                        submissionRepository.countByUser_UserId(user.getUserId()),
+                        submissionRepository.countDistinctChallengesByUserIdAndStatus(
+                                user.getUserId(),
+                                SubmissionStatus.ACCEPTED
+                        )
+                ))
+                .collect(Collectors.toList());
     }
 
 

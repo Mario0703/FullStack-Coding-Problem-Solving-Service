@@ -15,6 +15,19 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
 
     List<Submission> findAllByUser_UserId(UUID userId);
 
+    long countByUser_UserId(UUID userId);
+
+    @Query("""
+            SELECT COUNT(DISTINCT submission.challenge.id)
+            FROM Submission submission
+            WHERE submission.user.userId = :userId
+              AND submission.status = :status
+            """)
+    long countDistinctChallengesByUserIdAndStatus(
+            @Param("userId") UUID userId,
+            @Param("status") SubmissionStatus status
+    );
+
     @Query("""
             SELECT COUNT(DISTINCT submission.challenge.id)
             FROM Submission submission

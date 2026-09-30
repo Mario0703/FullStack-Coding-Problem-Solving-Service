@@ -1,6 +1,7 @@
 package minicode.com.controller;
 
 import jakarta.servlet.http.HttpSession;
+import minicode.com.dto.AdminUserStatistics;
 import minicode.com.service.DashBoardStatsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/stats")
@@ -30,6 +32,12 @@ public class DashBoardStatsController {
     public long getNumberOfUsers(HttpSession session) {
         requireAdmin(session);
         return statsService.getNumberOfUsers();
+    }
+
+    @GetMapping("/users/list")
+    public List<AdminUserStatistics> getUserStatistics(HttpSession session) {
+        requireAdmin(session);
+        return statsService.getUserStatistics();
     }
 
     @GetMapping("/challenges")
