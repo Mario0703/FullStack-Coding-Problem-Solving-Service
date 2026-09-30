@@ -7,10 +7,11 @@ import UserLoginConfirmed from '@/components/authentication/UserLoginConfirmed.v
 import UserPage from '@/components/user/UserPage.vue'
 import ForgotPassword from '@/components/user/ForgotPassword.vue'
 import AdminDashBoard from '@/components/AdminPages/AdminDashBoard.vue'
+import AdminDashBoardStats from '@/components/AdminPages/AdminDashBoardStats.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
 import AdminLogin from '@/components/AdminPages/AdminLogin/AdminLogin.vue'
 import AdminLoginConfirmed from '@/components/AdminPages/AdminLogin/AdminLoginConfirmed.vue'
-import ViewSubmission from "@/components/user/ViewSubmission.vue";
+import ViewSubmission from '@/components/user/ViewSubmission.vue'
 import ChallengeDetails from '@/components/AdminPages/ChallengeDetails.vue'
 
 export const routes = [
@@ -63,6 +64,12 @@ export const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/admin/stats',
+    name: 'adminDashboardStats',
+    component: AdminDashBoardStats,
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/admin/challenge/:id',
     name: 'adminChallengeDetails',
     component: ChallengeDetails,
@@ -91,5 +98,5 @@ export const routes = [
     alias: '/AdminLogin',
     name: 'admin login',
     component: AdminLogin,
-  }
-];
+  },
+]
