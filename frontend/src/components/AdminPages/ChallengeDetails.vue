@@ -1,25 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ChangeChallange from '@/components/AdminPages/ChangeChallange.vue'
 import { formatChallengeValue, type Challenge } from '@/utils/AdminUtils'
 import {
   getChallengeExamples,
   getChallengeTestCases,
   listAdminChallenges,
-  type ChallengeExample,
-  type ChallengeTestCase,
 } from '@/utils/ChallangeUtil'
 
-type ChallengeDetails = Challenge & {
-  numberOfTestCases: number
-  testCases: ChallengeTestCase[]
-  inputOutput: ChallengeExample[]
-}
-
 const route = useRoute()
-const challenge = ref<ChallengeDetails | null>(null)
+const challenge = ref<Challenge | null>(null)
 const isLoading = ref(true)
 const loadError = ref('')
+const editMode = ref(false)
 
 async function loadChallenge() {
   try {
@@ -32,7 +26,12 @@ async function loadChallenge() {
     const challengeSummary = challenges.find((item) => item.id === challengeId)
 
     challenge.value = challengeSummary
-      ? { ...challengeSummary, inputOutput: examples, testCases, numberOfTestCases: testCases.length }
+      ? {
+          ...challengeSummary,
+          inputOutput: examples,
+          testCases,
+          numberOfTestCases: testCases.length,
+        }
       : null
 
     if (!challenge.value) {
@@ -45,8 +44,11 @@ async function loadChallenge() {
   }
 }
 
-onMounted(loadChallenge)
+async function alterChallenge(updatedChallenge: Challenge) {
+  console.log('Updated challenge:', updatedChallenge)
+}
 
+onMounted(loadChallenge)
 </script>
 
 <template>
@@ -63,7 +65,7 @@ onMounted(loadChallenge)
       variant="tonal"
     />
 
-    <template v-else-if="challenge">
+    <template v-else-if="challenge && !editMode">
       <v-card variant="outlined" class="mb-6">
         <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
         <v-card-subtitle>
@@ -82,6 +84,7 @@ onMounted(loadChallenge)
             <v-list-item-subtitle class="mt-2">
               <strong>Input:</strong> {{ example.inputExample }}
             </v-list-item-subtitle>
+            <v-btn></v-btn>
             <v-list-item-subtitle>
               <strong>Output:</strong> {{ example.outputExample }}
             </v-list-item-subtitle>
@@ -104,13 +107,14 @@ onMounted(loadChallenge)
           </v-list-item>
         </v-list>
       </v-card>
-
+      <v-btn @click="editMode = true">Edit Challenge</v-btn>
       <v-btn to="/admin/dashboard" variant="text" class="mt-4">Back to dashboard</v-btn>
     </template>
+    <v-container v-else-if="editMode && challenge">
+      <ChangeChallange :current="challenge" @update="alterChallenge" />
+      <v-btn @click="editMode = false">Abort</v-btn>
+    </v-container>
   </v-container>
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
