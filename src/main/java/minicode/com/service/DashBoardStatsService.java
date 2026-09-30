@@ -66,6 +66,14 @@ public class DashBoardStatsService {
         return submissionRepository.countDistinctChallengesByStatus(SubmissionStatus.ACCEPTED);
     }
 
+    public Map<String, Long> getPlatformStatistics() {
+        Map<String, Long> statistics = new LinkedHashMap<>();
+        statistics.put("numberOfUsers", getNumberOfUsers());
+        statistics.put("numberOfChallenges", getNumberOfChallenges());
+        statistics.put("numberOfSubmittedSolutions", getNumberOfSubmittedSolutions());
+        statistics.put("numberOfSolvedChallenges", getNumberOfSolvedChallenges());
+        return statistics;
+    }
 
 
 }
