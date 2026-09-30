@@ -8,7 +8,6 @@ import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
 import minicode.com.repository.AdminRepo;
 import minicode.com.service.ChallengeService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +17,7 @@ import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenge")
@@ -72,8 +72,26 @@ public class ChallengeController {
         }
     }
 
+    @GetMapping("/{challengeId}/examples")
+    public List<minicode.com.entity.InputOutput> getChallengeExamples(
+            @PathVariable UUID challengeId,
+            HttpSession session
+    ) {
+        checkIfAdmin(session);
+        return challangeService.getChallengeExamples(challengeId);
+    }
+
+    @GetMapping("/{challengeId}/test-cases")
+    public List<minicode.com.entity.TestCases> getChallengeTestCases(
+            @PathVariable UUID challengeId,
+            HttpSession session
+    ) {
+        checkIfAdmin(session);
+        return challangeService.getChallengeTestCases(challengeId);
+    }
+
     @PostMapping("/create")
-    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, HttpSession session) {
+    public Challenge createChallenge( @RequestBody CreateChallangeRequest request, HttpSession session) {
         checkIfAdmin(session);
         Challenge challenge = challangeService.createChallenge(request);
         UUID challengeId = challenge.getId();
@@ -155,6 +173,12 @@ public class ChallengeController {
         if (adminRepo.findById((UUID) adminUserId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin is not authenticated");
         }
+    }
+
+    @DeleteMapping("/delete")
+    public void deleteChallenge(@RequestParam UUID challengeId, HttpSession session) {
+        checkIfAdmin(session);
+        challangeService.deleteChallenge(challengeId);
     }
 
 

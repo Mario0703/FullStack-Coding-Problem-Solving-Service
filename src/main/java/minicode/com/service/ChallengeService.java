@@ -1,11 +1,14 @@
 package minicode.com.service;
 
 import minicode.com.dto.CreateChallangeRequest;
-import minicode.com.entity.Category;
-import minicode.com.entity.Challenge;
-import minicode.com.entity.Difficulty;
+import minicode.com.dto.CreateExamplesRequest;
+import minicode.com.dto.CreateTestCaseRequest;
+import minicode.com.entity.*;
 import minicode.com.repository.ChallengeRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ChallengeService {
@@ -19,13 +22,22 @@ public class ChallengeService {
         return challengeRepo.findAll();
     }
 
+    public List<InputOutput> getChallengeExamples(UUID challengeId) {
+        Challenge challenge = getChallenge(challengeId);
+        return challenge.getInputOutput();
+    }
+
+    public List<TestCases> getChallengeTestCases(UUID challengeId) {
+        Challenge challenge = getChallenge(challengeId);
+        return challenge.getTestCases();
+    }
+
     public Challenge createChallenge(CreateChallangeRequest request) {
         String name = request.getName();
         String description = request.getDescription();
         Difficulty difficulty = request.getDifficulty();
         Category category = request.getCategory();
         int numberOfTestCases = request.getTestCases().size();
-
         Challenge challenge = new Challenge(
                 name,
                 description,
@@ -34,7 +46,34 @@ public class ChallengeService {
                 numberOfTestCases
         );
 
+        for (CreateExamplesRequest example : request.getExamples()) {
+            InputOutput inputOutput = new InputOutput();
+            inputOutput.setInputExample(example.getInputExample());
+            inputOutput.setOutputExample(example.getOutputExample());
+            inputOutput.setChallenge(challenge);
+            challenge.getInputOutput().add(inputOutput);
+        }
+
+        for (CreateTestCaseRequest testCaseRequest : request.getTestCases()) {
+            TestCases testCases = new TestCases();
+            testCases.setTestInput(testCaseRequest.getInput());
+            testCases.setTestOutput(testCaseRequest.getExpectedOutput());
+            testCases.setChallenge(challenge);
+            challenge.getTestCases().add(testCases);
+        }
+
         return challengeRepo.save(challenge);
+    }
+
+    public void deleteChallenge(UUID challengeid) {
+        Challenge challenge = challengeRepo.findById(challengeid)
+                .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeid));
+        challengeRepo.deleteById(challenge.getId());
+    }
+
+    private Challenge getChallenge(UUID challengeId) {
+        return challengeRepo.findById(challengeId)
+                .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeId));
     }
 
 

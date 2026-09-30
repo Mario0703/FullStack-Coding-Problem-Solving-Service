@@ -8,9 +8,10 @@ import UserPage from '@/components/user/UserPage.vue'
 import ForgotPassword from '@/components/user/ForgotPassword.vue'
 import AdminDashBoard from '@/components/AdminPages/AdminDashBoard.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
-import AdminLogin from '@/components/AdminPages/Admin/AdminLogin.vue'
-import AdminLoginConfirmed from '@/components/AdminPages/Admin/AdminLoginConfirmed.vue'
+import AdminLogin from '@/components/AdminPages/AdminLogin/AdminLogin.vue'
+import AdminLoginConfirmed from '@/components/AdminPages/AdminLogin/AdminLoginConfirmed.vue'
 import ViewSubmission from "@/components/user/ViewSubmission.vue";
+import ChallengeDetails from '@/components/AdminPages/ChallengeDetails.vue'
 
 export const routes = [
   {
@@ -59,6 +60,12 @@ export const routes = [
     path: '/admin/dashboard',
     name: 'adminDashboard',
     component: AdminDashBoard,
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/admin/challenge/:id',
+    name: 'adminChallengeDetails',
+    component: ChallengeDetails,
     meta: { requiresAdmin: true },
   },
   {
