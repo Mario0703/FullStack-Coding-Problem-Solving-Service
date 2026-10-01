@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { SubmitEventPromise } from 'vuetify'
-import { currentUser, type UserData } from '@/authenticator/auth'
+import { loadCurrentUser } from '@/authenticator/auth'
 import { getLoginValidationErrors } from '@/utils/UserInputCheck'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { baseUrl } from '@/utils/api'
@@ -55,7 +55,7 @@ async function login(_event: SubmitEventPromise) {
       return
     }
 
-    currentUser.value = (await response.json()) as UserData
+    await loadCurrentUser()
     await router.push({ name: 'loginConfirmed' })
   } catch {
     loginError.value = 'Unable to reach the server. Please try again later.'

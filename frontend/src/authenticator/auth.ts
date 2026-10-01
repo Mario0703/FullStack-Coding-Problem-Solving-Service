@@ -6,7 +6,7 @@ export type UserData = {
   userId: string;
   userName: string;
   email: string;
-  Role: string
+  role: string
 };
 
 export const currentUser = ref<UserData | null>(null);
@@ -27,6 +27,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
 
     if (response.status === 401) {
       currentUser.value = null;
+      currentRole.value = null;
       return null;
     }
 
@@ -35,6 +36,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
     }
 
     currentUser.value = await response.json();
+    currentRole.value = currentUser.value?.role ?? null;
     return currentUser.value;
   } catch (error) {
     currentUser.value = null;

@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { currentRole, currentUser, loadCurrentAdmin } from "@/authenticator/auth";
-
-
-onMounted(() => {
-  loadCurrentAdmin().catch(() => undefined);
-});
+import { currentRole, currentUser } from "@/authenticator/auth";
 </script>
 
 <template>
