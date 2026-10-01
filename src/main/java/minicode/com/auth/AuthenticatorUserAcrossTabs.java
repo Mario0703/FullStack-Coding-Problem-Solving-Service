@@ -27,7 +27,8 @@ public class AuthenticatorUserAcrossTabs {
 
     @GetMapping("/me")
     public userResponse authenticateUserAcrossTabs(Authentication authentication){
-        if (authentication == null || !authentication.isAuthenticated()) {
+        boolean isAuthenticatedValid = isAuthenticated(authentication);
+        if (!isAuthenticatedValid) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
@@ -57,7 +58,7 @@ public class AuthenticatorUserAcrossTabs {
 
     @GetMapping("/admin")
     public String checkIfAdmin(Authentication authentication) {
-        boolean isAuthenticatedValid = authentication != null && authentication.isAuthenticated();
+        boolean isAuthenticatedValid = isAuthenticated(authentication);
         if (!isAuthenticatedValid){
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -82,6 +83,10 @@ public class AuthenticatorUserAcrossTabs {
                 .filter(authority -> authority.startsWith("ROLE_"))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private Boolean isAuthenticated(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated();
     }
 
 

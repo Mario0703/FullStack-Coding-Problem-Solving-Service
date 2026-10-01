@@ -3,6 +3,7 @@ package minicode.com.controller;
 import minicode.com.dto.Admin.AdminUserStatistics;
 import minicode.com.service.Admin.DashBoardStatsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,7 @@ public class DashBoardStatsController {
     }
 
     @GetMapping("/users/list")
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public List<AdminUserStatistics> getUserStatistics(Authentication authentication) {
         requireAdmin(authentication);
         return statsService.getUserStatistics();
