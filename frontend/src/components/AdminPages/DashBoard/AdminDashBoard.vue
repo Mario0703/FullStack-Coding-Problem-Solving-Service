@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import AddChallange from '@/components/AdminPages/AddChallange.vue'
 import ManageChallenges from '@/components/AdminPages/ManageChallenges.vue'
-import AdminLogout from '@/components/AdminPages/AdminLogout.vue'
+import Logout from '@/components/authentication/Logout.vue'
 import type { Challenge } from '@/utils/AdminUtils'
 import { useRouter } from 'vue-router'
 import SuccessFeedback from '@/components/FeedBack/Succes.vue'
@@ -31,7 +31,7 @@ function goToStats() {
         <v-card-subtitle class="text-body-1 mt-2 px-0">
           Create and review coding challenges.
         </v-card-subtitle>
-        <AdminLogout class="mt-4" />
+        <Logout admin class="mt-4" />
       </v-card>
     </v-container>
 

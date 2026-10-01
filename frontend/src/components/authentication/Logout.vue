@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { clearCurrentUser } from '@/authenticator/auth'
+import { clearCurrentUser, isAdmin } from '@/authenticator/auth'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
-defineOptions({
-  name: 'UserLogout',
-})
+const props = withDefaults(
+  defineProps<{
+    admin?: boolean
+  }>(),
+  { admin: false },
+)
 
 const router = useRouter()
 const logoutError = ref('')
@@ -15,17 +18,21 @@ async function logout() {
   logoutError.value = ''
 
   try {
-    const response = await fetch('http://localhost:8082/api/user/logout', {
+    const response = await fetch(
+      `http://localhost:8082/api/${props.admin ? 'admin' : 'user'}/logout`,
+      {
       method: 'POST',
       credentials: 'include',
-    })
+      },
+    )
 
     if (!response.ok) {
       throw new Error('Logout failed')
     }
 
     clearCurrentUser()
-    await router.push({ name: 'login' })
+    isAdmin.value = false
+    await router.push({ name: props.admin ? 'admin login' : 'login' })
   } catch {
     logoutError.value = 'Unable to log out. Please try again.'
   }
