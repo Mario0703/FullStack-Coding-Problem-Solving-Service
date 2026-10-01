@@ -58,7 +58,9 @@ watch(
 )
 
 async function executeCode() {
-  if (!code.value.trim() || !language.value || !props.challengeId) {
+  const isCodeValid = code.value.trim() && language.value && props.challengeId
+
+  if (!isCodeValid) {
     output.value = 'Please load a challenge and enter code first.'
     return
   }
