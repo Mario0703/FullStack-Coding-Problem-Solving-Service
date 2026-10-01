@@ -39,6 +39,10 @@ const props = defineProps({
     type: Function as PropType<(event: SubmitEventPromise) => unknown>,
     required: true,
   },
+  width: {
+    type: [String, Number],
+    default: 400,
+  },
 })
 
 const emit = defineEmits<{
@@ -59,7 +63,7 @@ const emit = defineEmits<{
       class="mb-4"
     />
 
-    <v-form class="signup-form" @submit.prevent="props.login">
+    <v-form :style="{ width: `${props.width}px`, maxWidth: '100%' }" class="signup-form" @submit.prevent="props.login">
       <v-card-title class="text-h5 font-weight-bold px-0">{{ props.loginTitle }}</v-card-title>
 
       <v-switch

@@ -50,5 +50,6 @@ async function adminSignIn(_event: SubmitEventPromise) {
     :allow-email-login="false"
     v-model:name="adminUserName"
     v-model:password="adminPassword"
+    :width="300"
   />
 </template>
