@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 const route = useRoute()
 const submission = ref<any>(null)
@@ -31,7 +32,7 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <v-alert v-if="errorMessage" type="error" :text="errorMessage" />
+    <ErrorFeedback v-if="errorMessage" :message="errorMessage" />
 
     <v-card v-else-if="submission" class="border-lg" border="primary" variant="outlined">
       <v-card-title class="text-h5 font-weight-bold pa-6">

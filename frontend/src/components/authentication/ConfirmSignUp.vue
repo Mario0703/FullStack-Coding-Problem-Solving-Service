@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import SuccessFeedback from '@/components/FeedBack/Succes.vue'
 const router = useRouter()
 
 function SendUserToLogin() {
@@ -11,10 +12,9 @@ function SendUserToLogin() {
 <template>
   <v-container class="d-flex flex-column align-center justify-center h-screen">
     <v-card class="pa-4 text-center">
-      <v-alert
+      <SuccessFeedback
         title="You can now go on to solve challenges"
-        text="You have successfully made an account and are now signed in."
-        type="success"
+        message="You have successfully made an account and are now signed in."
       />
     </v-card>
 

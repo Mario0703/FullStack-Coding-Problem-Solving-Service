@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { currentUser } from '@/authenticator/auth'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import InfoFeedback from '@/components/FeedBack/info.vue'
 
 type ChallengeTemplateResponse = {
   language: string
@@ -131,10 +133,10 @@ async function executeCode() {
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-alert v-else-if="loadError" :text="loadError" type="error" variant="tonal" />
+    <ErrorFeedback v-else-if="loadError" :message="loadError" variant="tonal" />
 
     <template v-else>
-      <v-alert v-if="explanation" :text="explanation" type="info" variant="tonal" class="mb-4" />
+      <InfoFeedback v-if="explanation" :message="explanation" variant="tonal" class="mb-4" />
 
       <div class="d-flex flex-wrap align-center ga-2 mb-4">
         <span class="text-subtitle-1 font-weight-medium">Language:</span>

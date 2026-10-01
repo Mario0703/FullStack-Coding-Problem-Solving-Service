@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
 import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
 import { listAdminChallenges } from "@/utils/ChallangeUtil";
@@ -82,11 +84,10 @@ async function deleteChallenge(challengeId: string) {
       </v-card-actions>
     </v-card>
 
-    <v-alert
+    <ErrorFeedback
       v-if="loadError"
       title="Could not load challenges"
-      :text="loadError"
-      type="error"
+      :message="loadError"
       variant="tonal"
       class="mb-4"
     />
@@ -95,10 +96,9 @@ async function deleteChallenge(challengeId: string) {
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-alert
+    <InfoFeedback
       v-else-if="challenges.length === 0"
-      text="No challenges have been created yet."
-      type="info"
+      message="No challenges have been created yet."
       variant="tonal"
     />
 

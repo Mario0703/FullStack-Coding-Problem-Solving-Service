@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { currentUser, type UserData } from "@/authenticator/auth";
 import { getLoginValidationErrors } from "@/utils/UserInputCheck";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
 
 const router = useRouter();
 const email = ref("");
@@ -75,11 +76,10 @@ async function LogIn() {
 
 <template>
   <v-container class="d-flex align-center justify-center">
-    <v-alert
+    <ErrorFeedback
       v-if="loginError"
       title="Login failed"
-      :text="loginError"
-      type="error"
+      :message="loginError"
       variant="tonal"
       class="mb-4"
     />

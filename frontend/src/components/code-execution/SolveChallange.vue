@@ -5,6 +5,7 @@ import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
 import ChallangeSolv from '@/components/code-execution/ChallangeSolv.vue'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 const solvedBypeople = ref<string[]>([])
 solvedBypeople.value = ['Alice', 'Bob', 'Charlie'] // Example data, replace with actual data fetching logic
@@ -39,11 +40,10 @@ onMounted(loadChallenge)
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-alert
+    <ErrorFeedback
       v-else-if="loadError"
-      :text="loadError"
       title="Challenge unavailable"
-      type="error"
+      :message="loadError"
       variant="tonal"
     />
 

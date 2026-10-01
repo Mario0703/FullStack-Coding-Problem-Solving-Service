@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 type PlatformStatistics = {
   numberOfUsers: number
@@ -59,7 +60,7 @@ onMounted(loadStatistics)
   <v-container class="py-8">
     <v-card-title class="text-h4 font-weight-bold px-0 mb-4">Platform statistics</v-card-title>
 
-    <v-alert v-if="loadError" :text="loadError" type="error" variant="tonal" class="mb-4" />
+    <ErrorFeedback v-if="loadError" :message="loadError" variant="tonal" class="mb-4" />
 
     <v-row v-if="isLoading">
       <v-col cols="12" class="d-flex justify-center">

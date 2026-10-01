@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 const router = useRouter()
 const logoutError = ref('')
@@ -26,6 +27,6 @@ async function logout() {
 </script>
 
 <template>
-  <v-alert v-if="logoutError" type="error" :text="logoutError" />
+  <ErrorFeedback v-if="logoutError" :message="logoutError" />
   <v-btn color="red" @click="logout">Logout</v-btn>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import InfoFeedback from '@/components/FeedBack/info.vue'
 import { computed, onMounted, ref } from 'vue'
 import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
@@ -64,11 +66,10 @@ const filteredChallenges = computed(() =>
       </v-card-subtitle>
     </v-card>
 
-    <v-alert
+    <ErrorFeedback
       v-if="loadError"
       title="Could not load challenges"
-      :text="loadError"
-      type="error"
+      :message="loadError"
       variant="tonal"
       class="mb-4"
     />
@@ -77,10 +78,9 @@ const filteredChallenges = computed(() =>
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-alert
+    <InfoFeedback
       v-else-if="challenges.length === 0"
-      text="No challenges are available yet."
-      type="info"
+      message="No challenges are available yet."
       variant="tonal"
     />
 

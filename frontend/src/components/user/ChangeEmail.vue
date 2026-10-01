@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
 import { inputsMatch, isblank, isValidEmail } from "@/utils/UserInputCheck";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
 
 const emit = defineEmits<{ abort: [] }>();
 const newEmail = ref("");
@@ -60,8 +61,8 @@ function abortChange() {
 </script>
 
 <template>
-  <v-alert v-if="validationError" type="error" :text="validationError" />
-  <v-alert v-if="saveError" type="error" :text="saveError" />
+  <ErrorFeedback v-if="validationError" :message="validationError" />
+  <ErrorFeedback v-if="saveError" :message="saveError" />
 
   <v-form @submit.prevent="changeEmail">
     <v-text-field

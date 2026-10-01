@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { isAdmin } from "@/authenticator/auth";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
 
 const router = useRouter();
 const adminUserName = ref("");
@@ -32,7 +33,7 @@ async function AdminSignIn(){
 
 <template>
   <v-container class="d-flex align-center justify-center">
-    <v-alert v-if="loginError" :text="loginError" type="error" class="mb-4" />
+    <ErrorFeedback v-if="loginError" :message="loginError" class="mb-4" />
     <v-form @submit.prevent="AdminSignIn" class="elevation-12 pa-6" style="max-width: 400px; width: 100%;">
       <v-text-field
         v-model="adminUserName"

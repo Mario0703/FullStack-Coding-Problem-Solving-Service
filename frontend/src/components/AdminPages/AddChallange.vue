@@ -9,6 +9,7 @@ import {
   languageOptions,
   type Challenge,
 } from '@/utils/AdminUtils'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 const emit = defineEmits<{
   created: [challenge: Challenge]
@@ -72,11 +73,10 @@ async function createChallenge() {
   <v-card class="mx-auto" max-width="720" variant="outlined">
     <v-card-title class="text-h5 font-weight-bold pa-6">Add challenge</v-card-title>
     <v-card-text>
-      <v-alert
+      <ErrorFeedback
         v-if="formError"
         title="Challenge creation failed"
-        :text="formError"
-        type="error"
+        :message="formError"
         variant="tonal"
         class="mb-4"
       />

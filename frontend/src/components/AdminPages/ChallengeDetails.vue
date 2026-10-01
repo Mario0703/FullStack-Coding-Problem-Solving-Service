@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ChangeChallange from '@/components/AdminPages/ChangeChallange.vue'
@@ -57,11 +58,10 @@ onMounted(loadChallenge)
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-alert
+    <ErrorFeedback
       v-else-if="loadError"
       title="Challenge unavailable"
-      :text="loadError"
-      type="error"
+      :message="loadError"
       variant="tonal"
     />
 

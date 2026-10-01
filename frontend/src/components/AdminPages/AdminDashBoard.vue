@@ -5,6 +5,7 @@ import ManageChallenges from '@/components/AdminPages/ManageChallenges.vue'
 import AdminLogout from '@/components/AdminPages/AdminLogout.vue'
 import type { Challenge } from '@/utils/AdminUtils'
 import { useRouter } from 'vue-router'
+import SuccessFeedback from '@/components/FeedBack/Succes.vue'
 
 const newChallenge = ref<Challenge | null>(null)
 const successMessage = ref('')
@@ -36,10 +37,9 @@ function goToStats() {
 
     <AddChallange @created="addChallenge" />
 
-    <v-alert
+    <SuccessFeedback
       v-if="successMessage"
-      :text="successMessage"
-      type="success"
+      :message="successMessage"
       variant="tonal"
       class="mt-4"
     />

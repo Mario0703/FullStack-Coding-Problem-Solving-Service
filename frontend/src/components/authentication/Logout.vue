@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearCurrentUser } from '@/authenticator/auth'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 defineOptions({
   name: 'UserLogout',
@@ -32,6 +33,6 @@ async function logout() {
 </script>
 
 <template>
-  <v-alert v-if="logoutError" type="error" :text="logoutError" />
+  <ErrorFeedback v-if="logoutError" :message="logoutError" />
   <v-btn color="red" @click="logout">Logout</v-btn>
 </template>

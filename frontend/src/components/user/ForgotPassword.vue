@@ -2,6 +2,8 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { isblank, isValidEmail } from "@/utils/UserInputCheck";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
+import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 
 const router = useRouter();
 const email = ref("");
@@ -44,8 +46,8 @@ function returnToLogin() {
 
       <v-card-text class="pa-6 pt-0">
 
-        <v-alert v-if="validationError" type="error" :text="validationError" class="mb-4" />
-        <v-alert v-if="successMessage" type="success" :text="successMessage" class="mb-4" />
+        <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
+        <SuccessFeedback v-if="successMessage" :message="successMessage" class="mb-4" />
 
         <v-form @submit.prevent="submitForgotPassword">
           <v-text-field
