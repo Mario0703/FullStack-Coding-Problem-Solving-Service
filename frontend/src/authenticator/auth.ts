@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { baseUrl } from '@/utils/api';
 
 
 
@@ -20,7 +21,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
   authError.value = "";
 
   try {
-    const response = await fetch("http://localhost:8082/api/auth/me", {
+    const response = await fetch(`${baseUrl}/api/auth/me`, {
       method: "GET",
       credentials: "include",
     });
@@ -47,7 +48,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
 }
 
 export async function loadCurrentAdmin(): Promise<void> {
-  const response = await fetch("http://localhost:8082/api/auth/admin", {
+  const response = await fetch(`${baseUrl}/api/auth/admin`, {
     credentials: "include",
   });
 

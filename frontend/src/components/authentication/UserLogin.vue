@@ -5,6 +5,7 @@ import type { SubmitEventPromise } from 'vuetify'
 import { currentUser, type UserData } from '@/authenticator/auth'
 import { getLoginValidationErrors } from '@/utils/UserInputCheck'
 import LoginPage from '@/components/authentication/LoginPage.vue'
+import { baseUrl } from '@/utils/api'
 
 const router = useRouter()
 const name = ref('')
@@ -37,7 +38,7 @@ async function login(_event: SubmitEventPromise) {
   isSubmitting.value = true
 
   try {
-    const response = await fetch('http://localhost:8082/api/user/login', {
+    const response = await fetch(`${baseUrl}/api/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

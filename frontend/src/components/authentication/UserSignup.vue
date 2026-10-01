@@ -9,6 +9,7 @@ import {
   isValidEmail,
   isValidPassword,
 } from '@/utils/UserInputCheck'
+import { baseUrl } from '@/utils/api'
 
 const userName = ref("");
 const email = ref("");
@@ -37,7 +38,7 @@ async function sendUserData() {
   }
 
   try {
-    const response = await fetch('http://localhost:8082/api/user/signup', {
+    const response = await fetch(`${baseUrl}/api/user/signup`, {
 
       method: 'POST',
       headers: {

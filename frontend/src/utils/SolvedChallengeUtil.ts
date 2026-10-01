@@ -1,3 +1,5 @@
+import { baseUrl } from '@/utils/api'
+
 export type UserSubmission = {
   id: string
   challengeId: string
@@ -13,7 +15,7 @@ export type UserSubmission = {
   testCasesFailed: number
 }
 
-const SUBMISSIONS_URL = 'http://localhost:8082/api/submission'
+const SUBMISSIONS_URL = `${baseUrl}/api/submission`
 
 async function loadTestCaseValues(path: 'passed' | 'failed' | 'total'): Promise<number[]> {
   const response = await fetch(`${SUBMISSIONS_URL}/${path}`, {

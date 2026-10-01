@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearCurrentUser, isAdmin } from '@/authenticator/auth'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
-const BASE_URL = `http://localhost:8082`
+import { baseUrl } from '@/utils/api'
 
 
 const router = useRouter()
@@ -13,7 +13,7 @@ async function logout() {
   logoutError.value = ''
 
   try {
-    const response = await fetch(`${BASE_URL}/api/logout`, {
+    const response = await fetch(`${baseUrl}/api/logout`, {
       method: 'POST',
       credentials: 'include',
     })
