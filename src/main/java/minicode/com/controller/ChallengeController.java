@@ -1,11 +1,13 @@
 package minicode.com.controller;
 
 
-import minicode.com.dto.CreateChallangeRequest;
-import minicode.com.dto.ChallengeTemplateResponse;
-import minicode.com.dto.CreateTestCaseRequest;
-import minicode.com.entity.Challenge;
-import minicode.com.service.ChallengeService;
+import minicode.com.dto.Challenge.CreateChallangeRequest;
+import minicode.com.dto.Challenge.ChallengeTemplateResponse;
+import minicode.com.dto.Challenge.CreateTestCaseRequest;
+import minicode.com.entity.Challange.Challenge;
+import minicode.com.entity.Challange.InputOutput;
+import minicode.com.entity.Challange.TestCases;
+import minicode.com.service.Challange.ChallengeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,7 +72,7 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/examples")
-    public List<minicode.com.entity.InputOutput> getChallengeExamples(
+    public List<InputOutput> getChallengeExamples(
             @PathVariable UUID challengeId,
             Authentication authentication
     ) {
@@ -79,7 +81,7 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/test-cases")
-    public List<minicode.com.entity.TestCases> getChallengeTestCases(
+    public List<TestCases> getChallengeTestCases(
             @PathVariable UUID challengeId,
             Authentication authentication
     ) {
@@ -174,3 +176,6 @@ public class ChallengeController {
 
 
 }
+
+
+

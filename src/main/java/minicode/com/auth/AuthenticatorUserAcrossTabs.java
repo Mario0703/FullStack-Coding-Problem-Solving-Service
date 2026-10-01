@@ -1,7 +1,7 @@
 package minicode.com.auth;
 
 
-import minicode.com.entity.User;
+import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -61,3 +60,6 @@ public class AuthenticatorUserAcrossTabs {
 
 
 }
+
+
+

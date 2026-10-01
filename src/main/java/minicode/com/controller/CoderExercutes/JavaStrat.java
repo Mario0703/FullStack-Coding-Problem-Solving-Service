@@ -31,3 +31,6 @@ public class JavaStrat extends DockerCodeStrategy {
         return runner + System.lineSeparator() + System.lineSeparator() + submission;
     }
 }
+
+
+

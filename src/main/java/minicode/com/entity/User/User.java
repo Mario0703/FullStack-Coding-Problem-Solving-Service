@@ -1,9 +1,11 @@
-package minicode.com.entity;
+package minicode.com.entity.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import minicode.com.entity.Roles.Role;
+import minicode.com.entity.Roles.UserRole;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,3 +59,6 @@ public class User {
     }
 
 }
+
+
+

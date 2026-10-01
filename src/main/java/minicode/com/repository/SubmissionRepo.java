@@ -1,7 +1,7 @@
 package minicode.com.repository;
 
-import minicode.com.entity.Submission;
-import minicode.com.entity.SubmissionStatus;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.Submissions.SubmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -80,3 +80,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
             @Param("userId") UUID userId
     );
 }
+
+
+

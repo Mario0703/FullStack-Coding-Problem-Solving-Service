@@ -5,18 +5,17 @@ import minicode.com.controller.CoderExercutes.CSharpStrat;
 import minicode.com.controller.CoderExercutes.CppStrat;
 import minicode.com.controller.CoderExercutes.JavaStrat;
 import minicode.com.controller.CoderExercutes.PythonStrat;
-import minicode.com.dto.ExecutionResult;
-import minicode.com.dto.SubmissionRequest;
-import minicode.com.entity.Challenge;
-import minicode.com.entity.Submission;
-import minicode.com.entity.SubmissionStatus;
-import minicode.com.entity.User;
-import minicode.com.entity.UserRole;
+import minicode.com.dto.User.ExecutionResult;
+import minicode.com.dto.User.SubmissionRequest;
+import minicode.com.entity.Challange.Challenge;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.Submissions.SubmissionStatus;
+import minicode.com.entity.User.User;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.message.StructuredDataMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -173,3 +172,6 @@ public class CodeController {
         return user.getUserId();
     }
 }
+
+
+

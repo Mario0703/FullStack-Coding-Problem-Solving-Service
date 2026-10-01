@@ -1,9 +1,9 @@
 package minicode.com.controller;
 
-import minicode.com.dto.SubmissionResponse;
-import minicode.com.entity.Submission;
-import minicode.com.entity.User;
-import minicode.com.entity.UserRole;
+import minicode.com.dto.User.SubmissionResponse;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.User.User;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
 import org.springframework.web.bind.annotation.*;
@@ -105,3 +105,6 @@ public class submissionController {
         }
     }
 }
+
+
+

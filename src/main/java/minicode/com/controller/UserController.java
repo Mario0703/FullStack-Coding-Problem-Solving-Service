@@ -1,12 +1,12 @@
 package minicode.com.controller;
 
-import minicode.com.dto.LoginRequest;
-import minicode.com.dto.SignupRequest;
-import minicode.com.dto.ChangeEmailRequest;
-import minicode.com.dto.ChangePasswordRequest;
-import minicode.com.dto.ChangeUserNameRequest;
-import minicode.com.entity.User;
-import minicode.com.service.UserService;
+import minicode.com.dto.User.LoginRequest;
+import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.ChangeEmailRequest;
+import minicode.com.dto.User.ChangePasswordRequest;
+import minicode.com.dto.User.ChangeUserNameRequest;
+import minicode.com.entity.User.User;
+import minicode.com.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -103,3 +102,6 @@ public class UserController {
 
 
 }
+
+
+

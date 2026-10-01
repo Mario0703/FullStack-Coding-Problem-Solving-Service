@@ -3,9 +3,9 @@ package minicode.com.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import minicode.com.dto.AdminLoginRequest;
-import minicode.com.entity.User;
-import minicode.com.service.AdminService;
+import minicode.com.dto.Admin.AdminLoginRequest;
+import minicode.com.entity.User.User;
+import minicode.com.service.Admin.AdminService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,3 +61,6 @@ public class AdminController {
         securityContextRepository.saveContext(context, request, response);
     }
 }
+
+
+

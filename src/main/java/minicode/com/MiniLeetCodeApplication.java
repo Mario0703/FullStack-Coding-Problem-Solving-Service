@@ -2,7 +2,7 @@ package minicode.com;
 
 import jakarta.annotation.PostConstruct;
 import minicode.com.security.RateLimitingFilter;
-import minicode.com.service.AdminService;
+import minicode.com.service.Admin.AdminService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -28,3 +28,6 @@ public class MiniLeetCodeApplication {
         return registration;
     }
 }
+
+
+

@@ -1,10 +1,10 @@
 package minicode.com.config;
 
 import jakarta.transaction.Transactional;
-import minicode.com.entity.Permissions;
-import minicode.com.entity.Role;
-import minicode.com.entity.User;
-import minicode.com.entity.UserRole;
+import minicode.com.entity.Roles.Permissions;
+import minicode.com.entity.Roles.Role;
+import minicode.com.entity.User.User;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.repository.PermissionsRepo;
 import minicode.com.repository.RoleRepo;
 import minicode.com.repository.UserRepo;
@@ -156,3 +156,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
     }
 }
+
+
+

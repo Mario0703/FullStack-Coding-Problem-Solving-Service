@@ -1,7 +1,7 @@
 package minicode.com.repository;
 
-import minicode.com.entity.User;
-import minicode.com.entity.UserRole;
+import minicode.com.entity.User.User;
+import minicode.com.entity.Roles.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,3 +16,6 @@ public interface UserRepo extends JpaRepository<User, UUID> {
     Optional<User> findFirstByUserNameAndRole(String userName, UserRole role);
 
 }
+
+
+
