@@ -1,4 +1,4 @@
-import type { challangeForm } from '@/components/AdminPages/LanguageType'
+import type { challangeForm } from '@/utils/LanguageType'
 
 export function isChallengeFormValid(challengeData: challangeForm): boolean {
   const hasRequiredFields = Boolean(

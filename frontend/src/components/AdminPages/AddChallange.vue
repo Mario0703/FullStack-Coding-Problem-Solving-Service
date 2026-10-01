@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { createChallenge as createChallengeRequest } from '@/utils/ChallangeUtil'
 import { isChallengeFormValid } from '@/utils/ChallengeValidation'
-import { useChallengeForm } from '@/components/AdminPages/useChallengeForm'
+import { useChallengeForm } from '@/utils/useChallengeForm'
 import {
   categoryOptions,
   difficultyOptions,

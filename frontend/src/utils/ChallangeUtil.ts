@@ -1,4 +1,4 @@
-import type { challangeForm } from '@/components/AdminPages/LanguageType'
+import type { challangeForm } from '@/utils/LanguageType'
 import type { Challenge } from '@/utils/AdminUtils'
 
 const CHALLENGES_URL = "http://localhost:8082/api/challenge/list";
