@@ -1,5 +1,6 @@
 package minicode.com.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import minicode.com.security.BcryptPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,6 +74,9 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                response.setStatus(HttpServletResponse.SC_NO_CONTENT)
+                        )
                 )
 
                 .formLogin(form -> form.disable())
@@ -94,4 +98,3 @@ public class SecurityConfig {
         return source;
     }
 }
-

@@ -37,6 +37,8 @@ async function logout() {
 </script>
 
 <template>
-  <ErrorFeedback v-if="logoutError" :message="logoutError" />
-  <v-btn color="red" @click="logout">Logout</v-btn>
+  <div class="logout-control">
+    <ErrorFeedback v-if="logoutError" :message="logoutError" />
+    <v-btn color="red" @click="logout">Logout</v-btn>
+  </div>
 </template>
