@@ -99,6 +99,6 @@ export function useChallengeForm() {
     toCreateChallengeForm,
     examples,
     numberOfExamples,
-    createNumberOfSampels
+    createNumberOfSamples: createNumberOfSampels
   }
 }

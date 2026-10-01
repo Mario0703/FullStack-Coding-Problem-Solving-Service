@@ -32,7 +32,7 @@ const {
   toCreateChallengeForm,
   numberOfExamples,
   examples,
-  createNumberOfSampels,
+  createNumberOfSamples,
 } = useChallengeForm()
 
 function submit() {
@@ -122,7 +122,7 @@ defineExpose({ resetForm })
       label="Number of test cases"
       :min="1"
       :max="50"
-      @update:model-value="createNumberOfSampels(testCases, $event, { input: '', expectedOutput: '' })"
+      @update:model-value="createNumberOfSamples(testCases, $event, { input: '', expectedOutput: '' })"
       control-variant="default"
       required
       class="mb-4"
@@ -159,7 +159,7 @@ defineExpose({ resetForm })
       label="Number of examples"
       :min="0"
       :max="15"
-      @update:model-value="createNumberOfSampels(examples, $event, { inputExample: '', outputExample: '' })"
+      @update:model-value="createNumberOfSamples(examples, $event, { inputExample: '', outputExample: '' })"
       control-variant="default"
       required
     />
