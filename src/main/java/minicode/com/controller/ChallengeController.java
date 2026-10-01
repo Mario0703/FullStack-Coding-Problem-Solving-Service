@@ -1,18 +1,15 @@
 package minicode.com.controller;
 
 
-import jakarta.servlet.http.HttpSession;
 import minicode.com.dto.CreateChallangeRequest;
 import minicode.com.dto.ChallengeTemplateResponse;
 import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
-import minicode.com.entity.User;
-import minicode.com.entity.UserRole;
-import minicode.com.repository.UserRepo;
 import minicode.com.service.ChallengeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,11 +22,9 @@ import java.util.List;
 @RequestMapping("/api/challenge")
 public class ChallengeController {
     private final ChallengeService challangeService;
-    private final UserRepo userRepo;
 
-    public ChallengeController(ChallengeService challengeService, UserRepo userRepo) {
+    public ChallengeController(ChallengeService challengeService) {
         this.challangeService = challengeService;
-        this.userRepo = userRepo;
     }
 
     @GetMapping("/list")
@@ -39,8 +34,8 @@ public class ChallengeController {
 
 
     @GetMapping("/ListChallanges")
-    public Iterable<Challenge> listChallenges(HttpSession session) {
-        checkIfAdmin(session);
+    public Iterable<Challenge> listChallenges(Authentication authentication) {
+        checkIfAdmin(authentication);
         return challangeService.listChallenges();
     }
 
@@ -77,24 +72,24 @@ public class ChallengeController {
     @GetMapping("/{challengeId}/examples")
     public List<minicode.com.entity.InputOutput> getChallengeExamples(
             @PathVariable UUID challengeId,
-            HttpSession session
+            Authentication authentication
     ) {
-        checkIfAdmin(session);
+        checkIfAdmin(authentication);
         return challangeService.getChallengeExamples(challengeId);
     }
 
     @GetMapping("/{challengeId}/test-cases")
     public List<minicode.com.entity.TestCases> getChallengeTestCases(
             @PathVariable UUID challengeId,
-            HttpSession session
+            Authentication authentication
     ) {
-        checkIfAdmin(session);
+        checkIfAdmin(authentication);
         return challangeService.getChallengeTestCases(challengeId);
     }
 
     @PostMapping("/create")
-    public Challenge createChallenge( @RequestBody CreateChallangeRequest request, HttpSession session) {
-        checkIfAdmin(session);
+    public Challenge createChallenge( @RequestBody CreateChallangeRequest request, Authentication authentication) {
+        checkIfAdmin(authentication);
         Challenge challenge = challangeService.createChallenge(request);
         UUID challengeId = challenge.getId();
         File challengeFolder = new File("CodeEnv/Challenges/" + challengeId);
@@ -161,23 +156,19 @@ public class ChallengeController {
         return challenge;
     }
 
-    private void checkIfAdmin(HttpSession session) {
-        if (session == null) {
+    private void checkIfAdmin(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
-        User user = userRepo.findById((UUID) userId).orElse(null);
-        if (user == null || user.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin is not authenticated");
+        if (authentication.getAuthorities().stream()
+                .noneMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin access required");
         }
     }
 
     @DeleteMapping("/delete")
-    public void deleteChallenge(@RequestParam UUID challengeId, HttpSession session) {
-        checkIfAdmin(session);
+    public void deleteChallenge(@RequestParam UUID challengeId, Authentication authentication) {
+        checkIfAdmin(authentication);
         challangeService.deleteChallenge(challengeId);
     }
 

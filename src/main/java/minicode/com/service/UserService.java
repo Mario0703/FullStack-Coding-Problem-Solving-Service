@@ -186,7 +186,7 @@ public class UserService {
         if (!isBlank(email)) {
             user = findUserByEmail(email);
         } else {
-            user = findUserByUserName(userName);
+            user = findByUserName(userName);
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -223,7 +223,7 @@ public class UserService {
         return user.get();
     }
 
-    private User findUserByUserName(String userName) {
+    public User findByUserName(String userName) {
         Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
         if (!userByUserName.isPresent()) {
             throw new ResponseStatusException(

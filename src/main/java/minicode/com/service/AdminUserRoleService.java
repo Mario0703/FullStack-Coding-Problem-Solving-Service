@@ -26,6 +26,7 @@ public class AdminUserRoleService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepo.findFirstByUserName(username)
+                .or(() -> userRepo.findFirstByEmail(username))
                 .map(user -> {
                     Set<String> authorities = new HashSet<>();
                     user.getRoles().forEach(role -> {

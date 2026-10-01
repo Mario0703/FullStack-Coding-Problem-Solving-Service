@@ -15,13 +15,12 @@ import minicode.com.entity.UserRole;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.message.StructuredDataMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,9 +59,9 @@ public class CodeController {
     @PostMapping("/submit")
     public ExecutionResult submitCode(
             @Valid @RequestBody SubmissionRequest codeSubmission,
-            HttpServletRequest httpRequest
+            Authentication authentication
     ) throws IOException {
-        UUID authenticatedUserId = getAuthenticatedUserId(httpRequest);
+        UUID authenticatedUserId = getAuthenticatedUserId(authentication);
         if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
         }
@@ -115,8 +114,8 @@ public class CodeController {
         }
     }
     @GetMapping("/SolvedChallenges")
-    public List<UUID> getSolvedChallenges(HttpServletRequest httpRequest) {
-        UUID userId = getAuthenticatedUserId(httpRequest);
+    public List<UUID> getSolvedChallenges(Authentication authentication) {
+        UUID userId = getAuthenticatedUserId(authentication);
         return submissionRepo.findChallengeIdsByUserIdAndStatus(
                 userId,
                 SubmissionStatus.ACCEPTED
@@ -160,23 +159,17 @@ public class CodeController {
         };
     }
 
-    private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
+    private UUID getAuthenticatedUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
         }
 
-        Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID id)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        User user = userRepo.findById(id).orElseThrow(() ->
+        User user = userRepo.findFirstByUserName(authentication.getName()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated"));
         if (user.getRole() == UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
         }
 
-        return id;
+        return user.getUserId();
     }
 }

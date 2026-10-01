@@ -1,7 +1,5 @@
 package minicode.com.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import minicode.com.dto.SubmissionResponse;
 import minicode.com.entity.Submission;
 import minicode.com.entity.User;
@@ -11,6 +9,7 @@ import minicode.com.repository.UserRepo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,16 +28,8 @@ public class submissionController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public List<SubmissionResponse> listUserSubmissions(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
-        }
-        if (!(session.getAttribute("user_id") instanceof UUID userId)) {
-            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
-        }
-
-        ensureNormalUser(userId);
+    public List<SubmissionResponse> listUserSubmissions(Authentication authentication) {
+        UUID userId = authenticatedUserId(authentication);
         return SubmissionRepo.findAllByUserId(userId).stream()
                 .map(SubmissionResponse::from)
                 .toList();
@@ -47,10 +38,10 @@ public class submissionController {
     @GetMapping("/details")
     @Transactional(readOnly = true)
     public SubmissionResponse getDetailsFromSubmissionId(
-            HttpServletRequest httpRequest,
+            Authentication authentication,
             @RequestParam UUID submissionId
     ) {
-        UUID userId = authenticatedUserId(httpRequest);
+        UUID userId = authenticatedUserId(authentication);
 
         Submission submission = SubmissionRepo.findByIdAndUser_UserId(submissionId, userId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -63,50 +54,44 @@ public class submissionController {
 
     @GetMapping("/passed")
     @Transactional(readOnly = true)
-    public List<Integer> listNumberOfPassedTestCases(HttpServletRequest httpRequest) {
-        return testCaseValuesForUser(httpRequest, true);
+    public List<Integer> listNumberOfPassedTestCases(Authentication authentication) {
+        return testCaseValuesForUser(authentication, true);
     }
 
     @GetMapping("/failed")
     @Transactional(readOnly = true)
-    public List<Integer> listNumberOfFailedTestCases(HttpServletRequest httpRequest) {
-        return testCaseValuesForUser(httpRequest, false);
+    public List<Integer> listNumberOfFailedTestCases(Authentication authentication) {
+        return testCaseValuesForUser(authentication, false);
     }
 
     @GetMapping("/total")
     @Transactional(readOnly = true)
-    public List<Integer> listNumberOfTotalTestCases(HttpServletRequest httpRequest) {
-        UUID userId = authenticatedUserId(httpRequest);
+    public List<Integer> listNumberOfTotalTestCases(Authentication authentication) {
+        UUID userId = authenticatedUserId(authentication);
         return SubmissionRepo.findTotalTestCasesByUserId(userId);
     }
 
     private List<Integer> testCaseValuesForUser(
-            HttpServletRequest httpRequest,
+            Authentication authentication,
             boolean passed
     ) {
-        UUID userId = authenticatedUserId(httpRequest);
+        UUID userId = authenticatedUserId(authentication);
         return passed
                 ? SubmissionRepo.findPassedTestCasesByUserId(userId)
                 : SubmissionRepo.findFailedTestCasesByUserId(userId);
     }
 
-    private UUID authenticatedUserId(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
+    private UUID authenticatedUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User not logged in"
             );
         }
-        Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID id)) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User not logged in"
-            );
-        }
-        ensureNormalUser(id);
-        return id;
+        User user = userRepo.findFirstByUserName(authentication.getName()).orElseThrow(() ->
+                new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in"));
+        ensureNormalUser(user.getUserId());
+        return user.getUserId();
     }
 
     private void ensureNormalUser(UUID userId) {
