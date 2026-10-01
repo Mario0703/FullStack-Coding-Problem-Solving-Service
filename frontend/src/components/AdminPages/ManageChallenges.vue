@@ -4,6 +4,7 @@ import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
 import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
 import { listAdminChallenges } from "@/utils/ChallangeUtil";
+import { baseUrl } from '@/utils/api';
 
 const props = defineProps<{
   newChallenge?: Challenge | null;
@@ -55,7 +56,7 @@ onMounted(loadChallenges);
 async function deleteChallenge(challengeId: string) {
   try {
     const response = await fetch(
-      `http://localhost:8082/api/challenge/delete?challengeId=${encodeURIComponent(challengeId)}`,
+      `${baseUrl}/api/challenge/delete?challengeId=${encodeURIComponent(challengeId)}`,
       {
         method: 'DELETE',
         credentials: 'include',

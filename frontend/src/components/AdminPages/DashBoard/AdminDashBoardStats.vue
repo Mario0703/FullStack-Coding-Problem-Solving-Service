@@ -7,6 +7,7 @@ import type {
   PlatformStatistics as PlatformStatisticsData,
   UserStatistics as UserStatisticsData,
 } from '@/utils/AdminStatisticsUtils'
+import { baseUrl } from '@/utils/api'
 
 const statistics = ref<PlatformStatisticsData | null>(null)
 const users = ref<UserStatisticsData[]>([])
@@ -16,8 +17,8 @@ const loadError = ref('')
 async function loadStatistics() {
   try {
     const [statisticsResponse, usersResponse] = await Promise.all([
-      fetch('http://localhost:8082/api/admin/stats', { credentials: 'include' }),
-      fetch('http://localhost:8082/api/admin/stats/users/list', { credentials: 'include' }),
+      fetch(`${baseUrl}/api/admin/stats`, { credentials: 'include' }),
+      fetch(`${baseUrl}/api/admin/stats/users/list`, { credentials: 'include' }),
     ])
 
     if (!statisticsResponse.ok || !usersResponse.ok) {

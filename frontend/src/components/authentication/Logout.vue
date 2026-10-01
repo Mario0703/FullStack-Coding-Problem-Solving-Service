@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { clearCurrentUser, isAdmin } from '@/authenticator/auth'
+import { clearCurrentUser } from '@/authenticator/auth'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
 
@@ -24,7 +24,6 @@ async function logout() {
     }
 
     clearCurrentUser()
-    isAdmin.value = false
     await router.push({ name: 'home' })
   } catch {
     logoutError.value = 'Unable to log out. Please try again.'

@@ -58,6 +58,9 @@ public class User {
         this.role = role;
     }
 
+    public UUID getId() {
+        return null;
+    }
 }
 
 

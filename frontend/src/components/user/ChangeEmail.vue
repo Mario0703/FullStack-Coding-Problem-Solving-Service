@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
 import { inputsMatch, isblank, isValidEmail } from "@/utils/UserInputCheck";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
+import { baseUrl } from '@/utils/api';
 
 const emit = defineEmits<{ abort: [] }>();
 const newEmail = ref("");
@@ -33,7 +34,7 @@ async function changeEmail() {
   isSubmitting.value = true;
 
   try {
-    const response = await fetch("http://localhost:8082/api/user/change-email", {
+    const response = await fetch(`${baseUrl}/api/user/change-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { currentUser, isAdmin, isAdminAuthenticated } from "@/authenticator/auth";
+import { currentRole, currentUser, loadCurrentAdmin } from "@/authenticator/auth";
 
 
 onMounted(() => {
-  isAdminAuthenticated();
+  loadCurrentAdmin().catch(() => undefined);
 });
 </script>
 
@@ -16,16 +16,16 @@ onMounted(() => {
     <v-btn color="white" variant="text" :to="{ name: 'challenges' }">
       Explore coding challenges
     </v-btn>
-    <v-btn v-if="!currentUser && !isAdmin" color="white" variant="text" :to="{ name: 'signup' }">
+    <v-btn v-if="!currentUser && currentRole !== 'ROLE_ADMIN'" color="white" variant="text" :to="{ name: 'signup' }">
       Sign up
     </v-btn>
-    <v-btn v-if="!currentUser && !isAdmin" color="white" variant="text" :to="{ name: 'login' }">
+    <v-btn v-if="!currentUser && currentRole !== 'ROLE_ADMIN'" color="white" variant="text" :to="{ name: 'login' }">
       Login
     </v-btn>
     <v-btn v-if="currentUser" color="white" variant="text" :to="{ name: 'user' }">
       View Profile
     </v-btn>
-    <v-btn v-if="isAdmin" color="white" variant="text" :to="{ name: 'adminDashboard' }">
+    <v-btn v-if="currentRole === 'ROLE_ADMIN'" color="white" variant="text" :to="{ name: 'adminDashboard' }">
       Admin dashboard
     </v-btn>
   </v-app-bar>

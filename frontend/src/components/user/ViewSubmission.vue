@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import { baseUrl } from '@/utils/api'
 
 const route = useRoute()
 const submission = ref<any>(null)
@@ -17,7 +18,7 @@ onMounted(async () => {
   }
 
   const response = await fetch(
-    `http://localhost:8082/api/submission/details?submissionId=${submissionId}`,
+    `${baseUrl}/api/submission/details?submissionId=${submissionId}`,
     { credentials: 'include' },
   )
 

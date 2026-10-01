@@ -4,6 +4,7 @@ package minicode.com.auth;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,7 +26,7 @@ public class AuthenticatorUserAcrossTabs {
     }
 
     @GetMapping("/me")
-    public User authenticateUserAcrossTabs(Authentication authentication){
+    public userResponse authenticateUserAcrossTabs(Authentication authentication){
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
@@ -38,24 +40,48 @@ public class AuthenticatorUserAcrossTabs {
                     "User is not authenticated"
             );
         }
+        String role = getRoleFromAuthentication(authentication);
+        UUID id = user.get().getId();
+        String userName = user.get().getUserName();
+        String email = user.get().getEmail();
 
-        return user.get();
+
+        userResponse UserResponse = new userResponse(
+                id,
+                userName,
+                email,
+                role
+        );
+        return UserResponse;
     }
 
     @GetMapping("/admin")
-    public void checkIfAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public String checkIfAdmin(Authentication authentication) {
+        boolean isAuthenticatedValid = authentication != null && authentication.isAuthenticated();
+        if (!isAuthenticatedValid){
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Authentication required"
             );
         }
+        String role = getRoleFromAuthentication(authentication);
 
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        if (!isAdmin) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin access required");
+        if(!role.equals("ROLE_ADMIN")){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Admin role required"
+            );
         }
+        return role;
+
+    }
+
+    private String getRoleFromAuthentication(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(authority -> authority.startsWith("ROLE_"))
+                .findFirst()
+                .orElse(null);
     }
 
 

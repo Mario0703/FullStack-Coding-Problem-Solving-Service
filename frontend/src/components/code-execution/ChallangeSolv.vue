@@ -4,6 +4,7 @@ import { currentUser } from '@/authenticator/auth'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
+import { baseUrl } from '@/utils/api'
 
 type ChallengeTemplateResponse = {
   language: string
@@ -56,7 +57,7 @@ async function loadTemplate(challengeId: string | undefined) {
   isLoading.value = true
 
   try {
-    const response = await fetch(`http://localhost:8082/api/challenge/${challengeId}/template`, {
+    const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/template`, {
       credentials: 'include',
     })
 
@@ -97,7 +98,7 @@ async function executeCode() {
   output.value = ''
 
   try {
-    const response = await fetch('http://localhost:8082/api/code/playground/submit', {
+    const response = await fetch(`${baseUrl}/api/code/playground/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { SubmitEventPromise } from 'vuetify'
-import { isAdmin } from '@/authenticator/auth'
+import { loadCurrentAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
 
@@ -43,7 +43,7 @@ async function adminSignIn(_event: SubmitEventPromise) {
       return
     }
 
-    isAdmin.value = true
+    await loadCurrentAdmin()
     await router.push({ name: 'adminLoginConfirmed' })
   } catch {
     loginError.value = 'Unable to reach the server. Please try again later.'

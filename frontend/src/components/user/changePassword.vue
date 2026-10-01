@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { inputsMatch, isblank, isValidPassword } from "@/utils/UserInputCheck";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
+import { baseUrl } from '@/utils/api';
 
 const emit = defineEmits<{ abort: [] }>();
 
@@ -43,7 +44,7 @@ async function changePassword() {
   isSubmitting.value = true;
 
   try {
-    const response = await fetch("http://localhost:8082/api/user/change-password", {
+    const response = await fetch(`${baseUrl}/api/user/change-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

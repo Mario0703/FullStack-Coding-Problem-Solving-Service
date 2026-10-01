@@ -2,16 +2,15 @@ import { ref } from "vue";
 import { baseUrl } from '@/utils/api';
 
 
-
-
 export type UserData = {
   userId: string;
   userName: string;
   email: string;
+  Role: string
 };
 
 export const currentUser = ref<UserData | null>(null);
-export const isAdmin = ref(false);
+export const currentRole = ref<string | null>(null);
 export const isLoadingUser = ref(true);
 export const hasCheckedUser = ref(false);
 export const authError = ref("");
@@ -35,7 +34,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
       throw new Error("Unable to check authentication");
     }
 
-    currentUser.value = (await response.json()) as UserData;
+    currentUser.value = await response.json();
     return currentUser.value;
   } catch (error) {
     currentUser.value = null;
@@ -47,31 +46,24 @@ export async function loadCurrentUser(): Promise<UserData | null> {
   }
 }
 
-export async function loadCurrentAdmin(): Promise<void> {
+export async function loadCurrentAdmin(): Promise<string> {
   const response = await fetch(`${baseUrl}/api/auth/admin`, {
     credentials: "include",
   });
 
   if (!response.ok) {
-    isAdmin.value = false;
+    currentRole.value = null;
     throw new Error("Admin is not authenticated");
   }
 
-  isAdmin.value = true;
-}
-
-export async function isAdminAuthenticated(): Promise<boolean> {
-  try {
-    await loadCurrentAdmin();
-    return true;
-  } catch {
-    isAdmin.value = false;
-    return false;
-  }
+  const role = (await response.text()).trim();
+  currentRole.value = role;
+  return role;
 }
 
 
 export function clearCurrentUser(): void {
   currentUser.value = null;
+  currentRole.value = null;
   hasCheckedUser.value = true;
 }
