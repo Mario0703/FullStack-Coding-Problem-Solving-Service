@@ -6,6 +6,7 @@ import {
 } from '@/utils/AdminUtils'
 import type { CreateChallengeForm } from '@/utils/LanguageType'
 import { useChallengeForm } from '@/utils/useChallengeForm'
+import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 
 defineProps<{
   isSubmitting: boolean
@@ -64,31 +65,27 @@ defineExpose({ resetForm })
     <v-select v-model="difficulty" label="Difficulty" :items="difficultyOptions" required />
     <v-select v-model="category" label="Category" :items="categoryOptions" required />
     <v-select v-model="language" label="Language" :items="languageOptions" required />
-    <v-textarea
+    <v-label class="mb-2">Reference solution</v-label>
+    <CodeEditor
       v-model="solution"
-      label="Reference solution"
-      placeholder="Enter the complete solution used to validate the challenge."
-      rows="12"
-      cols="80"
-      auto-grow
-      :max-rows="24"
+      :language="language ?? ''"
+      height="300px"
       class="mb-6"
     />
-    <v-textarea
+    <v-label class="mb-2">User starter template</v-label>
+    <CodeEditor
       v-model="template"
-      label="User starter template"
-      :hint="
+      :language="language ?? ''"
+      height="300px"
+      class="mb-3"
+    />
+    <div class="text-caption mb-3">
+      {{
         language
           ? `Template shown to users for ${language}`
           : 'Select a language to load a starter template'
-      "
-      persistent-hint
-      rows="12"
-      cols="80"
-      auto-grow
-      :max-rows="24"
-      class="mb-3"
-    />
+      }}
+    </div>
     <v-textarea
       v-model="templateExplanation"
       label="User template explanation"
@@ -98,16 +95,16 @@ defineExpose({ resetForm })
       :max-rows="8"
       class="mb-6"
     />
-    <v-textarea
+    <v-label class="mb-2">Runner</v-label>
+    <CodeEditor
       v-model="runner"
-      label="Runner"
-      hint="The server uses this code to read test input, call the user's function, and print its result."
-      persistent-hint
-      rows="12"
-      auto-grow
-      :max-rows="24"
+      :language="language ?? ''"
+      height="300px"
       class="mb-3"
     />
+    <div class="text-caption mb-3">
+      The server uses this code to read test input, call the user's function, and print its result.
+    </div>
     <v-textarea
       v-model="runnerExplanation"
       label="Runner explanation"
