@@ -15,6 +15,8 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
 
     List<Submission> findAllByUser_UserId(UUID userId);
 
+    void deleteAllByUser_UserId(UUID userId);
+
     long countByUser_UserId(UUID userId);
 
     @Query("""

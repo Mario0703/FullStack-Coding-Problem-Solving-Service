@@ -1,17 +1,23 @@
 package minicode.com.controller;
 
 import minicode.com.dto.Admin.AdminUserStatistics;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.User.User;
 import minicode.com.service.Admin.DashBoardStatsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/stats")
@@ -40,6 +46,45 @@ public class DashBoardStatsController {
     public long getNumberOfUsers(Authentication authentication) {
         requireAdmin(authentication);
         return statsService.getNumberOfUsers();
+    }
+
+    @GetMapping("/users/all")
+    public List<User> getAllUsers(Authentication authentication) {
+        requireAdmin(authentication);
+        return statsService.getAllUsers();
+    }
+
+    @GetMapping("/users/search")
+    public User searchForUserByName(
+            @RequestParam String userName,
+            Authentication authentication
+    ) {
+        requireAdmin(authentication);
+        return statsService.searchForUserByName(userName);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(
+            @PathVariable UUID userId,
+            Authentication authentication
+    ) {
+        requireAdmin(authentication);
+        statsService.deleteUser(userId);
+    }
+
+    @GetMapping("/submissions/all")
+    public List<Submission> getAllSubmissions(Authentication authentication) {
+        requireAdmin(authentication);
+        return statsService.getAllSubmissions();
+    }
+
+    @GetMapping("/submissions/user/{userId}")
+    public List<Submission> getAllSubmissionsByUser(
+            @PathVariable UUID userId,
+            Authentication authentication
+    ) {
+        requireAdmin(authentication);
+        return statsService.getAllSubmissionsByUser(userId);
     }
 
     @GetMapping("/users/list")

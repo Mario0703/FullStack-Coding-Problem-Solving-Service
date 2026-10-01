@@ -9,6 +9,9 @@ import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -44,14 +47,27 @@ public class DashBoardStatsService {
         // disable the user by restring their acces to pages and challenges
     }
 
-    @PreAuthorize("hasAuthority('Search for user')")
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public User searchForUserByName(String userName){
-        return userRepository.findFirstByUserName(userName).orElse(null);
+        return userRepository.findFirstByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
     }
 
-    @PreAuthorize("hasAuthority('Delete user')")
+    @PreAuthorize("hasAuthority('MODIFY_USERS')")
+    @Transactional
     public void deleteUser(UUID userId){
-        userRepository.deleteById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+
+        submissionRepository.deleteAllByUser_UserId(userId);
+        user.getRoles().clear();
+        userRepository.delete(user);
     }
 
     @PreAuthorize("hasAuthority('VIEW_SUBMISSIONS')")
