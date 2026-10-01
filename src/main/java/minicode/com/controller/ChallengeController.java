@@ -6,7 +6,9 @@ import minicode.com.dto.CreateChallangeRequest;
 import minicode.com.dto.ChallengeTemplateResponse;
 import minicode.com.dto.CreateTestCaseRequest;
 import minicode.com.entity.Challenge;
-import minicode.com.repository.AdminRepo;
+import minicode.com.entity.User;
+import minicode.com.entity.UserRole;
+import minicode.com.repository.UserRepo;
 import minicode.com.service.ChallengeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +25,11 @@ import java.util.List;
 @RequestMapping("/api/challenge")
 public class ChallengeController {
     private final ChallengeService challangeService;
-    private final AdminRepo adminRepo;
+    private final UserRepo userRepo;
 
-    public ChallengeController(ChallengeService challengeService, AdminRepo adminRepo) {
+    public ChallengeController(ChallengeService challengeService, UserRepo userRepo) {
         this.challangeService = challengeService;
-        this.adminRepo = adminRepo;
+        this.userRepo = userRepo;
     }
 
     @GetMapping("/list")
@@ -163,14 +165,12 @@ public class ChallengeController {
         if (session == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        if (session.getAttribute("user_id") != null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
-        }
-        Object adminUserId = session.getAttribute("admin_user_id");
-        if (!(adminUserId instanceof UUID)) {
+        Object userId = session.getAttribute("user_id");
+        if (!(userId instanceof UUID)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        if (adminRepo.findById((UUID) adminUserId).isEmpty()) {
+        User user = userRepo.findById((UUID) userId).orElse(null);
+        if (user == null || user.getRole() != UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin is not authenticated");
         }
     }

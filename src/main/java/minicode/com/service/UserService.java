@@ -9,6 +9,8 @@ import minicode.com.dto.LoginRequest;
 import minicode.com.dto.SignupRequest;
 import minicode.com.entity.User;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.RoleRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -23,15 +27,23 @@ public class UserService {
     private final UserRepo userRepo;
     private final Validator validator;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepo roleRepo;
 
+    public UserService(UserRepo userRepo, Validator validator, PasswordEncoder passwordEncoder) {
+        this(userRepo, validator, passwordEncoder, null);
+    }
+
+    @Autowired
     public UserService(
             UserRepo userRepo,
             Validator validator,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            RoleRepo roleRepo
     ) {
         this.userRepo = userRepo;
         this.validator = validator;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepo = roleRepo;
     }
 
     @Transactional
@@ -64,6 +76,12 @@ public class UserService {
                 encodedPassword
         );
 
+        if (roleRepo != null) {
+            roleRepo.findByName("ROLE_USER").ifPresent(role ->
+                    user.setRoles(new HashSet<>(Set.of(role)))
+            );
+        }
+
         return userRepo.save(user);
     }
 
@@ -76,7 +94,7 @@ public class UserService {
             );
         }
 
-        User user = findUserById(userId);
+        User user = findById(userId);
         String normalizedUserName = request.newUserName().trim();
 
         Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
@@ -100,7 +118,7 @@ public class UserService {
             );
         }
 
-        User user = findUserById(userId);
+        User user = findById(userId);
         String normalizedEmail = request.newEmail().trim();
 
         Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
@@ -124,7 +142,7 @@ public class UserService {
             );
         }
 
-        User user = findUserById(userId);
+        User user = findById(userId);
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -193,7 +211,7 @@ public class UserService {
         return userByEmail.get();
     }
 
-    private User findUserById(UUID userId) {
+    public User findById(UUID userId) {
         Optional<User> user = userRepo.findById(userId);
         if (user.isEmpty()) {
             throw new ResponseStatusException(

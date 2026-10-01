@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity // This class should be tracked as a table
@@ -25,17 +25,35 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private UserRole role;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
 
     protected User() {
     }
 
     public User(String userName, String email, String password) {
+        this(userName, email, password, UserRole.USER);
+    }
+
+    public User(String userName, String email, String password, UserRole role) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
 }

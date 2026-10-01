@@ -7,6 +7,7 @@ import minicode.com.dto.ChangePasswordRequest;
 import minicode.com.dto.ChangeUserNameRequest;
 import minicode.com.entity.Challenge;
 import minicode.com.entity.User;
+import minicode.com.entity.UserRole;
 import minicode.com.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -89,20 +90,21 @@ public class UserController {
         }
 
         Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.FORBIDDEN,
-                        "User access is not permitted for an admin session"
-                );
-            }
+        if (!(userId instanceof UUID id)) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
             );
         }
 
-        return (UUID) userId;
+        User user = userService.findById(id);
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN,
+                    "User access is not permitted for an admin session"
+            );
+        }
+        return id;
     }
 
 

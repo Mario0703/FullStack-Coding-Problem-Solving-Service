@@ -11,6 +11,7 @@ import minicode.com.entity.Challenge;
 import minicode.com.entity.Submission;
 import minicode.com.entity.SubmissionStatus;
 import minicode.com.entity.User;
+import minicode.com.entity.UserRole;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
@@ -166,13 +167,16 @@ public class CodeController {
         }
 
         Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
-            }
+        if (!(userId instanceof UUID id)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
         }
 
-        return (UUID) userId;
+        User user = userRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated"));
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
+        }
+
+        return id;
     }
 }

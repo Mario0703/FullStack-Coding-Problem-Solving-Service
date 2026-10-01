@@ -4,7 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import minicode.com.dto.SubmissionResponse;
 import minicode.com.entity.Submission;
+import minicode.com.entity.User;
+import minicode.com.entity.UserRole;
 import minicode.com.repository.SubmissionRepo;
+import minicode.com.repository.UserRepo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +19,12 @@ import java.util.UUID;
 @RequestMapping("/api/submission")
 public class submissionController {
     private final SubmissionRepo SubmissionRepo;
+    private final UserRepo userRepo;
 
 
-    public submissionController(SubmissionRepo submissionRepo) {
+    public submissionController(SubmissionRepo submissionRepo, UserRepo userRepo) {
         this.SubmissionRepo = submissionRepo;
+        this.userRepo = userRepo;
     }
 
     @GetMapping
@@ -29,17 +34,11 @@ public class submissionController {
         if (session == null) {
             throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
         }
-        if (!(session.getAttribute("user_id") instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.FORBIDDEN,
-                        "User access is not permitted for an admin session"
-                );
-            }
+        if (!(session.getAttribute("user_id") instanceof UUID userId)) {
             throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in");
         }
 
-        UUID userId = (UUID) session.getAttribute("user_id");
+        ensureNormalUser(userId);
         return SubmissionRepo.findAllByUserId(userId).stream()
                 .map(SubmissionResponse::from)
                 .toList();
@@ -100,18 +99,24 @@ public class submissionController {
             );
         }
         Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.FORBIDDEN,
-                        "User access is not permitted for an admin session"
-                );
-            }
+        if (!(userId instanceof UUID id)) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User not logged in"
             );
         }
-        return (UUID) userId;
+        ensureNormalUser(id);
+        return id;
+    }
+
+    private void ensureNormalUser(UUID userId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new ResponseStatusException(
+                org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in"));
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN,
+                    "User access is not permitted for an admin session"
+            );
+        }
     }
 }

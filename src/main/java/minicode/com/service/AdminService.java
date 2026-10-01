@@ -1,32 +1,28 @@
 package minicode.com.service;
 
-import jakarta.annotation.PostConstruct;
 import minicode.com.dto.AdminLoginRequest;
-import minicode.com.entity.AdminUser;
-import minicode.com.repository.AdminRepo;
-import minicode.com.security.BcryptPasswordEncoder;
-import org.springframework.beans.factory.annotation.Value;
+import minicode.com.entity.User;
+import minicode.com.entity.UserRole;
+import minicode.com.repository.UserRepo;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminService {
-    private final AdminRepo adminRepo;
-    private final String startupAdminUsername;
-    private final String startupAdminPassword;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public AdminService(
-            AdminRepo adminRepo,
-            @Value("${ADMIN_USERNAME}") String startupAdminUsername,
-            @Value("${ADMIN_PASSWORD}") String startupAdminPassword
+            UserRepo userRepo,
+            PasswordEncoder passwordEncoder
     ) {
-        this.adminRepo = adminRepo;
-        this.startupAdminUsername = startupAdminUsername;
-        this.startupAdminPassword = startupAdminPassword;
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public AdminUser login(AdminLoginRequest adminSignUpRequest){
+    public User login(AdminLoginRequest adminSignUpRequest){
         String adminUserName = adminSignUpRequest.getAdminUserName();
         String adminPassword = adminSignUpRequest.getAdminPassword();
 
@@ -35,33 +31,18 @@ public class AdminService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin Username and Password cannot be blank");
         }
 
-        AdminUser adminUser = adminRepo.findByAdminUserName(adminUserName)
+        User adminUser = userRepo.findFirstByUserName(adminUserName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin user not found"));
 
-        BcryptPasswordEncoder bcryptEncrypter = new BcryptPasswordEncoder();
-        if (!bcryptEncrypter.matches(adminPassword, adminUser.getAdminPassword())) {
+        if (adminUser.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin user not found");
+        }
+
+        if (!passwordEncoder.matches(adminPassword, adminUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
         return adminUser;
-
-    }
-
-    @PostConstruct
-    public void createAdminUserOnStartup() {
-        createAdminOnStartUp(startupAdminUsername, startupAdminPassword);
-    }
-
-    public void createAdminOnStartUp(String adminUserName, String adminPassword) {
-        Boolean isAdminTableEmpty = adminRepo.isThereAnStartAdmin();
-        if (!isAdminTableEmpty) {
-            return;
-        }
-        BcryptPasswordEncoder bcryptEncrypter = new BcryptPasswordEncoder();
-        String encodedPassword = bcryptEncrypter.encode(adminPassword);
-        AdminUser admin = new AdminUser(adminUserName, encodedPassword);
-        adminRepo.save(admin);
-
 
     }
 
