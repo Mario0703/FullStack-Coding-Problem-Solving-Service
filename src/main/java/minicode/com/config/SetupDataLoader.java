@@ -3,6 +3,7 @@ package minicode.com.config;
 import jakarta.transaction.Transactional;
 import minicode.com.entity.Roles.Permissions;
 import minicode.com.entity.Roles.Role;
+import minicode.com.entity.Roles.UserPermissions;
 import minicode.com.entity.User.User;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.repository.PermissionsRepo;
@@ -42,17 +43,15 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             return;
         }
 
-        Permissions viewChallenges = createPermissionOnStartUP("VIEW_CHALLENGES");
-        Permissions submitSolutions = createPermissionOnStartUP("SUBMIT_SOLUTIONS");
-        Permissions manageChallenges = createPermissionOnStartUP("MANAGE_CHALLENGES");
-        Permissions viewStatistics = createPermissionOnStartUP("VIEW_STATISTICS");
+        for(UserRole role : UserRole.values()) {
+            createRolesOnStartUp(role.name(),
+                    role.getPermissions().stream().map(permission ->
+                            createPermissionOnStartUp(permission.name())).collect(java.util.stream.Collectors.toSet()));
+        }
 
-
-        Role userRole = createRolesOnStartUp("ROLE_USER", Set.of(viewChallenges, submitSolutions));
-        Role adminRole = createRolesOnStartUp(
-                "ROLE_ADMIN",
-                Set.of(viewChallenges, submitSolutions, manageChallenges, viewStatistics)
-        );
+        for (UserPermissions permission : UserPermissions.values()) {
+            createPermissionOnStartUp(permission.name());
+        }
 
         createStartupAdmin();
 
@@ -60,7 +59,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
 
-    private Permissions createPermissionOnStartUP(String name) {
+    private Permissions createPermissionOnStartUp(String name) {
         return permissionsRepo.findByName(name).orElseGet(() -> permissionsRepo.save(new Permissions(name)));
     }
 
