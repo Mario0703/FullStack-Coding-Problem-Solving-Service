@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import type { SubmitEventPromise } from 'vuetify'
 import { isAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
+import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
 
 const router = useRouter()
 const adminUserName = ref('')
@@ -13,21 +14,32 @@ const isSubmitting = ref(false)
 
 async function adminSignIn(_event: SubmitEventPromise) {
   loginError.value = ''
+
+  const adminLoginRequest: AdminLoginCredentials = {
+    adminUserName: adminUserName.value.trim(),
+    adminPassword: adminPassword.value,
+  }
+
+  const hasAdminFilledOutFields = adminLoginRequest.adminUserName && adminLoginRequest.adminPassword
+
+  if (!hasAdminFilledOutFields) {
+    loginError.value = 'Admin username and password are required.'
+    return
+  }
+
   isSubmitting.value = true
 
   try {
-    const response = await fetch('http://localhost:8082/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        adminUserName: adminUserName.value.trim(),
-        adminPassword: adminPassword.value,
-      }),
-    })
+    const response = await loginAdmin(adminLoginRequest)
+    const isAdminFieldsValid = response.status === 400 || response.status === 401
+
+    if (isAdminFieldsValid) {
+      loginError.value = 'Invalid admin username or password.'
+      return
+    }
 
     if (!response.ok) {
-      loginError.value = 'Invalid admin username or password.'
+      loginError.value = 'The server could not log you in. Please try again later.'
       return
     }
 
