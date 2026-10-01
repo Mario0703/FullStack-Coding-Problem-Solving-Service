@@ -18,13 +18,10 @@ async function logout() {
   logoutError.value = ''
 
   try {
-    const response = await fetch(
-      `http://localhost:8082/api/${props.admin ? 'admin' : 'user'}/logout`,
-      {
+    const response = await fetch('http://localhost:8082/api/logout', {
       method: 'POST',
       credentials: 'include',
-      },
-    )
+    })
 
     if (!response.ok) {
       throw new Error('Logout failed')

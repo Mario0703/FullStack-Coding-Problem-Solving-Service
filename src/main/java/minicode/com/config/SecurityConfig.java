@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -65,16 +64,12 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new OrRequestMatcher(
+                        .logoutRequestMatcher(
                                 PathPatternRequestMatcher.pathPattern(
                                         org.springframework.http.HttpMethod.POST,
-                                        "/api/user/logout"
-                                ),
-                                PathPatternRequestMatcher.pathPattern(
-                                        org.springframework.http.HttpMethod.POST,
-                                        "/api/admin/logout"
+                                        "/api/logout"
                                 )
-                        ))
+                        )
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
@@ -99,6 +94,4 @@ public class SecurityConfig {
         return source;
     }
 }
-
-
 
