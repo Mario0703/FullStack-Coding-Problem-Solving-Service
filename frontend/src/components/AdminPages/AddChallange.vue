@@ -32,7 +32,7 @@ const {
   numberOfTestCases,
   testCases,
   resetForm,
-  toChallengeForm,
+  toCreateChallengeForm,
   numberOfExamples,
   examples,
   createNumberOfSampels
@@ -41,7 +41,7 @@ const {
 async function createChallenge() {
   formError.value = ''
 
-  const challengeData = toChallengeForm()
+  const challengeData = toCreateChallengeForm()
 
   if (!isChallengeFormValid(challengeData)) {
     formError.value =

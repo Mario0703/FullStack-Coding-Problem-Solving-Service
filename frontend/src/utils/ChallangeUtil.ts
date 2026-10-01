@@ -1,4 +1,4 @@
-import type { challangeForm } from '@/utils/LanguageType'
+import type { CreateChallengeForm } from '@/utils/LanguageType'
 import type { Challenge } from '@/utils/AdminUtils'
 
 const CHALLENGES_URL = "http://localhost:8082/api/challenge/list";
@@ -66,7 +66,7 @@ export async function getChallengeTestCases(challengeId: string): Promise<Challe
   return (await response.json()) as ChallengeTestCase[]
 }
 
-export async function createChallenge(challengeData: challangeForm): Promise<Challenge | null> {
+export async function createChallenge(challengeData: CreateChallengeForm): Promise<Challenge | null> {
   const response = await fetch(CREATE_CHALLENGE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
