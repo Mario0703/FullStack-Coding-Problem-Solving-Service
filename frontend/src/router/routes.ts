@@ -2,7 +2,7 @@ import UserSignup from '@/components/authentication/UserSignup.vue'
 import LandingPage from '@/components/home/LandingPage.vue'
 import ChallengePage from '@/components/challenges/ChallengePage.vue'
 import ConfirmSignUp from '@/components/authentication/ConfirmSignUp.vue'
-import LoginPage from '@/components/authentication/LoginPage.vue'
+import UserLogin from '@/components/authentication/UserLogin.vue'
 import UserLoginConfirmed from '@/components/authentication/UserLoginConfirmed.vue'
 import UserPage from '@/components/user/UserPage.vue'
 import ForgotPassword from '@/components/user/ForgotPassword.vue'
@@ -38,7 +38,7 @@ export const routes = [
   {
     path: '/Login',
     name: 'login',
-    component: LoginPage,
+    component: UserLogin,
   },
   {
     path: '/forgot-password',
