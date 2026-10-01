@@ -31,7 +31,7 @@ function goToStats() {
         <v-card-subtitle class="text-body-1 mt-2 px-0">
           Create and review coding challenges.
         </v-card-subtitle>
-        <Logout admin class="mt-4" />
+        <Logout class="mt-4" />
       </v-card>
     </v-container>
 
