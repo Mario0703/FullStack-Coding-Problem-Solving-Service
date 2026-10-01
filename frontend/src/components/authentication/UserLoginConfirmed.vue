@@ -5,7 +5,7 @@ import { currentUser } from "@/authenticator/auth";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 
 const router = useRouter();
-const userName = computed(() => currentUser.value?.userName || "user");
+const userName = computed(() => currentUser.value?.userName);
 
 function SendUserToUser() {
   router.push({ name: "user" });

@@ -4,12 +4,13 @@ import {ref} from "vue";
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import router from "@/router";
 import {
-  hasValidSignupDetails,
+  getSignupValidationError,
   inputsMatch,
   isValidEmail,
   isValidPassword,
-} from '@/utils/UserInputCheck'
+} from '@/utils/signupValidation'
 import { baseUrl } from '@/utils/api'
+import type { SignupData } from '@/utils/signupValidation'
 
 const userName = ref("");
 const email = ref("");
@@ -18,12 +19,6 @@ const password = ref("");
 const confirmPassword = ref("");
 const signupError = ref("");
 
-type UserData = {
-  userName: string;
-  email: string;
-  password: string;
-};
-
 
 async function sendUserData() {
 
@@ -31,7 +26,7 @@ async function sendUserData() {
 
   if (!canSubmit()) return
 
-  const userData: UserData = {
+  const userData: SignupData = {
     userName: userName.value,
     email: email.value,
     password: password.value,
@@ -60,7 +55,7 @@ async function sendUserData() {
 }
 
 function canSubmit(): boolean {
-  const isValid = hasValidSignupDetails({
+  const validationError = getSignupValidationError({
     userName: userName.value,
     email: email.value,
     confirmEmail: confirmEmail.value,
@@ -68,8 +63,8 @@ function canSubmit(): boolean {
     confirmPassword: confirmPassword.value,
   })
 
-  if (!isValid) {
-    signupError.value = 'You have invalid fields. Please check your inputs and try again.'
+  if (validationError) {
+    signupError.value = validationError
     return false
   }
 

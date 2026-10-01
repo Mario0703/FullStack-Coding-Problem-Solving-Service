@@ -45,7 +45,9 @@ async function login(_event: SubmitEventPromise) {
       body: JSON.stringify(loginData),
     })
 
-    if (response.status === 400 || response.status === 401) {
+    const isInvalidCredentials = response.status === 400 || response.status === 401
+
+    if (isInvalidCredentials) {
       loginError.value = 'Invalid email/username or password.'
       return
     }
