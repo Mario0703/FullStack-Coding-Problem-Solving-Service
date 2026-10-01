@@ -4,7 +4,7 @@ import java.util.Set;
 
 public enum UserRole {
     USER(Set.of(UserPermissions.VIEW_CHALLENGES, UserPermissions.SUBMIT_SOLUTIONS)),
-    ADMIN(Set.of(UserPermissions.VIEW_CHALLENGES, UserPermissions.SUBMIT_SOLUTIONS, UserPermissions.MANAGE_CHALLENGES)),
+    ADMIN(Set.of(UserPermissions.VIEW_CHALLENGES, UserPermissions.SUBMIT_SOLUTIONS, UserPermissions.MANAGE_CHALLENGES, UserPermissions.VIEW_STATISTICS)),
     OWNER(Set.of(UserPermissions.VIEW_CHALLENGES, UserPermissions.SUBMIT_SOLUTIONS, UserPermissions.MANAGE_CHALLENGES, UserPermissions.VIEW_STATISTICS)),
     MODERATOR(Set.of(UserPermissions.VIEW_CHALLENGES, UserPermissions.SUBMIT_SOLUTIONS));
 
