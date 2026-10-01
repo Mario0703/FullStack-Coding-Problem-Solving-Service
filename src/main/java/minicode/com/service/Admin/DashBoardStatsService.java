@@ -7,6 +7,7 @@ import minicode.com.dto.Admin.AdminUserStatistics;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,26 +29,32 @@ public class DashBoardStatsService {
         this.submissionRepository = submissionRepository;
     }
 
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @PreAuthorize("hasAuthority('VIEW_SUBMISSIONS')")
     public List<Submission> getAllSubmissions() {
         return submissionRepository.findAll();
     }
 
+    @PreAuthorize("hasAuthority('DISABLE_USER')")
     public void DisableUser(UUID userId){
         // disable the user by restring their acces to pages and challenges
     }
 
+    @PreAuthorize("hasAuthority('Search for user')")
     public User searchForUserByName(String userName){
         return userRepository.findFirstByUserName(userName).orElse(null);
     }
 
+    @PreAuthorize("hasAuthority('Delete user')")
     public void deleteUser(UUID userId){
         userRepository.deleteById(userId);
     }
 
+    @PreAuthorize("hasAuthority('VIEW_SUBMISSIONS')")
     public List<Submission> getAllSubmissionsByUser(UUID userId){
         return submissionRepository.findAllByUser_UserId(userId);
     }

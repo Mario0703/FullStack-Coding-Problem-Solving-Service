@@ -44,7 +44,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         for(UserRole role : UserRole.values()) {
-            createRolesOnStartUp(role.name(),
+            createRolesOnStartUp("ROLE_" + role.name(),
                     role.getPermissions().stream().map(permission ->
                             createPermissionOnStartUp(permission.name())).collect(java.util.stream.Collectors.toSet()));
         }
@@ -53,7 +53,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             createPermissionOnStartUp(permission.name());
         }
 
-        createStartupAdmin();
+        Role adminRole = roleRepo.findByName("ROLE_" + UserRole.ADMIN.name())
+                .orElseThrow(() -> new IllegalStateException("ROLE_ADMIN was not initialized"));
+        createStartupAdmin(adminRole);
 
         alreadySetup = true;
     }
@@ -71,7 +73,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
 
-    private void createStartupAdmin() {
+    private void createStartupAdmin(Role adminRole) {
         User admin = userRepo.findFirstByUserName("admin").orElseGet(() ->
                 new User(
                         "admin",
@@ -81,6 +83,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                 )
         );
         admin.setRole(UserRole.ADMIN);
+        admin.getRoles().add(adminRole);
         userRepo.save(admin);
     }
 }

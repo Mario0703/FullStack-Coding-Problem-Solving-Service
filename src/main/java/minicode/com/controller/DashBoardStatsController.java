@@ -24,9 +24,16 @@ public class DashBoardStatsController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_STATISTICS')")
     public Map<String, Long> getPlatformStatistics(Authentication authentication) {
         requireAdmin(authentication);
         return statsService.getPlatformStatistics();
+    }
+
+    @GetMapping("/permission")
+    @PreAuthorize("hasAuthority('VIEW_STATISTICS')")
+    public Map<String, Boolean> canViewStatistics() {
+        return Map.of("allowed", true);
     }
 
     @GetMapping("/users")

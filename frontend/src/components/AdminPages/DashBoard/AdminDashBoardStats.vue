@@ -16,6 +16,19 @@ const loadError = ref('')
 
 async function loadStatistics() {
   try {
+    const permissionResponse = await fetch(`${baseUrl}/api/admin/stats/permission`, {
+      credentials: 'include',
+    })
+
+    if (permissionResponse.status === 403) {
+      loadError.value = 'You do not have permission to view platform statistics.'
+      return
+    }
+
+    if (!permissionResponse.ok) {
+      throw new Error('Could not check statistics permission')
+    }
+
     const [statisticsResponse, usersResponse] = await Promise.all([
       fetch(`${baseUrl}/api/admin/stats`, { credentials: 'include' }),
       fetch(`${baseUrl}/api/admin/stats/users/list`, { credentials: 'include' }),
