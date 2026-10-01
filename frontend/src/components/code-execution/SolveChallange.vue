@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
-import ChallangeSolv from '@/components/code-execution/ChallangeSolv.vue'
+import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 const solvedBypeople = ref<string[]>([])
@@ -58,7 +58,7 @@ onMounted(loadChallenge)
         <v-btn to="/challenges" variant="text">Back to challenges</v-btn>
       </v-card-actions>
     </v-card>
-    <ChallangeSolv v-if="challenge" :challenge-id="challenge.id" />
+    <ChallangeSolve v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
   <v-container>
     <v-row v-for="person in solvedBypeople" :key="person">

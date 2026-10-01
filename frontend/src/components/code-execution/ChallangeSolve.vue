@@ -4,24 +4,17 @@ import { currentUser } from '@/authenticator/auth'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
-import { baseUrl } from '@/utils/api'
-
-type ChallengeTemplateResponse = {
-  language: string
-  template: string
-  explanation: string
-}
-
-type ExecutionResult = {
-  exitCode: number
-  output: string
-}
-
+import {
+  languageLabel,
+  loadChallengeTemplate,
+  submitCode,
+} from '@/utils/CodeExecutorUtils'
+import { validLanguages } from '@/utils/CodeExecutorUtils'
 const props = defineProps<{
   challengeId?: string
 }>()
 
-defineOptions({ name: 'ChallangeSolv' })
+defineOptions({ name: 'ChallengeSolve' })
 
 const language = ref('')
 const code = ref('')
@@ -30,17 +23,6 @@ const output = ref('')
 const loadError = ref('')
 const isLoading = ref(false)
 const isExecuting = ref(false)
-
-function languageLabel(value: string) {
-  const labels: Record<string, string> = {
-    PYTHON: 'Python',
-    JAVA: 'Java',
-    'C++': 'C++',
-    'C#': 'C#',
-  }
-
-  return labels[value] ?? value
-}
 
 async function loadTemplate(challengeId: string | undefined) {
   language.value = ''
@@ -57,15 +39,7 @@ async function loadTemplate(challengeId: string | undefined) {
   isLoading.value = true
 
   try {
-    const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/template`, {
-      credentials: 'include',
-    })
-
-    if (!response.ok) {
-      throw new Error('The challenge template could not be loaded.')
-    }
-
-    const result = (await response.json()) as ChallengeTemplateResponse
+    const result = await loadChallengeTemplate(challengeId)
     language.value = result.language
     code.value = result.template
     explanation.value = result.explanation
@@ -98,27 +72,12 @@ async function executeCode() {
   output.value = ''
 
   try {
-    const response = await fetch(`${baseUrl}/api/code/playground/submit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
+    const result = await submitCode({
         userId: currentUser.value.userId,
         challengeId: props.challengeId,
         language: language.value.toLowerCase(),
         code: code.value,
-      }),
     })
-    console.log(code.value)
-
-    if (!response.ok) {
-      output.value = `Error: ${await response.text()}`
-      return
-    }
-
-    const result = (await response.json()) as ExecutionResult
     output.value = `Exit code: ${result.exitCode}\n${result.output}`
   } catch (error) {
     output.value = `Could not connect to the backend: ${String(error)}`
@@ -142,7 +101,7 @@ async function executeCode() {
       <div class="d-flex flex-wrap align-center ga-2 mb-4">
         <span class="text-subtitle-1 font-weight-medium">Language:</span>
         <v-btn
-          v-for="option in ['PYTHON', 'JAVA', 'C++', 'C#']"
+          v-for="option in validLanguages"
           :key="option"
           :color="language === option ? 'primary' : undefined"
           :variant="language === option ? 'flat' : 'outlined'"
