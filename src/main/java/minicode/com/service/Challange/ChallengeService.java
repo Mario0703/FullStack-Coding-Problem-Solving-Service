@@ -33,17 +33,30 @@ public class ChallengeService {
     }
 
     public Challenge createChallenge(CreateChallangeRequest request) {
+
         String name = request.getName();
+
         String description = request.getDescription();
         Difficulty difficulty = request.getDifficulty();
         Category category = request.getCategory();
         int numberOfTestCases = request.getTestCases().size();
+        String solution = request.getSolution();
+        String template = request.getTemplate();
+        String templateExplanation = request.getTemplateExplanation();
+        String runner = request.getRunner();
+        String runnerExplanation = request.getRunnerExplanation();
+
         Challenge challenge = new Challenge(
                 name,
                 description,
                 difficulty,
                 category,
-                numberOfTestCases
+                numberOfTestCases,
+                solution,
+                template,
+                templateExplanation,
+                runner,
+                runnerExplanation
         );
 
         for (CreateExamplesRequest example : request.getExamples()) {
