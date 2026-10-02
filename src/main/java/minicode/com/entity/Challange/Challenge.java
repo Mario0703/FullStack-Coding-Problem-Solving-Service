@@ -64,6 +64,9 @@ public class Challenge {
     @Column(columnDefinition = "TEXT")
     private String templeteExplanation;
 
+    @Column
+    private String language;
+
 
     public Challenge(
             String name,
@@ -75,7 +78,8 @@ public class Challenge {
             String runner,
             String runnerExplanation,
             String templete,
-            String templeteExplanation
+            String templeteExplanation,
+            String language
     ) {
         this.name = name;
         this.description = description;
@@ -87,6 +91,7 @@ public class Challenge {
         this.runnerExplanation = runnerExplanation;
         this.templete = templete;
         this.templeteExplanation = templeteExplanation;
+        this.language = language;
     }
 }
 

@@ -17,6 +17,7 @@ public class LoginRequest {
     @NotBlank(message = "All users must have a password")
     private String password;
 
+
 }
 
 

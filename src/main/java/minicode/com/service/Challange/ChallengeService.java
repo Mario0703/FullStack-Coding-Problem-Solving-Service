@@ -3,6 +3,7 @@ package minicode.com.service.Challange;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
 import minicode.com.dto.Challenge.CreateExamplesRequest;
 import minicode.com.dto.Challenge.CreateTestCaseRequest;
+import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.entity.Challange.*;
 import minicode.com.repository.ChallengeRepo;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,15 @@ public class ChallengeService {
         return challenge.getTestCases();
     }
 
+    public ChallengeTemplateResponse getChallengeTemplate(UUID challengeId) {
+        Challenge challenge = getChallenge(challengeId);
+        return new ChallengeTemplateResponse(
+                challenge.getLanguage(),
+                challenge.getTemplete(),
+                challenge.getTempleteExplanation()
+        );
+    }
+
     public Challenge createChallenge(CreateChallangeRequest request) {
 
         String name = request.getName();
@@ -53,10 +63,11 @@ public class ChallengeService {
                 category,
                 numberOfTestCases,
                 solution,
+                runner,
+                runnerExplanation,
                 template,
                 templateExplanation,
-                runner,
-                runnerExplanation
+                request.getLanguage()
         );
 
         for (CreateExamplesRequest example : request.getExamples()) {

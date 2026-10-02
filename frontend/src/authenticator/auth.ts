@@ -37,6 +37,7 @@ export async function loadCurrentUser(): Promise<UserData | null> {
 
     currentUser.value = await response.json();
     currentRole.value = currentUser.value?.role ?? null;
+    console.log("Current user:", currentUser.value);
     return currentUser.value;
   } catch (error) {
     currentUser.value = null;

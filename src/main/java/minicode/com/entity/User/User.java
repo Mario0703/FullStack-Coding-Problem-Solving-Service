@@ -59,7 +59,7 @@ public class User {
     }
 
     public UUID getId() {
-        return null;
+        return userId;
     }
 }
 
