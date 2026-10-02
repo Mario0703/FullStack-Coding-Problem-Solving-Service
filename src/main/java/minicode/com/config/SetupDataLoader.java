@@ -99,14 +99,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                     .toList());
         }
 
-        if (testRunnerRepo.count() == 0) {
-            testRunnerRepo.saveAll(definitions.stream()
-                    .map(definition -> new TestRunner(
-                            definition.language(),
-                            readMetadataFile(Path.of("CodeEnv", "TestSuite", "runCommandTest.bs"))
-                    ))
-                    .toList());
-        }
+        String runnerMetadata = readMetadataFile(Path.of("CodeEnv", "TestSuite", "runCommandTest.bs"));
+        testRunnerRepo.saveAll(definitions.stream().map(definition -> {
+            TestRunner runner = testRunnerRepo.findById(definition.language())
+                    .orElseGet(() -> new TestRunner(definition.language(), runnerMetadata));
+            runner.setTestRunnerMetaData(runnerMetadata);
+            return runner;
+        }).toList());
     }
 
     private String readMetadataFile(Path path) {
