@@ -21,13 +21,4 @@ public final class ExecutionDefinitionFactory {
         return DEFINITIONS;
     }
 
-    public static ExecutionDefinition forLanguage(String language) {
-        return DEFINITIONS.stream()
-                .filter(definition -> definition.language().equals(language))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Unsupported language: " + language
-                ));
-    }
 }
