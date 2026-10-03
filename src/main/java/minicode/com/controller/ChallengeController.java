@@ -18,6 +18,7 @@ import minicode.com.service.User.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import minicode.com.dto.User.PublicSubmissionResponse;
+import minicode.com.dto.User.SolverResponse;
 import minicode.com.dto.User.UserSummary;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -83,9 +84,9 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/solved-by")
-    public List<String> getSolvedByUserNames(@PathVariable UUID challengeId) {
+    public List<SolverResponse> getSolvedByUserNames(@PathVariable UUID challengeId) {
         List<SolvedChallenges> solvedChallenges = challangeService.getSolvedChallenges(challengeId);
-        return userService.getUserNamesBySolvedChallenges(solvedChallenges);
+        return userService.getSolversBySolvedChallenges(solvedChallenges);
     }
 
     @GetMapping("/{challengeId}/submissions")

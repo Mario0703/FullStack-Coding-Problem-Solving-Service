@@ -8,9 +8,13 @@ import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
+type Solver = {
+  userName: string
+  code: string
+}
 
-async function loadSolvedByPeople(challengeId: string) {
-  const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/getSolvedChallenges`, {
+async function loadSolvedByPeople(challengeId: string): Promise<Solver[]> {
+  const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/solved-by`, {
     credentials: 'include',
   })
   if (!response.ok) {
@@ -19,20 +23,20 @@ async function loadSolvedByPeople(challengeId: string) {
   }
   const data = await response.json()
   console.log(data)
-  return data as string[]
+  return data as Solver[]
 }
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
 const loadError = ref('')
 const isLoading = ref(true)
-const solvedBypeople = ref<string[]>([])
+const solvedByPeople = ref<Solver[]>([])
 
 async function loadChallenge() {
   try {
     const challengeId = String(route.params.id)
     const challenges = await listChallenges()
-    solvedBypeople.value = await loadSolvedByPeople(challengeId)
+    solvedByPeople.value = await loadSolvedByPeople(challengeId)
     challenge.value = challenges.find((item) => item.id === challengeId) ?? null
 
     if (!challenge.value) {
@@ -76,19 +80,28 @@ onMounted(loadChallenge)
     </v-card>
     <ChallangeSolve v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
-  <v-container>
-    <v-row v-for="person in solvedBypeople" :key="person">
+  <v-container v-if="solvedByPeople.length > 0">
+    <h3 class="text-h5 mb-4">Solved by</h3>
+    <v-row v-for="(person, index) in solvedByPeople" :key="index">
       <v-col>
-        <v-card title="Solved by" class="mb-4">
-          <v-card-text>{{ person }}</v-card-text>
-          <v-container>
-            <v-btn class="ma-4" color="primary">View profile</v-btn>
-            <v-btn class="ma-4" color="primary">View solutions</v-btn>
-          </v-container>
+        <v-card class="mb-4">
+          <v-card-title>{{ person.userName }}</v-card-title>
+          <v-card-text>
+            <pre class="code-block">{{ person.code }}</pre>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+.code-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  white-space: pre;
+}
+</style>

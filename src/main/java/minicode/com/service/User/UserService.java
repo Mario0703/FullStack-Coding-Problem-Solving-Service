@@ -7,6 +7,7 @@ import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
 import minicode.com.dto.User.LoginRequest;
 import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.SolverResponse;
 import minicode.com.dto.User.UserSummary;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.User.User;
@@ -263,10 +264,12 @@ public class UserService {
         return users;
     }
 
-    public List<String> getUserNamesBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
+    public List<SolverResponse> getSolversBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
         return solvedChallenges.stream()
-                .map(solvedChallenge -> findById(solvedChallenge.getUserId()).getUserName())
-                .distinct()
+                .map(solvedChallenge -> {
+                    User user = findById(solvedChallenge.getUserId());
+                    return new SolverResponse(user.getUserName(), solvedChallenge.getCode());
+                })
                 .toList();
     }
 }
