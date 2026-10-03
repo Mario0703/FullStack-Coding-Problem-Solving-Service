@@ -1,12 +1,13 @@
 package minicode.com.controller.CoderExercutes;
 
-import minicode.com.dto.User.ExecutionResult;
+import minicode.com.controller.CoderExercutes.CliCommands.CLCommandsStrat;
+import minicode.com.controller.CoderExercutes.CliCommands.BuildCommands;
+import minicode.com.controller.CoderExercutes.CliCommands.CLCommandsStrat.CommandResult;
+import minicode.com.dto.Challenge.ExecutionResult;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,38 +20,35 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     public ExecutionResult execute(Path path) throws IOException, InterruptedException {
         String imageName = "minileetcode-execution-" + UUID.randomUUID();
 
-        Process build = new ProcessBuilder(
-                "docker", "build", "-t", imageName, "."
-        ).directory(path.toFile()).redirectErrorStream(true).start();
+        CLCommandsStrat commands = new BuildCommands(path);
 
-        String buildOutput = readOutput(build);
-        int buildExitCode = build.waitFor();
-        if (buildExitCode != 0) {
-            return new ExecutionResult(buildExitCode, buildOutput, 0, 1);
+        CommandResult buildResult = commands.buildContainer(imageName);
+        boolean isBuildSuccess = buildResult.exitCode() == 0;
+
+        if (!isBuildSuccess) {
+            throw new IOException("Failed to build Docker image: " + buildResult.output());
         }
 
-        Process run = new ProcessBuilder(
-                "docker", "run", "--rm", imageName
-        ).directory(path.toFile()).redirectErrorStream(true).start();
+        CommandResult runResult = commands.runContainer(imageName, imageName, 30);
 
-        if (!run.waitFor(30, TimeUnit.SECONDS)) {
-            run.destroyForcibly();
-            return new ExecutionResult(124, "Execution timed out", 0, 1);
-        }
+        String output = runResult.output();
 
-        String output = readOutput(run);
-        Matcher matcher = TEST_RESULT.matcher(output);
-        int passed = 0;
-        int failed = 1;
-        if (matcher.find()) {
-            passed = Integer.parseInt(matcher.group(1));
-            failed = Integer.parseInt(matcher.group(2));
-        }
+        findTestResults(output);
 
-        return new ExecutionResult(run.exitValue(), output, passed, failed);
+        int[] testResults = findTestResults(output);
+        int passed = testResults[0];
+        int failed = testResults[1];
+
+        return new ExecutionResult(runResult.exitCode(), output, passed, failed);
     }
 
-    private String readOutput(Process process) throws IOException {
-        return new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+    private int[] findTestResults(String output) {
+        Matcher matcher = TEST_RESULT.matcher(output);
+        if (matcher.find()) {
+            int passed = Integer.parseInt(matcher.group(1));
+            int failed = Integer.parseInt(matcher.group(2));
+            return new int[]{passed, failed};
+        }
+        return new int[]{0, 0};
     }
 }

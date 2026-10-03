@@ -1,7 +1,7 @@
 package minicode.com.controller;
 
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
-import minicode.com.dto.User.ExecutionResult;
+import minicode.com.dto.Challenge.ExecutionResult;
 import minicode.com.dto.User.SubmissionRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.TestCases;

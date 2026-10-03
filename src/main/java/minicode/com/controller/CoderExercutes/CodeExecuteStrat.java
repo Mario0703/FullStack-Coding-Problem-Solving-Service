@@ -1,6 +1,6 @@
 package minicode.com.controller.CoderExercutes;
 
-import minicode.com.dto.User.ExecutionResult;
+import minicode.com.dto.Challenge.ExecutionResult;
 
 import java.io.IOException;
 import java.nio.file.Path;
