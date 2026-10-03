@@ -86,7 +86,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private void seedExecutionMetadata() {
         List<ExecutionDefinition> definitions = ExecutionDefinitionFactory.definitions();
         String runnerMetadata = readMetadataFile(ExecutionDefinitionFactory.definitions().get(0).testRunnerPath());
+        setUpContainerDefitionsOrCreateANewOne(definitions, runnerMetadata);
+    }
 
+    private void setUpContainerDefitionsOrCreateANewOne(List<ExecutionDefinition> definitions, String runnerMetadata) {
         for (ExecutionDefinition definition : definitions) {
             Container container = containerRepo.findById(definition.language())
                     .orElseGet(() -> new Container(
