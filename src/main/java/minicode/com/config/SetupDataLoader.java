@@ -1,13 +1,15 @@
 package minicode.com.config;
 
 import jakarta.transaction.Transactional;
+import minicode.com.controller.CoderExercutes.ExerCuterDefition.ExecutionDefinition;
+import minicode.com.controller.CoderExercutes.ExerCuterDefition.ExecutionDefinitionFactory;
+import minicode.com.entity.Container.Container;
 import minicode.com.entity.Roles.Permissions;
 import minicode.com.entity.Roles.Role;
 import minicode.com.entity.Roles.UserPermissions;
-import minicode.com.entity.User.User;
 import minicode.com.entity.Roles.UserRole;
-import minicode.com.entity.Container.Container;
 import minicode.com.entity.TestRunner.TestRunner;
+import minicode.com.entity.User.User;
 import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.PermissionsRepo;
 import minicode.com.repository.RoleRepo;
@@ -82,31 +84,24 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     private void seedExecutionMetadata() {
-        List<ExecutionDefinition> definitions = List.of(
-                new ExecutionDefinition("python", "minileetcode-python"),
-                new ExecutionDefinition("java", "minileetcode-java"),
-                new ExecutionDefinition("cplusplus", "minileetcode-cpp"),
-                new ExecutionDefinition("csharp", "minileetcode-csharp")
-        );
+        List<ExecutionDefinition> definitions = ExecutionDefinitionFactory.definitions();
+        String runnerMetadata = readMetadataFile(ExecutionDefinitionFactory.definitions().get(0).testRunnerPath());
 
         for (ExecutionDefinition definition : definitions) {
             Container container = containerRepo.findById(definition.language())
                     .orElseGet(() -> new Container(
                             definition.language(),
                             definition.imageName(),
-                            readMetadataFile(Path.of("CodeEnv", definition.language(), "Dockerfile"))
+                            readMetadataFile(definition.dockerfilePath())
                     ));
-            container.setContainerMetadata(readMetadataFile(Path.of("CodeEnv", definition.language(), "Dockerfile")));
+            container.setContainerMetadata(readMetadataFile(definition.dockerfilePath()));
             containerRepo.save(container);
-        }
 
-        String runnerMetadata = readMetadataFile(Path.of("CodeEnv", "TestSuite", "runCommandTest.bs"));
-        testRunnerRepo.saveAll(definitions.stream().map(definition -> {
             TestRunner runner = testRunnerRepo.findById(definition.language())
                     .orElseGet(() -> new TestRunner(definition.language(), runnerMetadata));
             runner.setTestRunnerMetaData(runnerMetadata);
-            return runner;
-        }).toList());
+            testRunnerRepo.save(runner);
+        }
     }
 
     private String readMetadataFile(Path path) {
@@ -115,9 +110,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         } catch (IOException exception) {
             throw new IllegalStateException("Could not load execution metadata from " + path, exception);
         }
-    }
-
-    private record ExecutionDefinition(String language, String imageName) {
     }
 
 
