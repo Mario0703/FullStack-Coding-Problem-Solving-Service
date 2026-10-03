@@ -1,13 +1,16 @@
 import { ref } from "vue";
+import { baseUrl } from '@/utils/api';
+
 
 export type UserData = {
   userId: string;
   userName: string;
   email: string;
+  role: string
 };
 
 export const currentUser = ref<UserData | null>(null);
-export const isAdmin = ref(false);
+export const currentRole = ref<string | null>(null);
 export const isLoadingUser = ref(true);
 export const hasCheckedUser = ref(false);
 export const authError = ref("");
@@ -17,13 +20,14 @@ export async function loadCurrentUser(): Promise<UserData | null> {
   authError.value = "";
 
   try {
-    const response = await fetch("http://localhost:8082/api/auth/me", {
+    const response = await fetch(`${baseUrl}/api/auth/me`, {
       method: "GET",
       credentials: "include",
     });
 
     if (response.status === 401) {
       currentUser.value = null;
+      currentRole.value = null;
       return null;
     }
 
@@ -31,7 +35,9 @@ export async function loadCurrentUser(): Promise<UserData | null> {
       throw new Error("Unable to check authentication");
     }
 
-    currentUser.value = (await response.json()) as UserData;
+    currentUser.value = await response.json();
+    currentRole.value = currentUser.value?.role ?? null;
+    console.log("Current user:", currentUser.value);
     return currentUser.value;
   } catch (error) {
     currentUser.value = null;
@@ -43,31 +49,24 @@ export async function loadCurrentUser(): Promise<UserData | null> {
   }
 }
 
-export async function loadCurrentAdmin(): Promise<void> {
-  const response = await fetch("http://localhost:8082/api/auth/admin", {
+export async function loadCurrentAdmin(): Promise<string> {
+  const response = await fetch(`${baseUrl}/api/auth/admin`, {
     credentials: "include",
   });
 
   if (!response.ok) {
-    isAdmin.value = false;
+    currentRole.value = null;
     throw new Error("Admin is not authenticated");
   }
 
-  isAdmin.value = true;
-}
-
-export async function isAdminAuthenticated(): Promise<boolean> {
-  try {
-    await loadCurrentAdmin();
-    return true;
-  } catch {
-    isAdmin.value = false;
-    return false;
-  }
+  const role = (await response.text()).trim();
+  currentRole.value = role;
+  return role;
 }
 
 
 export function clearCurrentUser(): void {
   currentUser.value = null;
+  currentRole.value = null;
   hasCheckedUser.value = true;
 }

@@ -1,130 +1,108 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import { currentUser, type UserData } from "@/authenticator/auth";
-import { getLoginValidationErrors } from "@/utils/UserInputCheck";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
+import LoginWithEmail from "@/components/authentication/LoginWithEmail.vue";
+import ForgotPasswordLink from "@/components/authentication/ForgotPasswordLink.vue";
+import type { PropType } from "vue";
+import type { SubmitEventPromise } from "vuetify";
 
-const router = useRouter();
-const email = ref("");
-const userName = ref("");
-const password = ref("");
-const loginError = ref("");
-const isSubmitting = ref(false);
-const loginWithEmail = ref(false);
 
-const loginWithUsername = computed(() => !loginWithEmail.value);
+const props = defineProps({
+  loginTitle: {
+    type: String,
+    required : true
+  },
+  loginError: {
+    type: String,
+    required : false
+  },
+  loginWithEmail: {
+    type: Boolean,
+    default: false,
+  },
+  allowEmailLogin: {
+    type: Boolean,
+    default: true,
+  },
+  name: {
+    type: String,
+    default: '',
+  },
+  password: {
+    type: String,
+    default: '',
+  },
+  isSubmitting: {
+    type: Boolean,
+    default: false,
+  },
+  login: {
+    type: Function as PropType<(event: SubmitEventPromise) => unknown>,
+    required: true,
+  },
+  width: {
+    type: [String, Number],
+    default: 400,
+  },
+})
 
-type LoginData = {
-  email?: string;
-  userName?: string;
-  password: string;
-};
+const emit = defineEmits<{
+  'update:loginWithEmail': [value: boolean]
+  'update:name': [value: string]
+  'update:password': [value: string]
+}>()
 
-async function LogIn() {
-  loginError.value = "";
-  const validationErrors = getLoginValidationErrors({
-    identifier: loginWithEmail.value ? email.value : userName.value,
-    password: password.value,
-    identifierType: loginWithEmail.value ? "email" : "username",
-  });
-
-  if (validationErrors.length > 0) {
-    loginError.value = validationErrors.join(" ");
-    return;
-  }
-
-  const loginData: LoginData = {
-    password: password.value,
-    ...(loginWithEmail.value
-      ? { email: email.value.trim() }
-      : { userName: userName.value.trim() }),
-  };
-
-  isSubmitting.value = true;
-
-  try {
-    const response = await fetch("http://localhost:8082/api/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(loginData),
-    });
-
-    if (response.status === 400 || response.status === 401) {
-      loginError.value = "Invalid email/username or password.";
-      return;
-    }
-
-    if (!response.ok) {
-      loginError.value = "The server could not log you in. Please try again later.";
-      return;
-    }
-
-    const loggedInUser = (await response.json()) as UserData;
-    currentUser.value = loggedInUser;
-    await router.push({ name: "loginConfirmed" });
-  } catch {
-    loginError.value = "Unable to reach the server. Please try again later.";
-  } finally {
-    isSubmitting.value = false;
-  }
-}
 </script>
 
 <template>
   <v-container class="d-flex align-center justify-center">
-    <v-alert
-      v-if="loginError"
+    <ErrorFeedback
+      v-if="props.loginError"
       title="Login failed"
-      :text="loginError"
-      type="error"
+      :message="props.loginError"
       variant="tonal"
       class="mb-4"
     />
 
-    <v-form class="signup-form" @submit.prevent="LogIn">
-      <v-card-title class="text-h5 font-weight-bold px-0">Login to your account</v-card-title>
+    <v-form :style="{ width: `${props.width}px`, maxWidth: '100%' }" class="signup-form" @submit.prevent="props.login">
+      <v-card-title class="text-h5 font-weight-bold px-0">{{ props.loginTitle }}</v-card-title>
 
       <v-switch
-        v-model="loginWithEmail"
+        v-if="props.allowEmailLogin"
+        :model-value="props.loginWithEmail"
         label="Log in with email"
         color="primary"
+        @update:model-value="emit('update:loginWithEmail', Boolean($event))"
+      />
+
+      <LoginWithEmail
+        v-if="props.allowEmailLogin && props.loginWithEmail"
+        :model-value="props.name"
+        @update:model-value="emit('update:name', $event)"
       />
 
       <v-text-field
-        v-if="loginWithEmail"
-        v-model="email"
-        label="Email"
-        placeholder="Type your email"
-        type="email"
-        autocomplete="email"
-      />
-
-      <v-text-field
-        v-if="loginWithUsername"
-        v-model="userName"
+        v-else
+        :model-value="props.name"
         label="Username"
         placeholder="Type your username"
         autocomplete="username"
+        @update:model-value="emit('update:name', $event)"
       />
 
       <v-text-field
-        v-model="password"
+        :model-value="props.password"
         label="Password"
         placeholder="Type your password"
         type="password"
         autocomplete="current-password"
+        @update:model-value="emit('update:password', $event)"
       />
-      <RouterLink class="text-primary text-decoration-none" :to="{ name: 'forgotPassword' }">
-        Forgot password?
-      </RouterLink>
+      <ForgotPasswordLink v-if="props.allowEmailLogin && props.loginWithEmail" />
       <v-btn
         type="submit"
         color="primary"
-        :loading="isSubmitting"
-        :disabled="isSubmitting"
+        :loading="props.isSubmitting"
+        :disabled="props.isSubmitting"
       >
         Login
       </v-btn>

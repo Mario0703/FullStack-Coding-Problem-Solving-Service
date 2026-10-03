@@ -1,59 +1,67 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { isAdmin } from "@/authenticator/auth";
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import type { SubmitEventPromise } from 'vuetify'
+import { loadCurrentAdmin } from '@/authenticator/auth'
+import LoginPage from '@/components/authentication/LoginPage.vue'
+import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
 
-const router = useRouter();
-const adminUserName = ref("");
-const adminPassword = ref("");
-const loginError = ref("");
+const router = useRouter()
+const adminUserName = ref('')
+const adminPassword = ref('')
+const loginError = ref('')
+const isSubmitting = ref(false)
 
+async function adminSignIn(_event: SubmitEventPromise) {
+  loginError.value = ''
 
-async function AdminSignIn(){
-  const response = await fetch("http://localhost:8082/api/admin/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ adminUserName: adminUserName.value, adminPassword: adminPassword.value }),
-  });
-
-  if (!response.ok) {
-    loginError.value = "Invalid admin username or password.";
-    return;
+  const adminLoginRequest: AdminLoginCredentials = {
+    adminUserName: adminUserName.value.trim(),
+    adminPassword: adminPassword.value,
   }
 
-  await router.push({ name: "adminLoginConfirmed" });
-  isAdmin.value = true;
+  const hasAdminFilledOutFields = adminLoginRequest.adminUserName && adminLoginRequest.adminPassword
 
+  if (!hasAdminFilledOutFields) {
+    loginError.value = 'Admin username and password are required.'
+    return
+  }
+
+  isSubmitting.value = true
+
+  try {
+    const response = await loginAdmin(adminLoginRequest)
+    const isAdminFieldsValid = response.status === 400 || response.status === 401
+
+    if (isAdminFieldsValid) {
+      loginError.value = 'Invalid admin username or password.'
+      return
+    }
+
+    if (!response.ok) {
+      loginError.value = 'The server could not log you in. Please try again later.'
+      return
+    }
+
+    await loadCurrentAdmin()
+    await router.push({ name: 'adminLoginConfirmed' })
+  } catch {
+    loginError.value = 'Unable to reach the server. Please try again later.'
+  } finally {
+    isSubmitting.value = false
+  }
 }
-
-
 </script>
 
 <template>
-  <v-container class="d-flex align-center justify-center">
-    <v-alert v-if="loginError" :text="loginError" type="error" class="mb-4" />
-    <v-form @submit.prevent="AdminSignIn" class="elevation-12 pa-6" style="max-width: 400px; width: 100%;">
-      <v-text-field
-        v-model="adminUserName"
-        placeholder="AdminUserName"
-        outlined
-        dense
-        class="mb-4"
-      ></v-text-field>
-      <v-text-field
-        v-model="adminPassword"
-        placeholder="AdminPassword"
-        outlined
-        dense
-        type="password"
-        class="mb-4"
-      ></v-text-field>
-      <v-btn type="submit" color="primary" block>Login</v-btn>
-    </v-form>
-  </v-container>
+  <LoginPage
+    login-title="Admin login"
+    :login-error="loginError"
+    :is-submitting="isSubmitting"
+    :login="adminSignIn"
+    :allow-email-login="false"
+    v-model:name="adminUserName"
+    v-model:password="adminPassword"
+    :width="300"
+  />
 </template>
-
-<style scoped>
-
-</style>

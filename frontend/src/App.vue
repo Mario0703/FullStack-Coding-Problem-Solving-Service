@@ -7,6 +7,7 @@ import {
   loadCurrentUser,
 } from "./authenticator/auth";
 import MenuBar from "./components/navigation/MenuBar.vue";
+import WarningFeedback from "./components/FeedBack/Warning.vue";
 
 onMounted(() => {
   if (!hasCheckedUser.value) {
@@ -26,12 +27,11 @@ onMounted(() => {
     </v-main>
 
     <v-main v-else>
-      <v-alert
+      <WarningFeedback
         v-if="authError"
-        type="warning"
-        :text="authError"
         variant="tonal"
         class="ma-4"
+        :message="authError"
       />
       <RouterView />
     </v-main>

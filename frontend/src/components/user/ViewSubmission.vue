@@ -2,6 +2,9 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import { baseUrl } from '@/utils/api'
+import { languageLabel } from '@/utils/CodeExecutorUtils'
 
 const route = useRoute()
 const submission = ref<any>(null)
@@ -16,7 +19,7 @@ onMounted(async () => {
   }
 
   const response = await fetch(
-    `http://localhost:8082/api/submission/details?submissionId=${submissionId}`,
+    `${baseUrl}/api/submission/details?submissionId=${submissionId}`,
     { credentials: 'include' },
   )
 
@@ -31,7 +34,7 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <v-alert v-if="errorMessage" type="error" :text="errorMessage" />
+    <ErrorFeedback v-if="errorMessage" :message="errorMessage" />
 
     <v-card v-else-if="submission" class="border-lg" border="primary" variant="outlined">
       <v-card-title class="text-h5 font-weight-bold pa-6">
@@ -43,7 +46,7 @@ onMounted(async () => {
             <v-card class="h-100" color="blue-lighten-5" variant="tonal">
               <v-card-text>
                 <div class="text-caption text-medium-emphasis">Language</div>
-                <div class="text-body-1 font-weight-bold">{{ submission.language }}</div>
+                <div class="text-body-1 font-weight-bold">{{ languageLabel(submission.language) }}</div>
               </v-card-text>
             </v-card>
           </v-col>

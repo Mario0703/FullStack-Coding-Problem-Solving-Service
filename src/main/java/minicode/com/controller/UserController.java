@@ -1,20 +1,24 @@
 package minicode.com.controller;
 
-import minicode.com.dto.LoginRequest;
-import minicode.com.dto.SignupRequest;
-import minicode.com.dto.ChangeEmailRequest;
-import minicode.com.dto.ChangePasswordRequest;
-import minicode.com.dto.ChangeUserNameRequest;
-import minicode.com.entity.Challenge;
-import minicode.com.entity.User;
-import minicode.com.service.UserService;
+import minicode.com.dto.User.LoginRequest;
+import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.ChangeEmailRequest;
+import minicode.com.dto.User.ChangePasswordRequest;
+import minicode.com.dto.User.ChangeUserNameRequest;
+import minicode.com.entity.User.User;
+import minicode.com.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,9 +26,17 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
 
-    public UserController(UserService userService) {
+    public UserController(
+            UserService userService,
+            AuthenticationManager authenticationManager,
+            SecurityContextRepository securityContextRepository
+    ) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
     @PostMapping("/signup")
@@ -34,76 +46,62 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public User login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+    public User login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse
+    ) {
         User user = userService.login(request); // authenticate the user
-        HttpSession oldSession = httpRequest.getSession(false);
-        if (oldSession != null) {
-            oldSession.invalidate();
-        }
-
-        HttpSession newSession = httpRequest.getSession(true);
-        newSession.setAttribute("user_id", user.getUserId());
-
+        String identifier = request.getEmail() != null && !request.getEmail().isBlank()
+                ? request.getEmail()
+                : request.getUserName();
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
+        );
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
         return user;
 
     }
-    @PostMapping("/logout")
-    public void logout(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-    }
     @PostMapping("/change-username")
     public User changeUserName(
             @Valid @RequestBody ChangeUserNameRequest request,
-            HttpServletRequest httpRequest
+            Authentication authentication
     ) {
-        return userService.changeUserName(getAuthenticatedUserId(httpRequest), request);
+        return userService.changeUserName(getAuthenticatedUserId(authentication), request);
     }
 
     @PostMapping("/change-email")
     public User changeUserEmail(
             @Valid @RequestBody ChangeEmailRequest request,
-            HttpServletRequest httpRequest
+            Authentication authentication
     ) {
-        return userService.changeUserEmail(getAuthenticatedUserId(httpRequest), request);
+        return userService.changeUserEmail(getAuthenticatedUserId(authentication), request);
     }
 
     @PostMapping("/change-password")
     public User changePassword(
             @Valid @RequestBody ChangePasswordRequest request,
-            HttpServletRequest httpRequest
+            Authentication authentication
     ) {
-        return userService.changePassword(getAuthenticatedUserId(httpRequest), request);
+        return userService.changePassword(getAuthenticatedUserId(authentication), request);
     }
 
-    private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
+    private UUID getAuthenticatedUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
             );
         }
-
-        Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.FORBIDDEN,
-                        "User access is not permitted for an admin session"
-                );
-            }
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-        }
-
-        return (UUID) userId;
+        return userService.findByUserName(authentication.getName()).getUserId();
     }
 
 
 }
+
+
+

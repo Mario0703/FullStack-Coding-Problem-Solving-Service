@@ -14,7 +14,11 @@ for i in "$test_directory"/*.in; do
 
     "$@" < "$i" > "$actual_file" 2>&1
 
-    if diff --strip-trailing-cr -q "$actual_file" "$out_file" > /dev/null; then
+    actual_output=$(sed 's/\r$//' "$actual_file" | sed 's/[[:space:]]*$//' | sed '/^[[:space:]]*$/d')
+
+    expected_output=$(sed 's/\r$//' "$out_file" | sed 's/[[:space:]]*$//' | sed '/^[[:space:]]*$/d')
+
+    if [ "$actual_output" = "$expected_output" ]; then
         printf "Test case %s passed\n" "$index"
         passing_tests=$((passing_tests + 1))
     else

@@ -1,10 +1,10 @@
 package minicode.com;
 
-import minicode.com.dto.SignupRequest;
-import minicode.com.entity.User;
+import minicode.com.dto.User.SignupRequest;
+import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
 import minicode.com.security.BcryptPasswordEncoder;
-import minicode.com.service.UserService;
+import minicode.com.service.User.UserService;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -202,3 +202,6 @@ public class MiniLeetCodeSignupUnitTest {
         verify(mockUserRepo, never()).save(any(User.class));
     }
 }
+
+
+

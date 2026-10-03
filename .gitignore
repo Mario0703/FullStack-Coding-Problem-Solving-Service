@@ -51,13 +51,13 @@ build/
 /CodeEnv/python/submission.py
 /CodeEnv/java/Main.java
 /CodeEnv/java/submission.java
-/CodeEnv/c++/main.cpp
-/CodeEnv/c++/submission.cpp
-/CodeEnv/c#/Main.cs
-/CodeEnv/c#/submission.cs
+/CodeEnv/cplusplus/main.cpp
+/CodeEnv/cplusplus/submission.cpp
+/CodeEnv/csharp/Main.cs
+/CodeEnv/csharp/submission.cs
 
 # Compiled language output.
 *.class
 /CodeEnv/java/out/
-/CodeEnv/c#/bin/
-/CodeEnv/c#/obj/
+/CodeEnv/csharp/bin/
+/CodeEnv/csharp/obj/

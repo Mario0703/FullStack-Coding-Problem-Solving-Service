@@ -1,99 +1,89 @@
 package minicode.com.controller;
 
-import minicode.com.controller.CoderExercutes.CodeExercuteStrat;
-import minicode.com.controller.CoderExercutes.CSharpStrat;
-import minicode.com.controller.CoderExercutes.CppStrat;
-import minicode.com.controller.CoderExercutes.JavaStrat;
-import minicode.com.controller.CoderExercutes.PythonStrat;
-import minicode.com.dto.ExecutionResult;
-import minicode.com.dto.SubmissionRequest;
-import minicode.com.entity.Challenge;
-import minicode.com.entity.Submission;
-import minicode.com.entity.SubmissionStatus;
-import minicode.com.entity.User;
+import minicode.com.controller.CodeEnv.EnvStrat;
+import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
+import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
+import minicode.com.dto.Challenge.ExecutionResult;
+import minicode.com.dto.User.SubmissionRequest;
+import minicode.com.entity.Challange.Challenge;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.Submissions.SubmissionStatus;
+import minicode.com.entity.User.User;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.repository.ChallengeRepo;
+import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.SubmissionRepo;
+import minicode.com.repository.TestRunnerRepo;
 import minicode.com.repository.UserRepo;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.message.StructuredDataMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/code/playground")
 public class CodeController {
-
-    private final HashMap<String, CodeExercuteStrat> strategies = new HashMap<>();
+    private final DockerCodeStrategy containerStrat = new DockerCodeStrategy();
     private final ChallengeRepo challengeRepo;
     private final UserRepo userRepo;
     private final SubmissionRepo submissionRepo;
+    private final ContainerRepo containerRepo;
+    private final TestRunnerRepo testRunnerRepo;
 
     public CodeController(
             ChallengeRepo challengeRepo,
             UserRepo userRepo,
-            SubmissionRepo submissionRepo
+            SubmissionRepo submissionRepo,
+            ContainerRepo containerRepo,
+            TestRunnerRepo testRunnerRepo
     ) {
         this.challengeRepo = challengeRepo;
         this.userRepo = userRepo;
         this.submissionRepo = submissionRepo;
-        strategies.put("python", new PythonStrat());
-        strategies.put("java", new JavaStrat());
-        strategies.put("cpp", new CppStrat());
-        strategies.put("c++", new CppStrat());
-        strategies.put("csharp", new CSharpStrat());
-        strategies.put("c#", new CSharpStrat());
+        this.containerRepo = containerRepo;
+        this.testRunnerRepo = testRunnerRepo;
     }
 
     @PostMapping("/submit")
     public ExecutionResult submitCode(
             @Valid @RequestBody SubmissionRequest codeSubmission,
-            HttpServletRequest httpRequest
+            Authentication authentication
     ) throws IOException {
-        UUID authenticatedUserId = getAuthenticatedUserId(httpRequest);
-        if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
-        }
-        System.out.println("Code: " + codeSubmission.getCode());
+        UUID authenticatedUserId = getAuthenticatedUserId(authentication);
+        validateSubmissionUser(codeSubmission, authenticatedUserId);
 
-        User user = userRepo.findById(authenticatedUserId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Authenticated user was not found"
-                ));
-
-        Challenge challenge = challengeRepo.findById(codeSubmission.getChallengeId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Challenge not found"
-                ));
-
+        User user = findUserOrThrow(authenticatedUserId);
+        Challenge challenge = findChallengeOrThrow(codeSubmission.getChallengeId());
         String language = codeSubmission.getLanguage().toLowerCase(Locale.ROOT);
-        CodeExercuteStrat strategy = strategies.get(language);
 
-        if (strategy == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported language: " + language);
-        }
+        checkIfLanguageIsSupported(language);
 
-        Path challengeFolder = Path.of("CodeEnv", "Challenges", codeSubmission.getChallengeId().toString());
-        Path submissionFile = saveSubmission(codeSubmission, challenge);
+        EnvStrat envStrategy = new TempEnvDestroyAfter(
+                language,
+                codeSubmission.getCode(),
+                challenge.getRunner(),
+                challenge.getTestCases(),
+                containerRepo,
+                testRunnerRepo
+        );
 
+        Path tempEnvPath = null;
         try {
-            ExecutionResult result = strategy.execute(submissionFile, challengeFolder);
-            SubmissionStatus status = result.exitCode() == 0
-                    ? SubmissionStatus.ACCEPTED
-                    : SubmissionStatus.WRONG_ANSWER;
+            tempEnvPath = envStrategy.createEnv();
+            ExecutionResult result = containerStrat.execute(tempEnvPath);
+            SubmissionStatus status;
+
+            if (result.exitCode() == 0){
+                status = SubmissionStatus.ACCEPTED;
+            }
+            else{
+                status = SubmissionStatus.WRONG_ANSWER;
+            }
 
             submissionRepo.save(new Submission(
                     user,
@@ -106,73 +96,77 @@ public class CodeController {
                     result.failingTestCases()
             ));
 
+
             return result;
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Code execution was interrupted", e);
+        } finally {
+            if (tempEnvPath != null) {
+                try {
+                    envStrategy.destroyEnv(tempEnvPath);
+                } catch (IOException e) {
+                    // Do not hide the submission result if cleanup fails.
+                    e.printStackTrace();
+                }
+            }
         }
     }
+
+    private void checkIfLanguageIsSupported(String language) {
+        try {
+            SupportedLanguages.valueOf(language.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported programming language");
+        }
+    }
+
+    private void validateSubmissionUser(SubmissionRequest codeSubmission, UUID authenticatedUserId) {
+        if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
+        }
+    }
+
+    private User findUserOrThrow(UUID userId) {
+        return userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Authenticated user was not found"
+                ));
+    }
+
+    private Challenge findChallengeOrThrow(UUID challengeId) {
+        return challengeRepo.findById(challengeId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Challenge not found"
+                ));
+    }
+
     @GetMapping("/SolvedChallenges")
-    public List<UUID> getSolvedChallenges(HttpServletRequest httpRequest) {
-        UUID userId = getAuthenticatedUserId(httpRequest);
+    public List<UUID> getSolvedChallenges(Authentication authentication) {
+        UUID userId = getAuthenticatedUserId(authentication);
         return submissionRepo.findChallengeIdsByUserIdAndStatus(
                 userId,
                 SubmissionStatus.ACCEPTED
         );
     }
 
-    private Path saveSubmission(SubmissionRequest submission, Challenge challenge) throws IOException {
-        String challengeFolderName = sanitizeFolderName(challenge.getName());
-        Path submissionFolder = Path.of(
-                "submissions",
-                submission.getUserId().toString(),
-                challengeFolderName
-        );
-        Files.createDirectories(submissionFolder);
-
-        Path submissionFile = submissionFolder.resolve(
-                "submission." + fileExtension(submission.getLanguage())
-        );
-        Files.writeString(submissionFile, submission.getCode(), StandardCharsets.UTF_8);
-        return submissionFile;
-    }
-
-    private String sanitizeFolderName(String name) {
-        String sanitized = name
-                .trim()
-                .replaceAll("[^a-zA-Z0-9._-]", "_")
-                .replaceAll("_+", "_");
-        return sanitized.isBlank() ? "challenge" : sanitized;
-    }
-
-    private String fileExtension(String language) {
-        return switch (language.toLowerCase(Locale.ROOT)) {
-            case "python" -> "py";
-            case "java" -> "java";
-            case "cpp", "c++" -> "cpp";
-            case "csharp", "c#" -> "cs";
-            default -> throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Unsupported language: " + language
-            );
-        };
-    }
-
-    private UUID getAuthenticatedUserId(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
+    private UUID getAuthenticatedUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
         }
 
-        Object userId = session.getAttribute("user_id");
-        if (!(userId instanceof UUID)) {
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        User user = userRepo.findFirstByUserName(authentication.getName()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated"));
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User access is not permitted for an admin session");
         }
 
-        return (UUID) userId;
+        return user.getUserId();
     }
 }
+
+
+

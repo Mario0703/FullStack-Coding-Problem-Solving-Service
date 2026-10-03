@@ -1,13 +1,16 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
+import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import router from "@/router";
 import {
-  hasValidSignupDetails,
+  getSignupValidationError,
   inputsMatch,
   isValidEmail,
   isValidPassword,
-} from '@/utils/UserInputCheck'
+} from '@/utils/signupValidation'
+import { baseUrl } from '@/utils/api'
+import type { SignupData } from '@/utils/signupValidation'
 
 const userName = ref("");
 const email = ref("");
@@ -16,12 +19,6 @@ const password = ref("");
 const confirmPassword = ref("");
 const signupError = ref("");
 
-type UserData = {
-  userName: string;
-  email: string;
-  password: string;
-};
-
 
 async function sendUserData() {
 
@@ -29,14 +26,14 @@ async function sendUserData() {
 
   if (!canSubmit()) return
 
-  const userData: UserData = {
+  const userData: SignupData = {
     userName: userName.value,
     email: email.value,
     password: password.value,
   }
 
   try {
-    const response = await fetch('http://localhost:8082/api/user/signup', {
+    const response = await fetch(`${baseUrl}/api/user/signup`, {
 
       method: 'POST',
       headers: {
@@ -58,7 +55,7 @@ async function sendUserData() {
 }
 
 function canSubmit(): boolean {
-  const isValid = hasValidSignupDetails({
+  const validationError = getSignupValidationError({
     userName: userName.value,
     email: email.value,
     confirmEmail: confirmEmail.value,
@@ -66,8 +63,8 @@ function canSubmit(): boolean {
     confirmPassword: confirmPassword.value,
   })
 
-  if (!isValid) {
-    alert('You have invalid fields. Please check your inputs and try again.')
+  if (validationError) {
+    signupError.value = validationError
     return false
   }
 
@@ -83,11 +80,10 @@ function canSubmit(): boolean {
       <v-card-title class="text-h5 font-weight-bold px-0">Create your account</v-card-title>
       <v-card-subtitle class="px-0">Sign up to start solving coding challenges.</v-card-subtitle>
 
-      <v-alert
+      <ErrorFeedback
         v-if="signupError"
         title="Signup failed"
-        :text="signupError"
-        type="error"
+        :message="signupError"
         class="mb-4"
       />
 
@@ -108,11 +104,10 @@ function canSubmit(): boolean {
         required
       />
 
-      <v-alert
+      <ErrorFeedback
       v-if="email && !isValidEmail(email)"
         title="Invalid email"
-        text="Enter a valid email address."
-        type="error"
+        message="Enter a valid email address."
         class="mt-2"
       />
 
@@ -125,8 +120,7 @@ function canSubmit(): boolean {
         required
       />
 
-      <v-alert title="Email mismatch" text="Email addresses must match." type="error" class="mt-2" v-if="confirmEmail && !inputsMatch(email, confirmEmail)">
-      </v-alert>
+      <ErrorFeedback title="Email mismatch" message="Email addresses must match." class="mt-2" v-if="confirmEmail && !inputsMatch(email, confirmEmail)" />
 
 
       <v-text-field class="mt-4"
@@ -138,17 +132,16 @@ function canSubmit(): boolean {
         required
       />
 
-      <v-alert title="Invalid password" text="  Passwords must be at least 8 characters long and contain an uppercase letter,
-        lowercase letter, and number." type ="error" v-if="password && !isValidPassword(password)">
+      <ErrorFeedback title="Invalid password" message="Passwords must be at least 8 characters long and contain an uppercase letter,
+        lowercase letter, and number." v-if="password && !isValidPassword(password)">
+      </ErrorFeedback>
 
-      </v-alert>
-
-      <v-alert
-        text="Passwords must match."
-        title="Passwords don't match" type="error"
+      <ErrorFeedback
+        message="Passwords must match."
+        title="Passwords don't match"
         class="mt-2 mb-2"
         v-if="confirmPassword && !inputsMatch(password, confirmPassword)">
-      </v-alert>
+      </ErrorFeedback>
 
       <v-text-field class="mt-4"
         v-model="confirmPassword"

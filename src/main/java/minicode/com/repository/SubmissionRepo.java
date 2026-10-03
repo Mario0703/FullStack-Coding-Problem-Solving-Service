@@ -1,7 +1,7 @@
 package minicode.com.repository;
 
-import minicode.com.entity.Submission;
-import minicode.com.entity.SubmissionStatus;
+import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.Submissions.SubmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +14,8 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     java.util.Optional<Submission> findByIdAndUser_UserId(UUID id, UUID userId);
 
     List<Submission> findAllByUser_UserId(UUID userId);
+
+    void deleteAllByUser_UserId(UUID userId);
 
     long countByUser_UserId(UUID userId);
 
@@ -80,3 +82,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
             @Param("userId") UUID userId
     );
 }
+
+
+

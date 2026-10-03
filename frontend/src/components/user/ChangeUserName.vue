@@ -2,6 +2,8 @@
 import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
 import {inputsMatch, isblank} from "@/utils/UserInputCheck";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
+import { baseUrl } from '@/utils/api';
 
 const emit = defineEmits<{ abort: [] }>();
 const newUserName = ref("");
@@ -27,7 +29,7 @@ async function changeUserName() {
   isSubmitting.value = true;
 
   try {
-    const response = await fetch("http://localhost:8082/api/user/change-username", {
+    const response = await fetch(`${baseUrl}/api/user/change-username`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -55,8 +57,8 @@ function abortChange() {
 </script>
 
 <template>
-  <v-alert v-if="validationError" type="error" :text="validationError" />
-  <v-alert v-if="saveError" type="error" :text="saveError" />
+  <ErrorFeedback v-if="validationError" :message="validationError" />
+  <ErrorFeedback v-if="saveError" :message="saveError" />
 
   <v-form @submit.prevent="changeUserName">
     <v-text-field

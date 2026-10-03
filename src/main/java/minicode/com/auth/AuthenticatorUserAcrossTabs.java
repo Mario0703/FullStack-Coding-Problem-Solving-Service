@@ -1,17 +1,15 @@
 package minicode.com.auth;
 
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import minicode.com.entity.AdminUser;
-import minicode.com.entity.User;
+import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
-import minicode.com.repository.AdminRepo;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -22,82 +20,77 @@ public class AuthenticatorUserAcrossTabs {
 
 
     private final UserRepo userRepo;
-    private final AdminRepo adminUserRepo;
 
-    public AuthenticatorUserAcrossTabs(UserRepo userRepo, AdminRepo adminUserRepo) {
-        this.adminUserRepo = adminUserRepo;
+    public AuthenticatorUserAcrossTabs(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
 
     @GetMapping("/me")
-    public User authenticateUserAcrossTabs(HttpServletRequest httpRequest){
-        HttpSession session = httpRequest.getSession(false);
-        if(session == null){
-
+    public userResponse authenticateUserAcrossTabs(Authentication authentication){
+        boolean isAuthenticatedValid = isAuthenticated(authentication);
+        if (!isAuthenticatedValid) {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
             );
-
         }
-        UUID userId = (UUID) session.getAttribute("user_id");
-        if(userId == null){
-            if (session.getAttribute("admin_user_id") != null) {
-                throw new ResponseStatusException(
-                        org.springframework.http.HttpStatus.FORBIDDEN,
-                        "User access is not permitted for an admin session"
-                );
-            }
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-
-        }
-        Optional<User> user = userRepo.findById(userId);
+        Optional<User> user = userRepo.findFirstByUserName(authentication.getName());
         if(!user.isPresent()){
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "User is not authenticated"
             );
         }
+        String role = getRoleFromAuthentication(authentication);
+        UUID id = user.get().getId();
+        String userName = user.get().getUserName();
+        String email = user.get().getEmail();
 
-        return user.get();
+
+        userResponse UserResponse = new userResponse(
+                id,
+                userName,
+                email,
+                role
+        );
+        return UserResponse;
     }
 
     @GetMapping("/admin")
-    private void checkIfAdmin(HttpSession session) {
-        if (session == null) {
+    public String checkIfAdmin(Authentication authentication) {
+        boolean isAuthenticatedValid = isAuthenticated(authentication);
+        if (!isAuthenticatedValid){
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Authentication required"
             );
         }
+        String role = getRoleFromAuthentication(authentication);
 
-        Object adminId = session.getAttribute("admin_user_id");
-
-        if (adminId instanceof UUID) {
-            if (adminUserRepo.findById((UUID) adminId).isEmpty()) {
-                throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Admin is not authenticated"
-                );
-            }
-            return;
-        }
-
-        if (session.getAttribute("user_id") != null) {
+        if(!role.equals("ROLE_ADMIN")){
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "Admin access required"
+                    "Admin role required"
             );
         }
+        return role;
 
-        throw new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Authentication required"
-        );
+    }
+
+    private String getRoleFromAuthentication(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(authority -> authority.startsWith("ROLE_"))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Boolean isAuthenticated(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated();
     }
 
 
 }
+
+
+
