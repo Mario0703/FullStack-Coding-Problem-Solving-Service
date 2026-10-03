@@ -4,6 +4,7 @@ import {
   difficultyOptions,
   languageOptions,
 } from '@/utils/AdminUtils'
+import { languageLabel } from '@/utils/CodeExecutorUtils'
 import type { CreateChallengeForm } from '@/utils/LanguageType'
 import { useChallengeForm } from '@/utils/useChallengeForm'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
@@ -82,7 +83,7 @@ defineExpose({ resetForm })
     <div class="text-caption mb-3">
       {{
         language
-          ? `Template shown to users for ${language}`
+          ? `Template shown to users for ${languageLabel(language)}`
           : 'Select a language to load a starter template'
       }}
     </div>

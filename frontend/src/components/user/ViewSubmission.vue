@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
+import { languageLabel } from '@/utils/CodeExecutorUtils'
 
 const route = useRoute()
 const submission = ref<any>(null)
@@ -45,7 +46,7 @@ onMounted(async () => {
             <v-card class="h-100" color="blue-lighten-5" variant="tonal">
               <v-card-text>
                 <div class="text-caption text-medium-emphasis">Language</div>
-                <div class="text-body-1 font-weight-bold">{{ submission.language }}</div>
+                <div class="text-body-1 font-weight-bold">{{ languageLabel(submission.language) }}</div>
               </v-card-text>
             </v-card>
           </v-col>

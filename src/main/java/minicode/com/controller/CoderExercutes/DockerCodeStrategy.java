@@ -23,17 +23,12 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
         CLCommandsStrat commands = new BuildCommands(path);
 
         CommandResult buildResult = commands.buildContainer(imageName);
-        boolean isBuildSuccess = buildResult.exitCode() == 0;
-
-        if (!isBuildSuccess) {
-            throw new IOException("Failed to build Docker image: " + buildResult.output());
+        if (buildResult.exitCode() != 0) {
+            return new ExecutionResult(buildResult.exitCode(), buildResult.output(), 0, 1);
         }
 
         CommandResult runResult = commands.runContainer(imageName, imageName, 30);
-
         String output = runResult.output();
-
-        findTestResults(output);
 
         int[] testResults = findTestResults(output);
         int passed = testResults[0];

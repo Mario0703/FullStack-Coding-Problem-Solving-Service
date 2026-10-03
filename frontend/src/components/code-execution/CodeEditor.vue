@@ -23,11 +23,11 @@ const emit = defineEmits<{
 
 const extensions = computed(() => {
   const languageExtension = {
-    PYTHON: python(),
-    JAVA: java(),
-    'C++': cpp(),
-    'C#': csharp(),
-  }[props.language.toUpperCase()]
+    python: python(),
+    java: java(),
+    cplusplus: cpp(),
+    csharp: csharp(),
+  }[props.language]
 
   return languageExtension ? [languageExtension, oneDark] : [oneDark]
 })

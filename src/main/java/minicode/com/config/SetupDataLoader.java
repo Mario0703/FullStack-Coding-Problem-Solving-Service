@@ -57,7 +57,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             return;
         }
 
-        for(UserRole role : UserRole.values()) {
+        for (UserRole role : UserRole.values()) {
             createRolesOnStartUp("ROLE_" + role.name(),
                     role.getPermissions().stream().map(permission ->
                             createPermissionOnStartUp(permission.name())).collect(java.util.stream.Collectors.toSet()));
@@ -85,18 +85,19 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         List<ExecutionDefinition> definitions = List.of(
                 new ExecutionDefinition("python", "minileetcode-python"),
                 new ExecutionDefinition("java", "minileetcode-java"),
-                new ExecutionDefinition("c++", "minileetcode-cpp"),
-                new ExecutionDefinition("c#", "minileetcode-csharp")
+                new ExecutionDefinition("cplusplus", "minileetcode-cpp"),
+                new ExecutionDefinition("csharp", "minileetcode-csharp")
         );
 
-        if (containerRepo.count() == 0) {
-            containerRepo.saveAll(definitions.stream()
-                    .map(definition -> new Container(
+        for (ExecutionDefinition definition : definitions) {
+            Container container = containerRepo.findById(definition.language())
+                    .orElseGet(() -> new Container(
                             definition.language(),
                             definition.imageName(),
                             readMetadataFile(Path.of("CodeEnv", definition.language(), "Dockerfile"))
-                    ))
-                    .toList());
+                    ));
+            container.setContainerMetadata(readMetadataFile(Path.of("CodeEnv", definition.language(), "Dockerfile")));
+            containerRepo.save(container);
         }
 
         String runnerMetadata = readMetadataFile(Path.of("CodeEnv", "TestSuite", "runCommandTest.bs"));
@@ -141,6 +142,3 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         userRepo.save(admin);
     }
 }
-
-
-

@@ -3,7 +3,7 @@ import type { LanguageSetup } from '@/utils/LanguageType'
 
 
 export const languageSetups: Record<Language, LanguageSetup> = {
-  PYTHON: {
+  python: {
     userTemplate: `def add(a, b):
     # Write your solution here.
     pass
@@ -16,7 +16,7 @@ print(add(a, b))
     runnerExplanation:
       'The runner reads two integers from standard input, calls add(a, b), and prints the returned value. It is appended by the server when the submission runs.',
   },
-  JAVA: {
+  java: {
     userTemplate: `class Solution {
     public static int add(int a, int b) {
         // Write your solution here.
@@ -40,7 +40,7 @@ public class Main {
     runnerExplanation:
       'The runner reads two integers, calls Solution.add(a, b), and prints the result. The server combines it with the user template before compiling.',
   },
-  'C++': {
+  cplusplus: {
     userTemplate: `class Solution {
 public:
     int add(int a, int b) {
@@ -65,7 +65,7 @@ int main() {
     runnerExplanation:
       'The runner reads two integers, calls Solution::add, and prints the result. The server combines it with the user template before compiling.',
   },
-  'C#': {
+  csharp: {
     userTemplate: `public class Solution {
     public int Add(int a, int b) {
         // Write your solution here.

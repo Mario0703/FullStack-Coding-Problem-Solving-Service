@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public class CodeController {
 
     private static final Set<String> SUPPORTED_LANGUAGES = Set.of(
-            "python", "java", "c++", "c#", "csharp"
+            "python", "java", "csharp", "cplusplus"
     );
     private final DockerCodeStrategy strategy = new DockerCodeStrategy();
     private final ChallengeRepo challengeRepo;
@@ -64,25 +64,13 @@ public class CodeController {
             Authentication authentication
     ) throws IOException {
         UUID authenticatedUserId = getAuthenticatedUserId(authentication);
-        if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
-        }
+        validateSubmissionUser(codeSubmission, authenticatedUserId);
 
-
-        User user = userRepo.findById(authenticatedUserId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Authenticated user was not found"
-                ));
-
-        Challenge challenge = challengeRepo.findById(codeSubmission.getChallengeId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Challenge not found"
-                ));
-
-
+        User user = findUserOrThrow(authenticatedUserId);
+        Challenge challenge = findChallengeOrThrow(codeSubmission.getChallengeId());
         String language = codeSubmission.getLanguage().toLowerCase(Locale.ROOT);
+
+
         if (!SUPPORTED_LANGUAGES.contains(language)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported language: " + language);
         }
@@ -131,6 +119,29 @@ public class CodeController {
             }
         }
     }
+
+    private void validateSubmissionUser(SubmissionRequest codeSubmission, UUID authenticatedUserId) {
+        if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
+        }
+    }
+
+    private User findUserOrThrow(UUID userId) {
+        return userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Authenticated user was not found"
+                ));
+    }
+
+    private Challenge findChallengeOrThrow(UUID challengeId) {
+        return challengeRepo.findById(challengeId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Challenge not found"
+                ));
+    }
+
     @GetMapping("/SolvedChallenges")
     public List<UUID> getSolvedChallenges(Authentication authentication) {
         UUID userId = getAuthenticatedUserId(authentication);
@@ -152,13 +163,12 @@ public class CodeController {
             Files.createDirectories(languagePath);
             Path tempEnv = Files.createTempDirectory(languagePath, "tempEnv-");
 
-            String metadataLanguage = language.equals("csharp") ? "c#" : language;
-            Container container = containerRepo.findById(metadataLanguage).orElseThrow(() ->
+            Container container = containerRepo.findById(language).orElseThrow(() ->
                     new ResponseStatusException(
                             HttpStatus.INTERNAL_SERVER_ERROR,
                             "Container metadata was not found for " + language
                     ));
-            TestRunner testRunner = testRunnerRepo.findById(metadataLanguage).orElseThrow(() ->
+            TestRunner testRunner = testRunnerRepo.findById(language).orElseThrow(() ->
                     new ResponseStatusException(
                             HttpStatus.INTERNAL_SERVER_ERROR,
                             "Test runner metadata was not found for " + language
@@ -174,8 +184,8 @@ public class CodeController {
 
             String submissionFileName = switch (language) {
                 case "python" -> "submission.py";
-                case "c++" -> "submission.cpp";
-                case "c#", "csharp" -> "submission.cs";
+                case "cplusplus" -> "submission.cpp";
+                case "csharp" -> "submission.cs";
                 case "java" -> "submission.java";
                 default -> throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
@@ -185,7 +195,7 @@ public class CodeController {
             Path submissionFile = tempEnv.resolve(submissionFileName);
 
             String executableCode = switch (language) {
-                case "java", "c#", "csharp" ->
+                case "java", "csharp" ->
                         Objects.requireNonNullElse(runnerCode, "") + "\n" + submissionCode;
                 default ->
                         submissionCode + "\n" + Objects.requireNonNullElse(runnerCode, "");

@@ -20,16 +20,16 @@ export interface CodeExecutionRequest {
 
 export function languageLabel(value: string): string {
   const labels: Record<string, string> = {
-    PYTHON: 'Python',
-    JAVA: 'Java',
-    'C++': 'C++',
-    'C#': 'C#',
+    python: 'Python',
+    java: 'Java',
+    cplusplus: 'C++',
+    csharp: 'C#',
   }
 
   return labels[value] ?? value
 }
 
-export const validLanguages = ['PYTHON', 'JAVA', 'C++', 'C#']
+export const validLanguages = ['python', 'java', 'cplusplus', 'csharp']
 
 export async function loadChallengeTemplate(
   challengeId: string,
