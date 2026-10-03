@@ -1,5 +1,7 @@
 package minicode.com.controller;
 
+import minicode.com.controller.CodeEnv.Submissionfile.SubmissionFileFactory;
+import minicode.com.controller.CodeEnv.Submissionfile.SubmissionFileName;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
 import minicode.com.dto.Challenge.ExecutionResult;
 import minicode.com.dto.User.SubmissionRequest;
@@ -182,24 +184,9 @@ public class CodeController {
                     testRunner.getTestRunnerMetaData()
             );
 
-            String submissionFileName = switch (language) {
-                case "python" -> "submission.py";
-                case "cplusplus" -> "submission.cpp";
-                case "csharp" -> "submission.cs";
-                case "java" -> "submission.java";
-                default -> throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Unsupported language: " + language
-                );
-            };
-            Path submissionFile = tempEnv.resolve(submissionFileName);
-
-            String executableCode = switch (language) {
-                case "java", "csharp" ->
-                        Objects.requireNonNullElse(runnerCode, "") + "\n" + submissionCode;
-                default ->
-                        submissionCode + "\n" + Objects.requireNonNullElse(runnerCode, "");
-            };
+            SubmissionFileName submissionFileStrategy = SubmissionFileFactory.forLanguage(language);
+            Path submissionFile = tempEnv.resolve(submissionFileStrategy.fileName());
+            String executableCode = submissionFileStrategy.combineCode(runnerCode, submissionCode);
             Files.writeString(submissionFile, executableCode, StandardCharsets.UTF_8);
 
             // Create test cases files
