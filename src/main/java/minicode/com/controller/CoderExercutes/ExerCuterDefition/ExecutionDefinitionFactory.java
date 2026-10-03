@@ -14,8 +14,6 @@ public final class ExecutionDefinitionFactory {
             new CsharpExecutionDefinition()
     );
 
-    private ExecutionDefinitionFactory() {
-    }
 
     public static List<ExecutionDefinition> definitions() {
         return DEFINITIONS;
