@@ -81,6 +81,50 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     List<Integer> findTotalTestCasesByUserId(
             @Param("userId") UUID userId
     );
+
+    @Query("""
+    SELECT s
+    FROM Submission s
+    WHERE s.challenge.id = :challengeId
+      AND s.status = 'ACCEPTED'
+    ORDER BY s.createdAt DESC
+""")
+    List<Submission> findAcceptedByChallengeId(@Param("challengeId") UUID challengeId);
+
+    @Query("""
+    SELECT s
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Submission> findPublicSubmissionsByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesPassed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findPassedTestCasesByUserIdPublic(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesFailed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findFailedTestCasesByUserIdPublic(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT c.numberOfTestCases
+    FROM Submission s
+    INNER JOIN s.challenge c
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findTotalTestCasesByUserIdPublic(
+            @Param("userId") UUID userId
+    );
 }
 
 

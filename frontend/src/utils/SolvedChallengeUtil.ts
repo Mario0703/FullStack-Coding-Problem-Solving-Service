@@ -61,6 +61,42 @@ export async function loadUserSubmissions(): Promise<UserSubmission[]> {
   return (await response.json()) as UserSubmission[]
 }
 
+export async function loadPublicSubmissions(userId: string): Promise<UserSubmission[]> {
+  const response = await fetch(`${baseUrl}/api/challenge/users/${userId}/submissions`, {
+    credentials: 'include',
+  })
+
+  if (response.status === 401) {
+    return []
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch public submissions')
+  }
+
+  return (await response.json()) as UserSubmission[]
+}
+
+export async function loadPublicSubmissionTestCaseValues(userId: string): Promise<[
+  number[],
+  number[],
+  number[],
+]> {
+  const response = await fetch(`${baseUrl}/api/challenge/users/${userId}/submission-stats`, {
+    credentials: 'include',
+  })
+
+  if (response.status === 401) {
+    return [[], [], []]
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch public submission stats')
+  }
+
+  return (await response.json()) as [number[], number[], number[]]
+}
+
 export async function loadSolvedChallengeIds(): Promise<Set<string>> {
   const submissions = await loadUserSubmissions()
   return new Set(

@@ -3,9 +3,11 @@ package minicode.com.controller;
 import minicode.com.controller.CodeEnv.EnvStrat;
 import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
+import minicode.com.controller.SupportedLanguages;
 import minicode.com.dto.Challenge.ExecutionResult;
 import minicode.com.dto.User.SubmissionRequest;
 import minicode.com.entity.Challange.Challenge;
+import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.entity.User.User;
@@ -15,6 +17,7 @@ import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.TestRunnerRepo;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.solvedChallengesRepo;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,19 +37,22 @@ public class CodeController {
     private final SubmissionRepo submissionRepo;
     private final ContainerRepo containerRepo;
     private final TestRunnerRepo testRunnerRepo;
+    private final solvedChallengesRepo solvedChallengesRepository;
 
     public CodeController(
             ChallengeRepo challengeRepo,
             UserRepo userRepo,
             SubmissionRepo submissionRepo,
             ContainerRepo containerRepo,
-            TestRunnerRepo testRunnerRepo
+            TestRunnerRepo testRunnerRepo,
+            solvedChallengesRepo solvedChallengesRepository
     ) {
         this.challengeRepo = challengeRepo;
         this.userRepo = userRepo;
         this.submissionRepo = submissionRepo;
         this.containerRepo = containerRepo;
         this.testRunnerRepo = testRunnerRepo;
+        this.solvedChallengesRepository = solvedChallengesRepository;
     }
 
     @PostMapping("/submit")
@@ -80,6 +86,7 @@ public class CodeController {
 
             if (result.exitCode() == 0){
                 status = SubmissionStatus.ACCEPTED;
+
             }
             else{
                 status = SubmissionStatus.WRONG_ANSWER;
@@ -96,6 +103,7 @@ public class CodeController {
                     result.failingTestCases()
             ));
 
+            SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode());
 
             return result;
 
@@ -111,6 +119,12 @@ public class CodeController {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code) {
+        if (result.exitCode() == 0) {
+            solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code));
         }
     }
 

@@ -2,18 +2,28 @@ package minicode.com.controller;
 
 
 import jakarta.validation.Valid;
+import minicode.com.config.SecurityConfig;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.dto.Challenge.CreateTestCaseRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.InputOutput;
+import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Challange.TestCases;
+import minicode.com.repository.UserRepo;
+import minicode.com.repository.SubmissionRepo;
+import minicode.com.entity.User.User;
 import minicode.com.service.Challange.ChallengeService;
+import minicode.com.service.User.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import minicode.com.dto.User.PublicSubmissionResponse;
+import minicode.com.dto.User.UserSummary;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.List;
 
@@ -21,9 +31,17 @@ import java.util.List;
 @RequestMapping("/api/challenge")
 public class ChallengeController {
     private final ChallengeService challangeService;
+    private final UserService userService;
+    private final SubmissionRepo submissionRepo;
 
-    public ChallengeController(ChallengeService challengeService) {
+    public ChallengeController(
+            ChallengeService challengeService,
+            UserService userService,
+            SubmissionRepo submissionRepo
+    ) {
         this.challangeService = challengeService;
+        this.userService = userService;
+        this.submissionRepo = submissionRepo;
     }
 
     @GetMapping("/list")
@@ -60,6 +78,44 @@ public class ChallengeController {
         checkIfAdmin(authentication);
         return challangeService.getChallengeTestCases(challengeId);
     }
+    @GetMapping("/{challengeId}/getSolvedChallenges")
+    public HashMap<List<UserSummary>, List<SolvedChallenges>> getSolvedChallenges(@PathVariable UUID challengeId) {
+        List<SolvedChallenges> solvedChallenges = challangeService.getSolvedChallenges(challengeId);
+        List<UserSummary> users = userService.getUsersBySolvedChallenges(solvedChallenges);
+        HashMap<List<UserSummary>, List<SolvedChallenges>> result = new HashMap<>();
+        result.put(users, solvedChallenges);
+        return result;
+    }
+
+    @GetMapping("/{challengeId}/submissions")
+    public List<PublicSubmissionResponse> getAcceptedSubmissionsForChallenge(@PathVariable UUID challengeId) {
+        return submissionRepo.findAcceptedByChallengeId(challengeId).stream()
+                .map(PublicSubmissionResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/users/{userId}")
+    public UserSummary getUserProfile(@PathVariable UUID userId) {
+        return userService.getUserSummaryById(userId);
+    }
+
+    @GetMapping("/users/{userId}/submissions")
+    public List<PublicSubmissionResponse> getUserSubmissions(@PathVariable UUID userId) {
+        return submissionRepo.findPublicSubmissionsByUserId(userId).stream()
+                .map(PublicSubmissionResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/users/{userId}/submission-stats")
+    public List<List<Integer>> getUserSubmissionStats(@PathVariable UUID userId) {
+        return List.of(
+                submissionRepo.findPassedTestCasesByUserIdPublic(userId),
+                submissionRepo.findFailedTestCasesByUserIdPublic(userId),
+                submissionRepo.findTotalTestCasesByUserIdPublic(userId)
+        );
+    }
+
+
 
     @PostMapping("/create")
     public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, Authentication authentication) {

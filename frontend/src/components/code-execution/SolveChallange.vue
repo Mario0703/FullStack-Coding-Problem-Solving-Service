@@ -7,18 +7,31 @@ import { listChallenges } from '@/utils/ChallangeUtil'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
-const solvedBypeople = ref<string[]>([])
-solvedBypeople.value = ['Alice', 'Bob', 'Charlie'] // Example data, replace with actual data fetching logic
+
+async function loadSolvedByPeople(challengeId: string) {
+  try {
+    const response = await fetch(`/api/challenges/${challengeId}/solved-by`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch solved by people')
+    }
+    const data = await response.json()
+    console.log('Solved by people:', data)
+  } catch (error) {
+    console.error('Error loading solved by people:', error)
+  }
+}
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
 const loadError = ref('')
 const isLoading = ref(true)
+let solvedBypeople = ref<string[]>([])
 
 async function loadChallenge() {
   try {
     const challengeId = String(route.params.id)
     const challenges = await listChallenges()
+    solvedBypeople = await loadSolvedByPeople(challengeId)
     challenge.value = challenges.find((item) => item.id === challengeId) ?? null
 
     if (!challenge.value) {
@@ -32,6 +45,7 @@ async function loadChallenge() {
 }
 
 onMounted(loadChallenge)
+
 </script>
 
 <template>
