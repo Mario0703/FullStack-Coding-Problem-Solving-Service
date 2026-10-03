@@ -261,7 +261,13 @@ public class UserService {
             users.add(new UserSummary(user.getUserId(), user.getUserName(), user.getEmail()));
         }
         return users;
+    }
 
+    public List<String> getUserNamesBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
+        return solvedChallenges.stream()
+                .map(solvedChallenge -> findById(solvedChallenge.getUserId()).getUserName())
+                .distinct()
+                .toList();
     }
 }
 

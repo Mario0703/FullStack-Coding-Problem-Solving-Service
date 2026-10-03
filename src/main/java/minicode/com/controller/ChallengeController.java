@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.List;
 
@@ -79,12 +78,14 @@ public class ChallengeController {
         return challangeService.getChallengeTestCases(challengeId);
     }
     @GetMapping("/{challengeId}/getSolvedChallenges")
-    public HashMap<List<UserSummary>, List<SolvedChallenges>> getSolvedChallenges(@PathVariable UUID challengeId) {
+    public List<SolvedChallenges> getSolvedChallenges(@PathVariable UUID challengeId) {
+        return challangeService.getSolvedChallenges(challengeId);
+    }
+
+    @GetMapping("/{challengeId}/solved-by")
+    public List<String> getSolvedByUserNames(@PathVariable UUID challengeId) {
         List<SolvedChallenges> solvedChallenges = challangeService.getSolvedChallenges(challengeId);
-        List<UserSummary> users = userService.getUsersBySolvedChallenges(solvedChallenges);
-        HashMap<List<UserSummary>, List<SolvedChallenges>> result = new HashMap<>();
-        result.put(users, solvedChallenges);
-        return result;
+        return userService.getUserNamesBySolvedChallenges(solvedChallenges);
     }
 
     @GetMapping("/{challengeId}/submissions")

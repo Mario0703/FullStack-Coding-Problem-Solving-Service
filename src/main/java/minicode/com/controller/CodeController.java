@@ -65,7 +65,7 @@ public class CodeController {
 
         User user = findUserOrThrow(authenticatedUserId);
         Challenge challenge = findChallengeOrThrow(codeSubmission.getChallengeId());
-        String language = codeSubmission.getLanguage().toLowerCase(Locale.ROOT);
+        String language = normalizeLanguage(codeSubmission.getLanguage().toLowerCase(Locale.ROOT));
 
         checkIfLanguageIsSupported(language);
 
@@ -126,6 +126,14 @@ public class CodeController {
         if (result.exitCode() == 0) {
             solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code));
         }
+    }
+    //remove later
+    private String normalizeLanguage(String language) {
+        return switch (language) {
+            case "c#" -> "csharp";
+            case "c++" -> "cplusplus";
+            default -> language;
+        };
     }
 
     private void checkIfLanguageIsSupported(String language) {

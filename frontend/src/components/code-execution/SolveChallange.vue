@@ -4,40 +4,42 @@ import { useRoute } from 'vue-router'
 import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
+import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 
 async function loadSolvedByPeople(challengeId: string) {
-  try {
-    const response = await fetch(`/api/challenges/${challengeId}/solved-by`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch solved by people')
-    }
-    const data = await response.json()
-    console.log('Solved by people:', data)
-  } catch (error) {
-    console.error('Error loading solved by people:', error)
+  const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/getSolvedChallenges`, {
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    console.error('Solved-by request failed:', response.status, response.statusText)
+    return []
   }
+  const data = await response.json()
+  console.log(data)
+  return data as string[]
 }
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
 const loadError = ref('')
 const isLoading = ref(true)
-let solvedBypeople = ref<string[]>([])
+const solvedBypeople = ref<string[]>([])
 
 async function loadChallenge() {
   try {
     const challengeId = String(route.params.id)
     const challenges = await listChallenges()
-    solvedBypeople = await loadSolvedByPeople(challengeId)
+    solvedBypeople.value = await loadSolvedByPeople(challengeId)
     challenge.value = challenges.find((item) => item.id === challengeId) ?? null
 
     if (!challenge.value) {
       loadError.value = 'The requested challenge could not be found.'
     }
-  } catch {
+  } catch (error) {
+    console.error('loadChallenge error:', error)
     loadError.value = 'Unable to load the challenge. Please try again later.'
   } finally {
     isLoading.value = false
