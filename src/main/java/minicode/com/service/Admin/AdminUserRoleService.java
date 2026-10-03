@@ -34,7 +34,11 @@ public class AdminUserRoleService implements UserDetailsService {
                         role.getPermissions().forEach(permission -> authorities.add(permission.getName()));
                     });
                     if (authorities.isEmpty()) {
-                        authorities.add(user.getRole() == UserRole.ADMIN ? "ROLE_ADMIN" : "ROLE_USER");
+                        if (user.getRole() == UserRole.ADMIN) {
+                            authorities.add("ROLE_ADMIN");
+                        } else {
+                            authorities.add("ROLE_USER");
+                        }
                     }
                     return User.withUsername(user.getUserName())
                             .password(user.getPassword())
