@@ -1,18 +1,15 @@
 package minicode.com.controller;
 
-import minicode.com.controller.CodeEnv.Submissionfile.SubmissionFileFactory;
-import minicode.com.controller.CodeEnv.Submissionfile.SubmissionFileName;
+import minicode.com.controller.CodeEnv.EnvStrat;
+import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
 import minicode.com.dto.Challenge.ExecutionResult;
 import minicode.com.dto.User.SubmissionRequest;
 import minicode.com.entity.Challange.Challenge;
-import minicode.com.entity.Challange.TestCases;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.entity.User.User;
 import minicode.com.entity.Roles.UserRole;
-import minicode.com.entity.Container.Container;
-import minicode.com.entity.TestRunner.TestRunner;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.SubmissionRepo;
@@ -25,21 +22,13 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/code/playground")
 public class CodeController {
-
-    private static final Set<String> SUPPORTED_LANGUAGES = Set.of(
-            "python", "java", "csharp", "cplusplus"
-    );
-    private final DockerCodeStrategy strategy = new DockerCodeStrategy();
+    private final DockerCodeStrategy containerStrat = new DockerCodeStrategy();
     private final ChallengeRepo challengeRepo;
     private final UserRepo userRepo;
     private final SubmissionRepo submissionRepo;
@@ -72,26 +61,29 @@ public class CodeController {
         Challenge challenge = findChallengeOrThrow(codeSubmission.getChallengeId());
         String language = codeSubmission.getLanguage().toLowerCase(Locale.ROOT);
 
+        checkIfLanguageIsSupported(language);
 
-        if (!SUPPORTED_LANGUAGES.contains(language)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported language: " + language);
-        }
-        Path languagePath = Path.of("CodeEnv", language);
+        EnvStrat envStrategy = new TempEnvDestroyAfter(
+                language,
+                codeSubmission.getCode(),
+                challenge.getRunner(),
+                challenge.getTestCases(),
+                containerRepo,
+                testRunnerRepo
+        );
+
         Path tempEnvPath = null;
-
         try {
-            tempEnvPath = prepareTemporaryEnvForSubmissionTest(
-                    languagePath,
-                    codeSubmission.getCode(),
-                    challenge.getRunner(),
-                    language,
-                    challenge.getTestCases()
-            );
+            tempEnvPath = envStrategy.createEnv();
+            ExecutionResult result = containerStrat.execute(tempEnvPath);
+            SubmissionStatus status;
 
-            ExecutionResult result = strategy.execute(tempEnvPath);
-            SubmissionStatus status = result.exitCode() == 0
-                    ? SubmissionStatus.ACCEPTED
-                    : SubmissionStatus.WRONG_ANSWER;
+            if (result.exitCode() == 0){
+                status = SubmissionStatus.ACCEPTED;
+            }
+            else{
+                status = SubmissionStatus.WRONG_ANSWER;
+            }
 
             submissionRepo.save(new Submission(
                     user,
@@ -113,12 +105,20 @@ public class CodeController {
         } finally {
             if (tempEnvPath != null) {
                 try {
-                    deleteDirectory(tempEnvPath);
+                    envStrategy.destroyEnv(tempEnvPath);
                 } catch (IOException e) {
                     // Do not hide the submission result if cleanup fails.
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void checkIfLanguageIsSupported(String language) {
+        try {
+            SupportedLanguages.valueOf(language.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported programming language");
         }
     }
 
@@ -152,85 +152,6 @@ public class CodeController {
                 SubmissionStatus.ACCEPTED
         );
     }
-
-    private Path prepareTemporaryEnvForSubmissionTest(
-            Path languagePath,
-            String submissionCode,
-            String runnerCode,
-            String language,
-            List<TestCases> testCases
-    ) {
-
-        try {
-            Files.createDirectories(languagePath);
-            Path tempEnv = Files.createTempDirectory(languagePath, "tempEnv-");
-
-            Container container = containerRepo.findById(language).orElseThrow(() ->
-                    new ResponseStatusException(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Container metadata was not found for " + language
-                    ));
-            TestRunner testRunner = testRunnerRepo.findById(language).orElseThrow(() ->
-                    new ResponseStatusException(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Test runner metadata was not found for " + language
-                    ));
-
-            Files.writeString(tempEnv.resolve("Dockerfile"), container.getContainerMetadata());
-            Path testSuiteDirectory = tempEnv.resolve("TestSuite");
-            Files.createDirectories(testSuiteDirectory);
-            Files.writeString(
-                    testSuiteDirectory.resolve("runCommandTest.bs"),
-                    testRunner.getTestRunnerMetaData()
-            );
-
-            SubmissionFileName submissionFileStrategy = SubmissionFileFactory.forLanguage(language);
-            Path submissionFile = tempEnv.resolve(submissionFileStrategy.fileName());
-            String executableCode = submissionFileStrategy.combineCode(runnerCode, submissionCode);
-            Files.writeString(submissionFile, executableCode, StandardCharsets.UTF_8);
-
-            // Create test cases files
-            for (int i = 0; i < testCases.size(); i++) {
-                TestCases testCase = testCases.get(i);
-                Path testCasesDirectory = tempEnv.resolve("TestCases");
-                Files.createDirectories(testCasesDirectory);
-                Path inputFile = testCasesDirectory.resolve("test-case" + (i + 1) + ".in");
-                Path outputFile = testCasesDirectory.resolve("test-case" + (i + 1) + ".out");
-                Files.writeString(
-                        inputFile,
-                        Objects.requireNonNullElse(testCase.getTestInput(), ""),
-                        StandardCharsets.UTF_8
-                );
-                Files.writeString(
-                        outputFile,
-                        Objects.requireNonNullElse(testCase.getTestOutput(), ""),
-                        StandardCharsets.UTF_8
-                );
-            }
-
-            return tempEnv;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create temporary environment", e);
-        }
-    }
-
-    private void deleteDirectory(Path path) throws IOException {
-        if (Files.exists(path)) {
-            try (Stream<Path> paths = Files.walk(path)) {
-                paths.sorted(Comparator.reverseOrder())
-                        .forEach(currentPath -> {
-                            try {
-                                Files.deleteIfExists(currentPath);
-                            } catch (IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        });
-            } catch (UncheckedIOException e) {
-                throw e.getCause();
-            }
-        }
-    }
-
 
     private UUID getAuthenticatedUserId(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
