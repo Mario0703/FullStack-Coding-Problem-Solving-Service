@@ -73,6 +73,12 @@ public class User {
     public UUID getId() {
         return userId;
     }
+
+    public int getTotalChallengesSolved() {
+        return numberOfEasyChallengesSolved
+                + numberOfMediumChallengesSolved
+                + numberOfHardChallengesSolved;
+    }
 }
 
 

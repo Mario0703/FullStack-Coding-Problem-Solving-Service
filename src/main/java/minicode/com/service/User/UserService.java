@@ -233,7 +233,8 @@ public class UserService {
                 user.getScore(),
                 user.getNumberOfEasyChallengesSolved(),
                 user.getNumberOfMediumChallengesSolved(),
-                user.getNumberOfHardChallengesSolved()
+                user.getNumberOfHardChallengesSolved(),
+                user.getTotalChallengesSolved()
         );
     }
 

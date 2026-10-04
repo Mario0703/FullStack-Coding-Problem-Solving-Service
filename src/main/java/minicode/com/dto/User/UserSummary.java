@@ -9,6 +9,7 @@ public record UserSummary(
         int score,
         int numberOfEasyChallengesSolved,
         int numberOfMediumChallengesSolved,
-        int numberOfHardChallengesSolved
+        int numberOfHardChallengesSolved,
+        int totalChallengesSolved
 ) {
 }
