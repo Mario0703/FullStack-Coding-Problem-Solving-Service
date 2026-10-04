@@ -27,6 +27,18 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Column
+    private int score;
+
+    @Column
+    private int numberOfEasyChallengesSolved;
+
+    @Column
+    private int numberOfMediumChallengesSolved;
+
+    @Column
+    private int numberOfHardChallengesSolved;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;
