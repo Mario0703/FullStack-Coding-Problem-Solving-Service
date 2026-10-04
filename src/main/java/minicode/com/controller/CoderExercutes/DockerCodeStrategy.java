@@ -16,8 +16,12 @@ import java.util.regex.Pattern;
 public class DockerCodeStrategy implements CodeExecuteStrat {
 
     private static final Pattern TEST_RESULT = Pattern.compile("Passed: (\\d+), Failed: (\\d+)");
-    private int passingTestIndex = 0;
-    private int failingTestIndex = 1;
+    private static final int passingTestIndex = 0;
+    private static final int failingTestIndex = 1;
+    private static final int timeoutSeconds = 30;
+    private static final int passingTestCasesForBuildFailure = 0;
+    private static final int passingTestCasesForFailure = 0;
+
 
     @Override
     public ExecutionResult execute(Path path) throws IOException, InterruptedException {
@@ -29,19 +33,16 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
         //build failed so just return the build error and exit code, no need to run the container
         if (!isBuildSuccess) {
             CodeError error = CodeErrorCodesFactory.resolve(buildResult.exitCode(), buildResult.output());
-            int failingTests = 0;
-            int passingTests = 0;
             ExecutionResult executionResult = new ExecutionResult(
                     buildResult.exitCode(),
                     buildResult.output(),
-                    passingTests,
-                    failingTests,
+                    passingTestCasesForBuildFailure,
+                    passingTestCasesForFailure,
                     error.errorCode()
             );
 
             return  executionResult;
         }
-        int timeoutSeconds = 30;
         CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
         String output = runResult.output();
 
