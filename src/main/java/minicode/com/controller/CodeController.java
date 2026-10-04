@@ -18,6 +18,7 @@ import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.TestRunnerRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.solvedChallengesRepo;
+import minicode.com.service.scoreService.ScoreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,7 @@ public class CodeController {
     private final ContainerRepo containerRepo;
     private final TestRunnerRepo testRunnerRepo;
     private final solvedChallengesRepo solvedChallengesRepository;
+    private final ScoreService scoreService;
 
     public CodeController(
             ChallengeRepo challengeRepo,
@@ -45,7 +47,8 @@ public class CodeController {
             SubmissionRepo submissionRepo,
             ContainerRepo containerRepo,
             TestRunnerRepo testRunnerRepo,
-            solvedChallengesRepo solvedChallengesRepository
+            solvedChallengesRepo solvedChallengesRepository,
+            ScoreService scoreService
     ) {
         this.challengeRepo = challengeRepo;
         this.userRepo = userRepo;
@@ -53,6 +56,7 @@ public class CodeController {
         this.containerRepo = containerRepo;
         this.testRunnerRepo = testRunnerRepo;
         this.solvedChallengesRepository = solvedChallengesRepository;
+        this.scoreService = scoreService;
     }
 
     @PostMapping("/submit")
@@ -103,7 +107,9 @@ public class CodeController {
                     result.failingTestCases()
             ));
 
-            SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode());
+            if (status == SubmissionStatus.ACCEPTED) {
+                SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode());
+            }
 
             return result;
 
@@ -123,9 +129,22 @@ public class CodeController {
     }
 
     private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code) {
-        if (result.exitCode() == 0) {
-            solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code));
+        UUID userId = user.getUserId();
+        UUID challengeId = challenge.getId();
+
+        if (solvedChallengesRepository.existsByUserIdAndChallengeId(userId, challengeId)) {
+            return;
         }
+
+        solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code));
+
+        int totalTestCases = result.passingTestCases() + result.failingTestCases();
+        scoreService.updateScoreAndSolvedCounters(
+                userId,
+                totalTestCases,
+                result.passingTestCases(),
+                challenge.getDifficulty().name()
+        );
     }
     //remove later
     private String normalizeLanguage(String language) {
@@ -189,6 +208,3 @@ public class CodeController {
         return user.getUserId();
     }
 }
-
-
-

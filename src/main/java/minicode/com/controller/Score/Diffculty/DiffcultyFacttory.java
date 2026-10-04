@@ -14,12 +14,12 @@ public class DiffcultyFacttory {
         diffcultyMultipliers.add(new Hard());
     }
 
-    public int getMultiPlier(String difficultyLevel){
-        for(DiffcultyMultiplier diffcultyMultiplier : diffcultyMultipliers){
-            if(diffcultyMultiplier.getMultiplier(difficultyLevel) != 0){
-                return diffcultyMultiplier.getMultiplier(difficultyLevel);
+    public List<DiffcultyMultiplier> getDiffcultyMultiplier(String diffcultyName) {
+        for(DiffcultyMultiplier diffcultyMultiplier : diffcultyMultipliers) {
+            if(diffcultyMultiplier.getDifficultyName().equalsIgnoreCase(diffcultyName)) {
+                return List.of(diffcultyMultiplier);
             }
         }
-        return 0;
+        return List.of();
     }
 }

@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface solvedChallengesRepo extends JpaRepository<SolvedChallenges, UUID> {
     List<SolvedChallenges> findAllByChallengeId(UUID challengeId);
+
+    boolean existsByUserIdAndChallengeId(UUID userId, UUID challengeId);
 }
