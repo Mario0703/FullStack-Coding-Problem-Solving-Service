@@ -6,6 +6,6 @@ COPY submission.java /app/Main.java
 COPY TestSuite /app/TestSuite
 COPY TestCases /app/TestCases
 
-RUN javac Main.java
+ENV COMPILE_CMD="javac /app/Main.java"
 
 CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "java", "-cp", "/app", "Main"]

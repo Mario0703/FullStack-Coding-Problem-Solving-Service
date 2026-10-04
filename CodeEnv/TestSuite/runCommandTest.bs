@@ -24,8 +24,10 @@ for i in "$test_directory"/*.in; do
         failing_tests=$((failing_tests + 1))
         if [ $first_error_shown -eq 0 ]; then
             printf "Runtime error on test case %s (exit code %s):\n" "$index" "$run_status"
+            format_error "$actual_file"
             first_error_shown=1
         fi
+        rm "$actual_file"
         index=$((index + 1))
         continue
     fi

@@ -18,7 +18,7 @@ public class BuildCommands implements CLCommandsStrat {
     @Override
     public CommandResult buildContainer(String imageName) throws IOException, InterruptedException {
         List<String> commands = new ArrayList<>(List.of(
-                "docker", "build", "-t", imageName, "."
+                "docker", "build","--progress=plain", "-t", imageName, "."
         ));
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
