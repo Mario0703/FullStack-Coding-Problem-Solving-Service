@@ -268,7 +268,7 @@ public class UserService {
         return solvedChallenges.stream()
                 .map(solvedChallenge -> {
                     User user = findById(solvedChallenge.getUserId());
-                    return new SolverResponse(user.getUserName(), solvedChallenge.getCode());
+                    return new SolverResponse(user.getUserId(), user.getUserName(), solvedChallenge.getCode());
                 })
                 .toList();
     }

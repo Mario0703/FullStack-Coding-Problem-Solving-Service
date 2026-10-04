@@ -6,6 +6,7 @@ export type PublicUser = {
   userId: string
   userName: string
   email: string
+  score: number
 }
 
 const props = defineProps<{
@@ -55,6 +56,7 @@ onMounted(async () => {
     <template v-else-if="publicUser">
       <h2>{{ publicUser.userName }}</h2>
       <p>{{ publicUser.email }}</p>
+      <p>Score: {{ publicUser.score }}</p>
     </template>
   </div>
 </template>

@@ -1,4 +1,6 @@
 package minicode.com.dto.User;
 
-public record SolverResponse(String userName, String code) {
+import java.util.UUID;
+
+public record SolverResponse(UUID userId, String userName, String code) {
 }

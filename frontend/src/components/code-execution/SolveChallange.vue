@@ -9,6 +9,7 @@ import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 type Solver = {
+  userId: string
   userName: string
   code: string
 }
@@ -89,6 +90,14 @@ onMounted(loadChallenge)
           <v-card-text>
             <pre class="code-block">{{ person.code }}</pre>
           </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              :to="{ name: 'publicProfile', params: { userId: person.userId } }"
+            >
+              View profile
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
