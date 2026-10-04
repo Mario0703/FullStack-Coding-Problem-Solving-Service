@@ -2,42 +2,95 @@
 import { computed, onMounted, ref } from 'vue'
 import type { ChallengeDifficulty } from '@/utils/AdminUtils'
 import {
-  loadSolvedChallengeIds,
+  loadSolvedChallenges,
   loadSubmissionTestCaseValues,
   loadUserSubmissions,
+  type SolvedChallenge,
   type UserSubmission,
 } from '@/utils/SolvedChallengeUtil'
 import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
 import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
 import {
+  languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
 } from '@/utils/CodeExecutorUtils'
 import router from '@/router'
 
+// The dashboard shows one card per solved challenge (from the solved
+// challenges table, never duplicated) followed by one card per failed
+// attempt from the submission receipt.
+type DashboardCard = {
+  key: string
+  challengeId: string
+  challengeName: string
+  difficulty: ChallengeDifficulty
+  status: string
+  isSolved: boolean
+  languages: string[]
+  solvedAt: string
+  testCasesPassed: number
+  testCasesFailed: number
+  totalTestCases: number
+  submissionId?: string
+}
+
 const submissions = ref<UserSubmission[]>([])
-const solvedChallengeIds = ref<Set<string>>(new Set())
+const solvedChallenges = ref<SolvedChallenge[]>([])
 const search = ref('')
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
 const selectedChallengeId = ref<string | null>(null)
 
+const solvedCards = computed<DashboardCard[]>(() =>
+  solvedChallenges.value.map((solved) => ({
+    key: `solved-${solved.challengeId}`,
+    challengeId: solved.challengeId,
+    challengeName: solved.challengeName,
+    difficulty: solved.difficulty,
+    status: 'ACCEPTED',
+    isSolved: true,
+    languages: solved.languages,
+    solvedAt: solved.solvedAt,
+    testCasesPassed: 0,
+    testCasesFailed: 0,
+    totalTestCases: 0,
+  })),
+)
+
+const receiptCards = computed<DashboardCard[]>(() =>
+  submissions.value.map((submission) => ({
+    key: submission.id,
+    challengeId: submission.challengeId,
+    challengeName: submission.challengeName,
+    difficulty: submission.difficulty,
+    status: submission.status,
+    isSolved: false,
+    languages: [],
+    solvedAt: '',
+    testCasesPassed: submission.testCasesPassed,
+    testCasesFailed: submission.testCasesFailed,
+    totalTestCases: submission.totalTestCases,
+    submissionId: submission.id,
+  })),
+)
+
+const cards = computed(() => [...solvedCards.value, ...receiptCards.value])
+
 const challengeFilterItems = computed(() =>
   [
-    ...new Map(
-      submissions.value.map((submission) => [submission.challengeId, submission.challengeName]),
-    ),
+    ...new Map(cards.value.map((card) => [card.challengeId, card.challengeName])),
   ]
     .map(([value, title]) => ({ value, title }))
     .sort((a, b) => a.title.localeCompare(b.title)),
 )
 
-const filteredSubmissions = computed(() =>
-  submissions.value.filter((submission) => {
+const filteredCards = computed(() =>
+  cards.value.filter((card) => {
     const matchesDifficulty =
-      !selectedDifficulty.value || submission.difficulty === selectedDifficulty.value
+      !selectedDifficulty.value || card.difficulty === selectedDifficulty.value
     const matchesChallenge =
-      !selectedChallengeId.value || submission.challengeId === selectedChallengeId.value
-    const matchesSearch = submission.challengeName
+      !selectedChallengeId.value || card.challengeId === selectedChallengeId.value
+    const matchesSearch = card.challengeName
       .toLowerCase()
       .includes(search.value.trim().toLowerCase())
 
@@ -49,12 +102,16 @@ function viewSubmissionDetails(submissionId: string) {
   router.push(`/submissions/${submissionId}`)
 }
 
+function formatSolvedDate(value: string): string {
+  return new Date(value).toLocaleDateString()
+}
+
 onMounted(async () => {
   try {
-    const [loadedSubmissions, [passed, failed, total], solvedIds] = await Promise.all([
+    const [loadedSubmissions, [passed, failed, total], solved] = await Promise.all([
       loadUserSubmissions(),
       loadSubmissionTestCaseValues(),
-      loadSolvedChallengeIds(),
+      loadSolvedChallenges(),
     ])
 
     submissions.value = loadedSubmissions.map((submission, index) => ({
@@ -63,22 +120,15 @@ onMounted(async () => {
       testCasesFailed: failed[index] ?? 0,
       totalTestCases: total[index] ?? 0,
     }))
-    solvedChallengeIds.value = solvedIds
+    solvedChallenges.value = solved
   } catch {
     submissions.value = []
+    solvedChallenges.value = []
   }
 })
 
 function solvedCount(difficulty: ChallengeDifficulty): number {
-  const difficultyByChallenge = new Map(
-    submissions.value.map((submission) => [submission.challengeId, submission.difficulty]),
-  )
-
-  return new Set(
-    [...solvedChallengeIds.value].filter(
-      (challengeId) => difficultyByChallenge.get(challengeId) === difficulty,
-    ),
-  ).size
+  return solvedChallenges.value.filter((solved) => solved.difficulty === difficulty).length
 }
 
 const easyQuestionsSolved = computed(() => solvedCount('EASY'))
@@ -174,13 +224,7 @@ const totalPoints = computed(
           variant="outlined"
         />
         <v-row align="stretch">
-          <v-col
-            v-for="submission in filteredSubmissions"
-            :key="submission.id"
-            cols="12"
-            sm="6"
-            md="4"
-          >
+          <v-col v-for="card in filteredCards" :key="card.key" cols="12" sm="6" md="4">
             <v-card
               class="border-lg h-100 d-flex flex-column bg-black"
               border="primary"
@@ -188,21 +232,21 @@ const totalPoints = computed(
             >
               <v-card-item>
                 <v-card-title class="text-h6 font-weight-bold px-0">
-                  {{ submission.challengeName }}
+                  {{ card.challengeName }}
                 </v-card-title>
                 <v-card-subtitle class="px-0 pt-2">
                   <v-chip
                     size="small"
                     variant="tonal"
                     :color="
-                      submission.difficulty === 'EASY'
+                      card.difficulty === 'EASY'
                         ? 'success'
-                        : submission.difficulty === 'MEDIUM'
+                        : card.difficulty === 'MEDIUM'
                           ? 'warning'
                           : 'error'
                     "
                   >
-                    {{ submission.difficulty }}
+                    {{ card.difficulty }}
                   </v-chip>
                 </v-card-subtitle>
               </v-card-item>
@@ -215,42 +259,56 @@ const totalPoints = computed(
                     <template #append>
                       <v-chip
                         size="small"
-                        :color="submissionStatusColor(submission.status)"
+                        :color="submissionStatusColor(card.status)"
                         variant="tonal"
                       >
                         <v-icon start>
-                          {{
-                            submission.status === 'ACCEPTED'
-                              ? 'mdi-check-circle'
-                              : 'mdi-close-circle'
-                          }}
+                          {{ card.isSolved ? 'mdi-check-circle' : 'mdi-close-circle' }}
                         </v-icon>
-                        {{ submissionStatusLabel(submission.status) }}
+                        {{ submissionStatusLabel(card.status) }}
                       </v-chip>
                     </template>
                   </v-list-item>
-                  <v-list-item class="px-0" title="TestCases passed">
-                    <template #append>
-                      <span class="font-weight-bold text-success">{{
-                        submission.testCasesPassed
-                      }}</span>
-                    </template>
-                  </v-list-item>
-                  <v-list-item class="px-0" title="TestCases failed">
-                    <template #append>
-                      <span class="font-weight-bold text-error">{{
-                        submission.testCasesFailed
-                      }}</span>
-                    </template>
-                  </v-list-item>
-                  <v-list-item class="px-0" title="Total test cases">
-                    <template #append>
-                      <span class="font-weight-bold">{{ submission.totalTestCases }}</span>
-                    </template>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn @click="viewSubmissionDetails(submission.id)">View Details</v-btn>
-                  </v-list-item>
+                  <template v-if="card.isSolved">
+                    <v-list-item class="px-0" title="Languages">
+                      <template #append>
+                        <span class="font-weight-bold">
+                          {{ card.languages.map(languageLabel).join(', ') }}
+                        </span>
+                      </template>
+                    </v-list-item>
+                    <v-list-item class="px-0" title="Solved at">
+                      <template #append>
+                        <span class="font-weight-bold">{{ formatSolvedDate(card.solvedAt) }}</span>
+                      </template>
+                    </v-list-item>
+                  </template>
+                  <template v-else>
+                    <v-list-item class="px-0" title="TestCases passed">
+                      <template #append>
+                        <span class="font-weight-bold text-success">{{
+                          card.testCasesPassed
+                        }}</span>
+                      </template>
+                    </v-list-item>
+                    <v-list-item class="px-0" title="TestCases failed">
+                      <template #append>
+                        <span class="font-weight-bold text-error">{{
+                          card.testCasesFailed
+                        }}</span>
+                      </template>
+                    </v-list-item>
+                    <v-list-item class="px-0" title="Total test cases">
+                      <template #append>
+                        <span class="font-weight-bold">{{ card.totalTestCases }}</span>
+                      </template>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-btn @click="viewSubmissionDetails(card.submissionId ?? '')">
+                        View Details
+                      </v-btn>
+                    </v-list-item>
+                  </template>
                 </v-list>
               </v-card-text>
             </v-card>

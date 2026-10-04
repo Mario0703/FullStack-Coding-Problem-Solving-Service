@@ -17,6 +17,16 @@ public interface solvedChallengesRepo extends JpaRepository<SolvedChallenges, UU
 
     void deleteAllByUserId(UUID userId);
 
+    // One row per (user, challenge, language); the caller groups by challenge
+    // so each solved challenge is reported exactly once.
+    @Query("""
+            SELECT s
+            FROM SolvedChallenges s
+            WHERE s.userId = :userId
+            ORDER BY s.solvedAt DESC
+            """)
+    List<SolvedChallenges> findAllByUserId(@Param("userId") UUID userId);
+
     @Query("""
             SELECT DISTINCT s.challengeId
             FROM SolvedChallenges s
