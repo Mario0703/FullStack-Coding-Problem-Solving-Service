@@ -85,7 +85,7 @@ public class CodeController {
         Path tempEnvPath = null;
         try {
             tempEnvPath = envStrategy.createEnv();
-            ExecutionResult result = containerStrat.execute(tempEnvPath);
+            ExecutionResult result = containerStrat.execute(language, tempEnvPath);
             SubmissionStatus status = result.status();
 
             submissionRepo.save(new Submission(

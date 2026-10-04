@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface CodeExecuteStrat {
-    ExecutionResult execute(Path path) throws IOException, InterruptedException;
+    ExecutionResult execute(String language, Path path) throws IOException, InterruptedException;
 }
 
 
