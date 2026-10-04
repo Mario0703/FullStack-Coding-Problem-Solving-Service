@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import type { ChallengeDifficulty } from '@/utils/AdminUtils'
 import {
+  loadSolvedChallengeIds,
   loadSubmissionTestCaseValues,
   loadUserSubmissions,
   type UserSubmission,
@@ -11,6 +12,7 @@ import FilterComponentChallange from '@/components/challenges/FilterComponentCha
 import router from '@/router'
 
 const submissions = ref<UserSubmission[]>([])
+const solvedChallengeIds = ref<Set<string>>(new Set())
 const search = ref('')
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
 const selectedChallengeId = ref<string | null>(null)
@@ -45,9 +47,10 @@ function viewSubmissionDetails(submissionId: string) {
 
 onMounted(async () => {
   try {
-    const [loadedSubmissions, [passed, failed, total]] = await Promise.all([
+    const [loadedSubmissions, [passed, failed, total], solvedIds] = await Promise.all([
       loadUserSubmissions(),
       loadSubmissionTestCaseValues(),
+      loadSolvedChallengeIds(),
     ])
 
     submissions.value = loadedSubmissions.map((submission, index) => ({
@@ -56,17 +59,21 @@ onMounted(async () => {
       testCasesFailed: failed[index] ?? 0,
       totalTestCases: total[index] ?? 0,
     }))
+    solvedChallengeIds.value = solvedIds
   } catch {
     submissions.value = []
   }
 })
 
 function solvedCount(difficulty: ChallengeDifficulty): number {
+  const difficultyByChallenge = new Map(
+    submissions.value.map((submission) => [submission.challengeId, submission.difficulty]),
+  )
+
   return new Set(
-    submissions.value
-      .filter((submission) => submission.status === 'ACCEPTED')
-      .filter((submission) => submission.difficulty === difficulty)
-      .map((submission) => submission.challengeId),
+    [...solvedChallengeIds.value].filter(
+      (challengeId) => difficultyByChallenge.get(challengeId) === difficulty,
+    ),
   ).size
 }
 

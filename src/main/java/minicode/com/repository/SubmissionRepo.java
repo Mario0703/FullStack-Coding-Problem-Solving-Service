@@ -1,7 +1,6 @@
 package minicode.com.repository;
 
 import minicode.com.entity.Submissions.Submission;
-import minicode.com.entity.Submissions.SubmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,34 +18,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
 
     long countByUser_UserId(UUID userId);
 
-    @Query("""
-            SELECT COUNT(DISTINCT submission.challenge.id)
-            FROM Submission submission
-            WHERE submission.user.userId = :userId
-              AND submission.status = :status
-            """)
-    long countDistinctChallengesByUserIdAndStatus(
-            @Param("userId") UUID userId,
-            @Param("status") SubmissionStatus status
-    );
-
-    @Query("""
-            SELECT COUNT(DISTINCT submission.challenge.id)
-            FROM Submission submission
-            WHERE submission.status = :status
-            """)
-    long countDistinctChallengesByStatus(@Param("status") SubmissionStatus status);
-
-    @Query("""
-            SELECT DISTINCT submission.challenge.id
-            FROM Submission submission
-            WHERE submission.user.userId = :userId
-              AND submission.status = :status
-            """)
-    List<UUID> findChallengeIdsByUserIdAndStatus(
-            @Param("userId") UUID userId,
-            @Param("status") SubmissionStatus status
-    );
     @Query("""
     SELECT s
     FROM Submission s

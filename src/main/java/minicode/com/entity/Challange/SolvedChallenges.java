@@ -28,9 +28,13 @@ public class SolvedChallenges {
     @Column
     private String code;
 
-    public SolvedChallenges(Challenge challenge, User user, String code) {
+    @Column
+    private String language;
+
+    public SolvedChallenges(Challenge challenge, User user, String code, String language) {
         this.userId = user.getUserId();
         this.challengeId = challenge.getId();
         this.code = code;
+        this.language = language;
     }
 }

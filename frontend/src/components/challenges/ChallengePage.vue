@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
-import { loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
+import { loadAttemptedChallengeIds, loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
 import SearchComponentChallange from './SearchComponentChallange.vue'
 import FilterComponentChallange from './FilterComponentChallange.vue'
 
@@ -14,6 +14,7 @@ const loadError = ref('')
 const isLoading = ref(true)
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
 const solvedChallengeIds = ref<Set<string>>(new Set())
+const attemptedChallengeIds = ref<Set<string>>(new Set())
 
 async function loadChallengeList() {
   loadError.value = ''
@@ -37,10 +38,21 @@ onMounted(() => {
     .catch(() => {
       solvedChallengeIds.value = new Set()
     })
+  loadAttemptedChallengeIds()
+    .then((ids) => {
+      attemptedChallengeIds.value = ids
+    })
+    .catch(() => {
+      attemptedChallengeIds.value = new Set()
+    })
 })
 
 function isChallengeSolved(challengeId: string): boolean {
   return solvedChallengeIds.value.has(challengeId)
+}
+
+function isChallengeAttempted(challengeId: string): boolean {
+  return attemptedChallengeIds.value.has(challengeId)
 }
 
 const search = ref('')
@@ -109,6 +121,10 @@ const filteredChallenges = computed(() =>
             <template v-if="isChallengeSolved(challenge.id)">
               <v-icon icon="mdi-check-circle" color="success" />
               <span class="ml-2">Solved</span>
+            </template>
+            <template v-else-if="isChallengeAttempted(challenge.id)">
+              <v-icon icon="mdi-alert-circle" color="warning" />
+              <span class="ml-2">Attempted</span>
             </template>
             <template v-else>
               <v-icon icon="mdi-close-circle" color="error" />

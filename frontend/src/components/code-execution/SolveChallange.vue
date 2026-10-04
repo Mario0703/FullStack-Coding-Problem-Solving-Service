@@ -13,6 +13,7 @@ type Solver = {
   userId: string
   userName: string
   code: string
+  language: string
 }
 
 async function loadSolvedByPeople(challengeId: string): Promise<Solver[]> {
@@ -91,7 +92,7 @@ onMounted(loadChallenge)
           <v-card-text>
             <CodeEditor
               :model-value="person.code"
-              :language="challenge.language"
+              :language="person.language || challenge.language"
               readonly
               height="200px"
             />

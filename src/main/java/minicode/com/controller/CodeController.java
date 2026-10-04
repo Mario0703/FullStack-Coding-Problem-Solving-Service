@@ -108,7 +108,7 @@ public class CodeController {
             ));
 
             if (status == SubmissionStatus.ACCEPTED) {
-                SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode());
+                SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode(), language);
             }
 
             return result;
@@ -128,15 +128,20 @@ public class CodeController {
         }
     }
 
-    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code) {
+    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code, String language) {
         UUID userId = user.getUserId();
         UUID challengeId = challenge.getId();
 
-        if (solvedChallengesRepository.existsByUserIdAndChallengeId(userId, challengeId)) {
-            return;
+        boolean alreadySolvedChallenge = solvedChallengesRepository.existsByUserIdAndChallengeId(userId, challengeId);
+        boolean alreadySolvedInLanguage = solvedChallengesRepository.existsByUserIdAndChallengeIdAndLanguage(userId, challengeId, language);
+
+        if (!alreadySolvedInLanguage) {
+            solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code, language));
         }
 
-        solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code));
+        if (alreadySolvedChallenge) {
+            return;
+        }
 
         int totalTestCases = result.passingTestCases() + result.failingTestCases();
         scoreService.updateScoreAndSolvedCounters(
@@ -188,10 +193,7 @@ public class CodeController {
     @GetMapping("/SolvedChallenges")
     public List<UUID> getSolvedChallenges(Authentication authentication) {
         UUID userId = getAuthenticatedUserId(authentication);
-        return submissionRepo.findChallengeIdsByUserIdAndStatus(
-                userId,
-                SubmissionStatus.ACCEPTED
-        );
+        return solvedChallengesRepository.findChallengeIdsByUserId(userId);
     }
 
     private UUID getAuthenticatedUserId(Authentication authentication) {

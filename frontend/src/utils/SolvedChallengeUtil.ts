@@ -98,10 +98,23 @@ export async function loadPublicSubmissionTestCaseValues(userId: string): Promis
 }
 
 export async function loadSolvedChallengeIds(): Promise<Set<string>> {
+  const response = await fetch(`${baseUrl}/api/code/playground/SolvedChallenges`, {
+    credentials: 'include',
+  })
+
+  if (response.status === 401) {
+    return new Set()
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch solved challenges')
+  }
+
+  const challengeIds = (await response.json()) as string[]
+  return new Set(challengeIds)
+}
+
+export async function loadAttemptedChallengeIds(): Promise<Set<string>> {
   const submissions = await loadUserSubmissions()
-  return new Set(
-    submissions
-      .filter((submission) => submission.status === 'ACCEPTED')
-      .map((submission) => submission.challengeId),
-  )
+  return new Set(submissions.map((submission) => submission.challengeId))
 }
