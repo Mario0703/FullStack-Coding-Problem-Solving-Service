@@ -8,11 +8,6 @@ passing_tests=0
 failing_tests=0
 first_error_shown=0
 
-# Compile the submission before running any test case. Every language image
-# exports COMPILE_CMD (see CodeEnv/<language>/Dockerfile), including Python,
-# which syntax-checks the file with py_compile. A non-zero compiler exit means
-# the submission never built: return the compiler feedback to the user and
-# skip the test cases entirely.
 if [ -n "$COMPILE_CMD" ]; then
     compile_output=$(bash -c "$COMPILE_CMD" 2>&1)
     compile_status=$?
@@ -31,9 +26,7 @@ for i in "$test_directory"/*.in; do
     "$@" < "$i" > "$actual_file" 2>&1
     run_status=$?
 
-    # A non-zero exit means the program crashed (runtime error) rather than
-    # producing the wrong answer. Report it once, cleanly, without the
-    # actual/expected dump repeated for every test case.
+
     if [ $run_status -ne 0 ]; then
         failing_tests=$((failing_tests + 1))
         if [ $first_error_shown -eq 0 ]; then
