@@ -5,19 +5,19 @@ import java.util.List;
 
 public class DiffcultyFacttory {
 
-    private List<DiffcultyMultiplier> diffcultyMultipliers;
+    private List<DifficultyMultiplier> difficultyMultipliers;
 
     public DiffcultyFacttory(){
-        this.diffcultyMultipliers = new ArrayList<>();
-        diffcultyMultipliers.add(new Easy());
-        diffcultyMultipliers.add(new Medium());
-        diffcultyMultipliers.add(new Hard());
+        this.difficultyMultipliers = new ArrayList<>();
+        difficultyMultipliers.add(new Easy());
+        difficultyMultipliers.add(new Medium());
+        difficultyMultipliers.add(new Hard());
     }
 
-    public List<DiffcultyMultiplier> getDiffcultyMultiplier(String diffcultyName) {
-        for(DiffcultyMultiplier diffcultyMultiplier : diffcultyMultipliers) {
-            if(diffcultyMultiplier.getDifficultyName().equalsIgnoreCase(diffcultyName)) {
-                return List.of(diffcultyMultiplier);
+    public List<DifficultyMultiplier> getDiffcultyMultiplier(String diffcultyName) {
+        for(DifficultyMultiplier difficultyMultiplier : difficultyMultipliers) {
+            if(difficultyMultiplier.getDifficultyName().equalsIgnoreCase(diffcultyName)) {
+                return List.of(difficultyMultiplier);
             }
         }
         return List.of();

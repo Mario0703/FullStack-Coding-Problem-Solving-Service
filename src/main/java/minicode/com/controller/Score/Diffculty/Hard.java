@@ -1,6 +1,6 @@
 package minicode.com.controller.Score.Diffculty;
 
-public class Hard implements DiffcultyMultiplier {
+public class Hard implements DifficultyMultiplier {
 
     public String getDifficultyName() {
         return "Hard";

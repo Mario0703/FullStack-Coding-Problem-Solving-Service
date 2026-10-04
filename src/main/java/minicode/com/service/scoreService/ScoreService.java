@@ -1,8 +1,7 @@
 package minicode.com.service.scoreService;
 
-import lombok.Setter;
 import minicode.com.controller.Score.Diffculty.DiffcultyFacttory;
-import minicode.com.controller.Score.Diffculty.DiffcultyMultiplier;
+import minicode.com.controller.Score.Diffculty.DifficultyMultiplier;
 import minicode.com.controller.Score.MiniCodeScore;
 import minicode.com.controller.Score.ScoreStrat;
 import minicode.com.entity.Challange.Difficulty;
@@ -40,7 +39,7 @@ public class ScoreService {
         Difficulty difficulty = DifficultyFactory.createDifficulty(difficultyLevel);
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        DiffcultyMultiplier multiplierStrategy = diffcultyFacttory.getDiffcultyMultiplier(difficultyLevel).stream().findFirst()
+        DifficultyMultiplier multiplierStrategy = diffcultyFacttory.getDiffcultyMultiplier(difficultyLevel).stream().findFirst()
                 .orElseThrow(() -> new RuntimeException("Difficulty multiplier not found"));
 
         int score = scoreStrategy.calculateScore(totalTestCases, passedTestCases, multiplierStrategy, difficultyLevel);
