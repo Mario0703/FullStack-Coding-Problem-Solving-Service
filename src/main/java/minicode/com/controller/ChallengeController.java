@@ -61,12 +61,10 @@ public class ChallengeController {
         return challangeService.getChallengeTemplate(challengeId);
     }
 
+    // Examples are part of the problem statement, so any solver can read them
+    // (like the template), unlike the hidden test cases below.
     @GetMapping("/{challengeId}/examples")
-    public List<InputOutput> getChallengeExamples(
-            @PathVariable UUID challengeId,
-            Authentication authentication
-    ) {
-        checkIfAdmin(authentication);
+    public List<InputOutput> getChallengeExamples(@PathVariable UUID challengeId) {
         return challangeService.getChallengeExamples(challengeId);
     }
 
@@ -147,6 +145,3 @@ public class ChallengeController {
 
 
 }
-
-
-
