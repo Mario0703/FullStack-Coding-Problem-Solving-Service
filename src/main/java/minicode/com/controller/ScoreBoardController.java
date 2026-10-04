@@ -7,20 +7,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/scoreboard")
 public class ScoreBoardController {
-    private ScoreBoardService scoreBoardService;
+    private final ScoreBoardService scoreBoardService;
 
     public ScoreBoardController(ScoreBoardService scoreBoardService) {
         this.scoreBoardService = scoreBoardService;
     }
 
     @GetMapping("/user-stats")
-    public List<UserStats> getUserStats(UUID userId) {
-        return scoreBoardService.getUserStats(userId);
+    public List<UserStats> getUserStats() {
+        return scoreBoardService.getUserStats();
     }
 
 }

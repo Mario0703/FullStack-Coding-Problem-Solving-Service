@@ -14,6 +14,7 @@ import AdminLoginConfirmed from '@/components/AdminPages/AdminLogin/AdminLoginCo
 import ViewSubmission from '@/components/user/ViewSubmission.vue'
 import ChallengeDetails from '@/components/AdminPages/ChallengeDetails.vue'
 import PublicUserProfile from '@/components/user/PublicUserProfile.vue'
+import scoreBoard from '@/components/ScoreBoard/scoreBoard.vue'
 
 export const routes = [
   {
@@ -86,6 +87,12 @@ export const routes = [
     path: '/challenges/:id/solve',
     name: 'solveChallenge',
     component: SolveChallange,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/scoreboard',
+    name: 'scoreBoard',
+    component: scoreBoard,
     meta: { requiresAuth: true },
   },
   {
