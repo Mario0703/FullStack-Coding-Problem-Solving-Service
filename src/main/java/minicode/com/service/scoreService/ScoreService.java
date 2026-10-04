@@ -10,10 +10,10 @@ import minicode.com.entity.User.User;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.service.scoreService.factory.DifficultyFactory;
-
+import org.springframework.stereotype.Service;
 import java.util.UUID;
 
-@Setter
+@Service
 public class ScoreService {
     private final UserRepo userRepo;
     private final ChallengeRepo challengeRepo;
@@ -21,15 +21,12 @@ public class ScoreService {
     private final DiffcultyFacttory diffcultyFacttory;
 
     public ScoreService(UserRepo userRepo, ChallengeRepo challengeRepo) {
-        this(userRepo, challengeRepo, new MiniCodeScore(), new DiffcultyFacttory());
-    }
-
-    public ScoreService(UserRepo userRepo, ChallengeRepo challengeRepo, ScoreStrat scoreStrategy, DiffcultyFacttory diffcultyFacttory) {
         this.userRepo = userRepo;
         this.challengeRepo = challengeRepo;
-        this.scoreStrategy = scoreStrategy;
-        this.diffcultyFacttory = diffcultyFacttory;
+        this.scoreStrategy = new MiniCodeScore();
+        this.diffcultyFacttory = new DiffcultyFacttory();
     }
+
 
     public void updateNumberOfChallengesSolvedBasedOnDifficulty(UUID userId, String difficultylevel) {
         Difficulty difficulty = DifficultyFactory.createDifficulty(difficultylevel);

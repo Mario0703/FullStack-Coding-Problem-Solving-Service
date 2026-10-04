@@ -27,17 +27,17 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column
-    private int score;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int score = 0;
 
-    @Column
-    private int numberOfEasyChallengesSolved;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfEasyChallengesSolved = 0;
 
-    @Column
-    private int numberOfMediumChallengesSolved;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfMediumChallengesSolved = 0;
 
-    @Column
-    private int numberOfHardChallengesSolved;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfHardChallengesSolved = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
