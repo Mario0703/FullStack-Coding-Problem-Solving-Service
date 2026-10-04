@@ -15,6 +15,15 @@ type Solver = {
   userName: string
   code: string
   language: string
+  solvedAt: string
+}
+
+function formatSubmittedDate(value: string): string {
+  if (!value) {
+    return 'Unknown'
+  }
+
+  return new Date(value).toLocaleDateString()
 }
 
 async function loadSolvedByPeople(challengeId: string): Promise<Solver[]> {
@@ -165,6 +174,7 @@ onMounted(loadChallenge)
       <v-col>
         <v-card class="mb-4">
           <v-card-title>{{ person.userName }}</v-card-title>
+          <v-card-subtitle>Submitted: {{ formatSubmittedDate(person.solvedAt) }}</v-card-subtitle>
           <v-card-text>
             <CodeEditor
               :model-value="person.code"
