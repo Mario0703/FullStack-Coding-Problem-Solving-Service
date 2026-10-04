@@ -15,8 +15,7 @@ import java.util.regex.Pattern;
 
 public class DockerCodeStrategy implements CodeExecuteStrat {
 
-    private static final Pattern TEST_RESULT =
-            Pattern.compile("Passed: (\\d+), Failed: (\\d+)");
+    private static final Pattern TEST_RESULT = Pattern.compile("Passed: (\\d+), Failed: (\\d+)");
     private int passingTestIndex = 0;
     private int failingTestIndex = 1;
 
