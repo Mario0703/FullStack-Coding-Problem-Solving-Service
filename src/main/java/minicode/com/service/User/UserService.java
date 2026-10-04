@@ -7,19 +7,20 @@ import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
 import minicode.com.dto.User.LoginRequest;
 import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.SolverResponse;
+import minicode.com.dto.User.UserSummary;
+import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -223,6 +224,19 @@ public class UserService {
         return user.get();
     }
 
+    public UserSummary getUserSummaryById(UUID userId) {
+        User user = findById(userId);
+        return new UserSummary(
+                user.getUserId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getScore(),
+                user.getNumberOfEasyChallengesSolved(),
+                user.getNumberOfMediumChallengesSolved(),
+                user.getNumberOfHardChallengesSolved()
+        );
+    }
+
     public User findByUserName(String userName) {
         Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
         if (!userByUserName.isPresent()) {
@@ -235,9 +249,31 @@ public class UserService {
         return userByUserName.get();
     }
 
+    public UUID getAuthenticatedUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
+        }
+        return findByUserName(authentication.getName()).getUserId();
+    }
+
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
     }
+
+
+    public List<SolverResponse> getSolversBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
+        return solvedChallenges.stream()
+                .map(solvedChallenge -> {
+                    User user = findById(solvedChallenge.getUserId());
+                    return new SolverResponse(user.getUserId(), user.getUserName(), solvedChallenge.getCode(), solvedChallenge.getLanguage(), solvedChallenge.getSolvedAt());
+                })
+                .toList();
+    }
+
+
 }
 
 

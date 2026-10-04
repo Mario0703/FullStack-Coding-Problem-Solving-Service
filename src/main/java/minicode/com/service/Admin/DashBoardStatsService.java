@@ -1,12 +1,12 @@
 package minicode.com.service.Admin;
 
 import minicode.com.entity.Submissions.Submission;
-import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.entity.User.User;
 import minicode.com.dto.Admin.AdminUserStatistics;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.solvedChallengesRepo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +25,13 @@ public class DashBoardStatsService {
     private final UserRepo userRepository;
     private final ChallengeRepo challengeRepository;
     private final SubmissionRepo submissionRepository;
+    private final solvedChallengesRepo solvedChallengesRepository;
 
-    public DashBoardStatsService(UserRepo userRepository, ChallengeRepo challengeRepository, SubmissionRepo submissionRepository) {
+    public DashBoardStatsService(UserRepo userRepository, ChallengeRepo challengeRepository, SubmissionRepo submissionRepository, solvedChallengesRepo solvedChallengesRepository) {
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.submissionRepository = submissionRepository;
+        this.solvedChallengesRepository = solvedChallengesRepository;
     }
 
     @PreAuthorize("hasAuthority('VIEW_USERS')")
@@ -66,6 +68,7 @@ public class DashBoardStatsService {
                 ));
 
         submissionRepository.deleteAllByUser_UserId(userId);
+        solvedChallengesRepository.deleteAllByUserId(userId);
         user.getRoles().clear();
         userRepository.delete(user);
     }
@@ -88,7 +91,7 @@ public class DashBoardStatsService {
     }
 
     public long getNumberOfSolvedChallenges() {
-        return submissionRepository.countDistinctChallengesByStatus(SubmissionStatus.ACCEPTED);
+        return solvedChallengesRepository.countDistinctChallenges();
     }
 
     public Map<String, Long> getPlatformStatistics() {
@@ -107,9 +110,8 @@ public class DashBoardStatsService {
                         user.getUserName(),
                         user.getEmail(),
                         submissionRepository.countByUser_UserId(user.getUserId()),
-                        submissionRepository.countDistinctChallengesByUserIdAndStatus(
-                                user.getUserId(),
-                                SubmissionStatus.ACCEPTED
+                        solvedChallengesRepository.countDistinctChallengesByUserId(
+                                user.getUserId()
                         )
                 ))
                 .collect(Collectors.toList());

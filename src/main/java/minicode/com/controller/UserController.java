@@ -71,7 +71,7 @@ public class UserController {
             @Valid @RequestBody ChangeUserNameRequest request,
             Authentication authentication
     ) {
-        return userService.changeUserName(getAuthenticatedUserId(authentication), request);
+        return userService.changeUserName(userService.getAuthenticatedUserId(authentication), request);
     }
 
     @PostMapping("/change-email")
@@ -79,7 +79,7 @@ public class UserController {
             @Valid @RequestBody ChangeEmailRequest request,
             Authentication authentication
     ) {
-        return userService.changeUserEmail(getAuthenticatedUserId(authentication), request);
+        return userService.changeUserEmail(userService.getAuthenticatedUserId(authentication), request);
     }
 
     @PostMapping("/change-password")
@@ -87,17 +87,7 @@ public class UserController {
             @Valid @RequestBody ChangePasswordRequest request,
             Authentication authentication
     ) {
-        return userService.changePassword(getAuthenticatedUserId(authentication), request);
-    }
-
-    private UUID getAuthenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-        }
-        return userService.findByUserName(authentication.getName()).getUserId();
+        return userService.changePassword(userService.getAuthenticatedUserId(authentication), request);
     }
 
 

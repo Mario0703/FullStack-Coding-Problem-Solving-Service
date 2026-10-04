@@ -1,7 +1,6 @@
 package minicode.com.repository;
 
 import minicode.com.entity.Submissions.Submission;
-import minicode.com.entity.Submissions.SubmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,34 +18,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
 
     long countByUser_UserId(UUID userId);
 
-    @Query("""
-            SELECT COUNT(DISTINCT submission.challenge.id)
-            FROM Submission submission
-            WHERE submission.user.userId = :userId
-              AND submission.status = :status
-            """)
-    long countDistinctChallengesByUserIdAndStatus(
-            @Param("userId") UUID userId,
-            @Param("status") SubmissionStatus status
-    );
-
-    @Query("""
-            SELECT COUNT(DISTINCT submission.challenge.id)
-            FROM Submission submission
-            WHERE submission.status = :status
-            """)
-    long countDistinctChallengesByStatus(@Param("status") SubmissionStatus status);
-
-    @Query("""
-            SELECT DISTINCT submission.challenge.id
-            FROM Submission submission
-            WHERE submission.user.userId = :userId
-              AND submission.status = :status
-            """)
-    List<UUID> findChallengeIdsByUserIdAndStatus(
-            @Param("userId") UUID userId,
-            @Param("status") SubmissionStatus status
-    );
     @Query("""
     SELECT s
     FROM Submission s
@@ -79,6 +50,50 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     ORDER BY s.createdAt DESC
 """)
     List<Integer> findTotalTestCasesByUserId(
+            @Param("userId") UUID userId
+    );
+
+    @Query("""
+    SELECT s
+    FROM Submission s
+    WHERE s.challenge.id = :challengeId
+      AND s.status = 'ACCEPTED'
+    ORDER BY s.createdAt DESC
+""")
+    List<Submission> findAcceptedByChallengeId(@Param("challengeId") UUID challengeId);
+
+    @Query("""
+    SELECT s
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Submission> findPublicSubmissionsByUserId(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesPassed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findPassedTestCasesByUserIdPublic(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT s.testCasesFailed
+    FROM Submission s
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findFailedTestCasesByUserIdPublic(@Param("userId") UUID userId);
+
+    @Query("""
+    SELECT c.numberOfTestCases
+    FROM Submission s
+    INNER JOIN s.challenge c
+    WHERE s.user.userId = :userId
+    ORDER BY s.createdAt DESC
+""")
+    List<Integer> findTotalTestCasesByUserIdPublic(
             @Param("userId") UUID userId
     );
 }

@@ -6,6 +6,7 @@ import minicode.com.dto.Challenge.CreateTestCaseRequest;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.entity.Challange.*;
 import minicode.com.repository.ChallengeRepo;
+import minicode.com.repository.solvedChallengesRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +15,12 @@ import java.util.UUID;
 @Service
 public class ChallengeService {
     private final ChallengeRepo challengeRepo;
+    private final solvedChallengesRepo solvedChallengesRepo;
 
-    public ChallengeService(ChallengeRepo challengeRepo) {
+    public ChallengeService(ChallengeRepo challengeRepo, solvedChallengesRepo solvedChallengesRepo) {
+
         this.challengeRepo = challengeRepo;
+        this.solvedChallengesRepo = solvedChallengesRepo;
     }
 
     public Iterable<Challenge> listChallenges() {
@@ -95,7 +99,11 @@ public class ChallengeService {
         challengeRepo.deleteById(challenge.getId());
     }
 
-    private Challenge getChallenge(UUID challengeId) {
+    public List<SolvedChallenges> getSolvedChallenges(UUID challengeId) {
+        return solvedChallengesRepo.findAllByChallengeId(challengeId);
+    }
+
+    public Challenge getChallenge(UUID challengeId) {
         return challengeRepo.findById(challengeId)
                 .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeId));
     }

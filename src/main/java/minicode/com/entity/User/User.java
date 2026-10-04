@@ -27,6 +27,18 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int score = 0;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfEasyChallengesSolved = 0;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfMediumChallengesSolved = 0;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int numberOfHardChallengesSolved = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;

@@ -13,6 +13,7 @@ import AdminLogin from '@/components/AdminPages/AdminLogin/AdminLogin.vue'
 import AdminLoginConfirmed from '@/components/AdminPages/AdminLogin/AdminLoginConfirmed.vue'
 import ViewSubmission from '@/components/user/ViewSubmission.vue'
 import ChallengeDetails from '@/components/AdminPages/ChallengeDetails.vue'
+import PublicUserProfile from '@/components/user/PublicUserProfile.vue'
 
 export const routes = [
   {
@@ -86,6 +87,12 @@ export const routes = [
     name: 'solveChallenge',
     component: SolveChallange,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/public-profile/:userId',
+    name: 'publicProfile',
+    component: PublicUserProfile,
+    props: true,
   },
   {
     path: '/submissions/:submissionId',

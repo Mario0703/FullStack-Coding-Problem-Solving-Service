@@ -67,6 +67,17 @@ export async function getChallengeTestCases(challengeId: string): Promise<Challe
   return (await response.json()) as ChallengeTestCase[]
 }
 
+export async function getChallengeSolution(challengeId: string): Promise<string> {
+  const response = await fetch(`${CHALLENGE_URL}/Solution/${encodeURIComponent(challengeId)}`, {
+  })
+
+  if (!response.ok) {
+    throw new Error('Could not load the challenge solution')
+  }
+
+  return await response.text()
+}
+
 export async function createChallenge(challengeData: CreateChallengeForm): Promise<Challenge | null> {
   const response = await fetch(CREATE_CHALLENGE_URL, {
     method: 'POST',

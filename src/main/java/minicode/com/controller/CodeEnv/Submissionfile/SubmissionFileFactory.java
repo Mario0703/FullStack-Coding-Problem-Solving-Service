@@ -19,7 +19,16 @@ public final class SubmissionFileFactory {
     }
 
     public static SubmissionFileName forLanguage(String language) {
-        SubmissionFileName strategy = STRATEGIES.get(language);
+        SupportedLanguages key;
+        try {
+            key = SupportedLanguages.valueOf(language.toUpperCase(java.util.Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Unsupported language: " + language
+            );
+        }
+        SubmissionFileName strategy = STRATEGIES.get(key);
         if (strategy == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
