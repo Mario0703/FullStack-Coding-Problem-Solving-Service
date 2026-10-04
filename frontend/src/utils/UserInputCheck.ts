@@ -1,4 +1,4 @@
-import { isblank, isValidEmail, inputsMatch, isValidPassword } from './signupValidation'
+import { isblank, isValidEmail } from './signupValidation'
 
 export {
   hasValidSignupDetails,

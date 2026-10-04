@@ -49,12 +49,10 @@ public class CreateChallangeRequest {
     private String language;
 
     @NotEmpty(message = "At least one test case is required")
-    @Valid
-    private List<CreateTestCaseRequest> testCases;
+    private List<@Valid CreateTestCaseRequest> testCases;
 
     @NotEmpty(message = "At least one example is required")
-    @Valid
-    private List<CreateExamplesRequest> examples;
+    private List<@Valid CreateExamplesRequest> examples;
 }
 
 

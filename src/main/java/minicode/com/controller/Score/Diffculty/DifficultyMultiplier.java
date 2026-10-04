@@ -1,6 +1,6 @@
 package minicode.com.controller.Score.Diffculty;
 
-public interface DiffcultyMultiplier {
+public interface DifficultyMultiplier {
 
     int getMultiplier();
 

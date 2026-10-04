@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { baseUrl } from '@/utils/api'
 
 export type PublicUser = {
@@ -10,6 +10,7 @@ export type PublicUser = {
   numberOfEasyChallengesSolved: number
   numberOfMediumChallengesSolved: number
   numberOfHardChallengesSolved: number
+  totalChallengesSolved: number
 }
 
 const props = defineProps<{
@@ -18,18 +19,6 @@ const props = defineProps<{
 
 const publicUser = ref<PublicUser | null>(null)
 const error = ref('')
-
-const numberOfChallengesSolved = computed(() => {
-  if (!publicUser.value) {
-    return 0
-  }
-
-  return (
-    publicUser.value.numberOfEasyChallengesSolved +
-    publicUser.value.numberOfMediumChallengesSolved +
-    publicUser.value.numberOfHardChallengesSolved
-  )
-})
 
 async function getPublicUserProfileData(userId: string): Promise<PublicUser> {
   if (!userId) {
@@ -79,7 +68,7 @@ onMounted(async () => {
         <v-card-title>User Profile</v-card-title>
         <v-card-text>{{ publicUser.userName }}</v-card-text>
       <v-card-text>Score: {{ publicUser.score }}</v-card-text>
-      <v-card-text>Challenges Solved: {{ numberOfChallengesSolved }}</v-card-text>
+      <v-card-text>Challenges Solved: {{ publicUser.totalChallengesSolved }}</v-card-text>
 
       <v-list>
         <v-list-item>

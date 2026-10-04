@@ -10,6 +10,7 @@ import { currentRole, currentUser } from "@/authenticator/auth";
     <v-btn color="white" variant="text" :to="{ name: 'challenges' }">
       Explore coding challenges
     </v-btn>
+    <v-btn color="white" variant="text" :to="{ name: 'scoreBoard' }">Scoreboard</v-btn>
     <v-btn v-if="!currentUser && currentRole !== 'ROLE_ADMIN'" color="white" variant="text" :to="{ name: 'signup' }">
       Sign up
     </v-btn>
