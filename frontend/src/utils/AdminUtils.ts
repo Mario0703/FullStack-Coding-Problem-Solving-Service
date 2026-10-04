@@ -15,6 +15,7 @@ export type Challenge = {
   numberOfTestCases: number
   testCases: ChallengeTestCase[]
   inputOutput: ChallengeExample[]
+  language: Language
 }
 
 export type ChallengeOption<T extends string> = {

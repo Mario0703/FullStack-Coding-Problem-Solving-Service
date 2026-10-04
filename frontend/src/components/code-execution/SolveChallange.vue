@@ -6,6 +6,7 @@ import { formatChallengeValue } from '@/utils/AdminUtils'
 import { listChallenges } from '@/utils/ChallangeUtil'
 import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
+import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
 type Solver = {
@@ -81,14 +82,19 @@ onMounted(loadChallenge)
     </v-card>
     <ChallangeSolve v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
-  <v-container v-if="solvedByPeople.length > 0">
+  <v-container v-if="challenge && solvedByPeople.length > 0">
     <h3 class="text-h5 mb-4">Solved by</h3>
     <v-row v-for="(person, index) in solvedByPeople" :key="index">
       <v-col>
         <v-card class="mb-4">
           <v-card-title>{{ person.userName }}</v-card-title>
           <v-card-text>
-            <pre class="code-block">{{ person.code }}</pre>
+            <CodeEditor
+              :model-value="person.code"
+              :language="challenge.language"
+              readonly
+              height="200px"
+            />
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -104,13 +110,3 @@ onMounted(loadChallenge)
   </v-container>
 </template>
 
-<style scoped>
-.code-block {
-  background: #1e1e1e;
-  color: #d4d4d4;
-  padding: 16px;
-  border-radius: 8px;
-  overflow-x: auto;
-  white-space: pre;
-}
-</style>
