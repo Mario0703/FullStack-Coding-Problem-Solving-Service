@@ -86,15 +86,7 @@ public class CodeController {
         try {
             tempEnvPath = envStrategy.createEnv();
             ExecutionResult result = containerStrat.execute(tempEnvPath);
-            SubmissionStatus status;
-
-            if (result.exitCode() == 0){
-                status = SubmissionStatus.ACCEPTED;
-
-            }
-            else{
-                status = SubmissionStatus.WRONG_ANSWER;
-            }
+            SubmissionStatus status = result.status();
 
             submissionRepo.save(new Submission(
                     user,

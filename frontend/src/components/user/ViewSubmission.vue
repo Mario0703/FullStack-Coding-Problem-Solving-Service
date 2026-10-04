@@ -4,7 +4,11 @@ import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
-import { languageLabel } from '@/utils/CodeExecutorUtils'
+import {
+  languageLabel,
+  submissionStatusColor,
+  submissionStatusLabel,
+} from '@/utils/CodeExecutorUtils'
 
 const route = useRoute()
 const submission = ref<any>(null)
@@ -71,11 +75,11 @@ onMounted(async () => {
               <v-card-text>
                 <div class="text-caption text-medium-emphasis">Status</div>
                 <v-chip
-                  :color="submission.status === 'ACCEPTED' ? 'success' : 'error'"
+                  :color="submissionStatusColor(submission.status)"
                   size="small"
                   variant="tonal"
                 >
-                  {{ submission.status === 'ACCEPTED' ? 'Solved' : 'Not Solved' }}
+                  {{ submissionStatusLabel(submission.status) }}
                 </v-chip>
               </v-card-text>
             </v-card>

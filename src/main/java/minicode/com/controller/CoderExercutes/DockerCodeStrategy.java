@@ -1,8 +1,10 @@
 package minicode.com.controller.CoderExercutes;
 
-import minicode.com.controller.CoderExercutes.CliCommands.CLCommandsStrat;
+import minicode.com.controller.CoderExercutes.CliCommands.CLIBuildCommands;
 import minicode.com.controller.CoderExercutes.CliCommands.BuildCommands;
-import minicode.com.controller.CoderExercutes.CliCommands.CLCommandsStrat.CommandResult;
+import minicode.com.controller.CoderExercutes.CliCommands.CLIBuildCommands.CommandResult;
+import minicode.com.controller.CoderExercutes.Responses.CodeError;
+import minicode.com.controller.CoderExercutes.Responses.CodeErrorCodesFactory;
 import minicode.com.dto.Challenge.ExecutionResult;
 
 import java.io.IOException;
@@ -19,22 +21,41 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     @Override
     public ExecutionResult execute(Path path) throws IOException, InterruptedException {
         String imageName = "minileetcode-execution-" + UUID.randomUUID();
-
-        CLCommandsStrat commands = new BuildCommands(path);
-
+        CLIBuildCommands commands = new BuildCommands(path);
         CommandResult buildResult = commands.buildContainer(imageName);
-        if (buildResult.exitCode() != 0) {
-            return new ExecutionResult(buildResult.exitCode(), buildResult.output(), 0, 1);
-        }
+        Boolean isBuildSuccess = buildResult.exitCode() == 0;
 
-        CommandResult runResult = commands.runContainer(imageName, imageName, 30);
+        if (!isBuildSuccess) {
+
+            CodeError error = CodeErrorCodesFactory.resolve(buildResult.exitCode(), buildResult.output());
+            ExecutionResult executionResult = new ExecutionResult(
+                    buildResult.exitCode(),
+                    buildResult.output(),
+                    0,
+                    0,
+                    error.errorCode()
+            );
+
+            return  executionResult;
+        }
+        int timeoutSeconds = 30;
+        CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
         String output = runResult.output();
 
         int[] testResults = findTestResults(output);
         int passed = testResults[0];
         int failed = testResults[1];
 
-        return new ExecutionResult(runResult.exitCode(), output, passed, failed);
+        CodeError error = CodeErrorCodesFactory.resolve(runResult.exitCode(), output);
+        ExecutionResult executionResult = new ExecutionResult(
+                runResult.exitCode(),
+                output,
+                passed,
+                failed,
+                error.errorCode()
+        );
+
+        return executionResult;
     }
 
     private int[] findTestResults(String output) {

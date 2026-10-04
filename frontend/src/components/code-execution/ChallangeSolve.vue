@@ -7,6 +7,8 @@ import InfoFeedback from '@/components/FeedBack/info.vue'
 import {
   languageLabel,
   loadChallengeTemplate,
+  submissionStatusColor,
+  submissionStatusLabel,
   submitCode,
 } from '@/utils/CodeExecutorUtils'
 import { validLanguages } from '@/utils/CodeExecutorUtils'
@@ -20,6 +22,7 @@ const language = ref('')
 const code = ref('')
 const explanation = ref('')
 const output = ref('')
+const submissionStatus = ref('')
 const loadError = ref('')
 const isLoading = ref(false)
 const isExecuting = ref(false)
@@ -29,6 +32,7 @@ async function loadTemplate(challengeId: string | undefined) {
   code.value = ''
   explanation.value = ''
   output.value = ''
+  submissionStatus.value = ''
   loadError.value = ''
 
   if (!challengeId) {
@@ -72,6 +76,7 @@ async function executeCode() {
 
   isExecuting.value = true
   output.value = ''
+  submissionStatus.value = ''
 
   try {
     const result = await submitCode({
@@ -80,6 +85,7 @@ async function executeCode() {
         language: language.value,
         code: code.value,
     })
+    submissionStatus.value = result.status
     output.value = `Exit code: ${result.exitCode}\n${result.output}`
   } catch (error) {
     output.value = `Could not connect to the backend: ${String(error)}`
@@ -119,7 +125,17 @@ async function executeCode() {
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
       <v-card v-if="output" class="mt-4">
-        <v-card-title>Output</v-card-title>
+        <v-card-title class="d-flex align-center ga-3">
+          Output
+          <v-chip
+            v-if="submissionStatus"
+            :color="submissionStatusColor(submissionStatus)"
+            size="small"
+            variant="tonal"
+          >
+            {{ submissionStatusLabel(submissionStatus) }}
+          </v-chip>
+        </v-card-title>
         <v-card-text>{{ output }}</v-card-text>
       </v-card>
     </template>

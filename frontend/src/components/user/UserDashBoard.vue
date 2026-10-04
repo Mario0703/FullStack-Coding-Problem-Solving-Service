@@ -9,6 +9,10 @@ import {
 } from '@/utils/SolvedChallengeUtil'
 import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
 import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
+import {
+  submissionStatusColor,
+  submissionStatusLabel,
+} from '@/utils/CodeExecutorUtils'
 import router from '@/router'
 
 const submissions = ref<UserSubmission[]>([])
@@ -211,7 +215,7 @@ const totalPoints = computed(
                     <template #append>
                       <v-chip
                         size="small"
-                        :color="submission.status === 'ACCEPTED' ? 'success' : 'error'"
+                        :color="submissionStatusColor(submission.status)"
                         variant="tonal"
                       >
                         <v-icon start>
@@ -221,7 +225,7 @@ const totalPoints = computed(
                               : 'mdi-close-circle'
                           }}
                         </v-icon>
-                        {{ submission.status === 'ACCEPTED' ? 'Solved' : 'Not solved' }}
+                        {{ submissionStatusLabel(submission.status) }}
                       </v-chip>
                     </template>
                   </v-list-item>

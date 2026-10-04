@@ -1,4 +1,5 @@
 import { baseUrl } from '@/utils/api'
+import type { SubmissionStatus } from '@/utils/CodeExecutorUtils'
 
 export type UserSubmission = {
   id: string
@@ -8,7 +9,7 @@ export type UserSubmission = {
   code: string
   language: string
   exitCode: number
-  status: 'ACCEPTED' | 'WRONG_ANSWER'
+  status: SubmissionStatus
   createdAt: string,
   testCasesPassed: number
   totalTestCases: number

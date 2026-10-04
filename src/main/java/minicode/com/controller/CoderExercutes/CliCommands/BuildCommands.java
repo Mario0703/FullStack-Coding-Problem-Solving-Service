@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class BuildCommands implements CLCommandsStrat {
+public class BuildCommands implements CLIBuildCommands {
 
     private final Path path;
 
