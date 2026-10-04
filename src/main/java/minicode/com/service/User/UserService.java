@@ -226,7 +226,15 @@ public class UserService {
 
     public UserSummary getUserSummaryById(UUID userId) {
         User user = findById(userId);
-        return new UserSummary(user.getUserId(), user.getUserName(), user.getEmail());
+        return new UserSummary(
+                user.getUserId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getScore(),
+                user.getNumberOfEasyChallengesSolved(),
+                user.getNumberOfMediumChallengesSolved(),
+                user.getNumberOfHardChallengesSolved()
+        );
     }
 
     public User findByUserName(String userName) {
@@ -255,14 +263,6 @@ public class UserService {
         return value == null || value.isBlank();
     }
 
-    public List<UserSummary> getUsersBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
-        List<UserSummary> users = new ArrayList<>();
-        for (SolvedChallenges solvedChallenge : solvedChallenges) {
-            User user = findById(solvedChallenge.getUserId());
-            users.add(new UserSummary(user.getUserId(), user.getUserName(), user.getEmail()));
-        }
-        return users;
-    }
 
     public List<SolverResponse> getSolversBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
         return solvedChallenges.stream()

@@ -96,10 +96,7 @@ public class ChallengeController {
                 .toList();
     }
 
-    @GetMapping("/users/{userId}")
-    public UserSummary getUserProfile(@PathVariable UUID userId) {
-        return userService.getUserSummaryById(userId);
-    }
+
 
     @GetMapping("/users/{userId}/submissions")
     public List<PublicSubmissionResponse> getUserSubmissions(@PathVariable UUID userId) {
