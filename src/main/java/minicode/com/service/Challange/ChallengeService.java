@@ -103,7 +103,7 @@ public class ChallengeService {
         return solvedChallengesRepo.findAllByChallengeId(challengeId);
     }
 
-    private Challenge getChallenge(UUID challengeId) {
+    public Challenge getChallenge(UUID challengeId) {
         return challengeRepo.findById(challengeId)
                 .orElseThrow(() -> new RuntimeException("Challenge not found with id: " + challengeId));
     }

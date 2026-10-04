@@ -114,6 +114,12 @@ public class ChallengeController {
         );
     }
 
+    @GetMapping("Solution/{challengeId}")
+    public String getChallengeSolution(@PathVariable UUID challengeId) {
+        Challenge challenge = challangeService.getChallenge(challengeId);
+        return challenge.getSolution();
+    }
+
 
 
     @PostMapping("/create")
