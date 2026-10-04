@@ -6,6 +6,8 @@ index=1
 total_tests=0
 passing_tests=0
 failing_tests=0
+statues=$?
+first_error_shown=0
 
 for i in "$test_directory"/*.in; do
     out_file="${i%.in}.out"
@@ -13,6 +15,20 @@ for i in "$test_directory"/*.in; do
     total_tests=$((total_tests + 1))
 
     "$@" < "$i" > "$actual_file" 2>&1
+    run_status=$?
+
+    # A non-zero exit means the program crashed (runtime error) rather than
+    # producing the wrong answer. Report it once, cleanly, without the
+    # actual/expected dump repeated for every test case.
+    if [ $run_status -ne 0 ]; then
+        failing_tests=$((failing_tests + 1))
+        if [ $first_error_shown -eq 0 ]; then
+            printf "Runtime error on test case %s (exit code %s):\n" "$index" "$run_status"
+            first_error_shown=1
+        fi
+        index=$((index + 1))
+        continue
+    fi
 
     actual_output=$(sed 's/\r$//' "$actual_file" | sed 's/[[:space:]]*$//' | sed '/^[[:space:]]*$/d')
 
