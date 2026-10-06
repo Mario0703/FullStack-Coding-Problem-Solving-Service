@@ -1,4 +1,5 @@
 import { baseUrl } from '@/utils/api'
+import type { SubmissionStatus } from '@/utils/CodeExecutorUtils'
 
 export type UserSubmission = {
   id: string
@@ -8,11 +9,21 @@ export type UserSubmission = {
   code: string
   language: string
   exitCode: number
-  status: 'ACCEPTED' | 'WRONG_ANSWER'
+  status: SubmissionStatus
   createdAt: string,
   testCasesPassed: number
   totalTestCases: number
   testCasesFailed: number
+}
+
+// One entry per solved challenge, extracted from the solved challenges
+// table: no matter how often the user re-solves it or in how many languages.
+export type SolvedChallenge = {
+  challengeId: string
+  challengeName: string
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD'
+  solvedAt: string
+  languages: string[]
 }
 
 const SUBMISSIONS_URL = `${baseUrl}/api/submission`
@@ -59,6 +70,22 @@ export async function loadUserSubmissions(): Promise<UserSubmission[]> {
   }
 
   return (await response.json()) as UserSubmission[]
+}
+
+export async function loadSolvedChallenges(): Promise<SolvedChallenge[]> {
+  const response = await fetch(`${SUBMISSIONS_URL}/solved`, {
+    credentials: 'include',
+  })
+
+  if (response.status === 401) {
+    return []
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch solved challenges')
+  }
+
+  return (await response.json()) as SolvedChallenge[]
 }
 
 export async function loadPublicSubmissions(userId: string): Promise<UserSubmission[]> {
@@ -115,6 +142,15 @@ export async function loadSolvedChallengeIds(): Promise<Set<string>> {
 }
 
 export async function loadAttemptedChallengeIds(): Promise<Set<string>> {
-  const submissions = await loadUserSubmissions()
-  return new Set(submissions.map((submission) => submission.challengeId))
+  // The submission receipt only lists failed attempts, so solved challenges
+  // have to be merged in from the solved challenges table.
+  const [submissions, solvedIds] = await Promise.all([
+    loadUserSubmissions(),
+    loadSolvedChallengeIds(),
+  ])
+
+  return new Set([
+    ...solvedIds,
+    ...submissions.map((submission) => submission.challengeId),
+  ])
 }

@@ -1,6 +1,11 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { languageSetups } from '@/utils/LanguageTemplet'
-import type { CreateChallengeForm, Example, TestCase } from '@/utils/LanguageType'
+import type {
+  CreateChallengeForm,
+  Example,
+  LanguageSetupInput,
+  TestCase,
+} from '@/utils/LanguageType'
 import type {
   ChallengeCategory,
   ChallengeDifficulty,
@@ -23,8 +28,44 @@ export function useChallengeForm() {
   const examples = ref<Example[]>([{ inputExample: '', outputExample: '' }])
   const numberOfExamples = ref(1)
 
+  // Languages the challenge additionally supports, and their authored data.
+  const extraLanguages = ref<Language[]>([])
+  const extraSetups = ref<Record<Language, LanguageSetupInput>>(
+    {} as Record<Language, LanguageSetupInput>,
+  )
+
+  const otherLanguages = computed(() =>
+    (Object.keys(languageSetups) as Language[]).filter((value) => value !== language.value),
+  )
+
+  function isExtraLanguage(value: Language): boolean {
+    return extraLanguages.value.includes(value)
+  }
+
+  function toggleExtraLanguage(value: Language) {
+    if (isExtraLanguage(value)) {
+      extraLanguages.value = extraLanguages.value.filter((item) => item !== value)
+      return
+    }
+
+    const setup = languageSetups[value]
+    extraSetups.value = {
+      ...extraSetups.value,
+      [value]: {
+        language: value,
+        template: setup.userTemplate,
+        templateExplanation: setup.userTemplateExplanation,
+        runner: setup.runner,
+        runnerExplanation: setup.runnerExplanation,
+      },
+    }
+    extraLanguages.value = [...extraLanguages.value, value]
+  }
+
   watch(language, (selectedLanguage) => {
+    // A language cannot be both the primary and an additional language.
     if (selectedLanguage) {
+      extraLanguages.value = extraLanguages.value.filter((item) => item !== selectedLanguage)
       const setup = languageSetups[selectedLanguage]
       template.value = setup.userTemplate
       templateExplanation.value = setup.userTemplateExplanation
@@ -48,6 +89,8 @@ export function useChallengeForm() {
     testCases.value = [{ input: '', expectedOutput: '' }]
     examples.value = [{ inputExample: '', outputExample: '' }]
     numberOfExamples.value = 1
+    extraLanguages.value = []
+    extraSetups.value = {} as Record<Language, LanguageSetupInput>
   }
 
   function createNumberOfSampels<T>(arr: T[], newSize: number, defaultValue: T) {
@@ -58,6 +101,25 @@ export function useChallengeForm() {
 
 
   function toCreateChallengeForm(): CreateChallengeForm {
+    const primary: LanguageSetupInput = {
+      language: language.value as Language,
+      template: template.value.trim(),
+      templateExplanation: templateExplanation.value.trim(),
+      runner: runner.value.trim(),
+      runnerExplanation: runnerExplanation.value.trim(),
+    }
+
+    const extraSetupsPayload: LanguageSetupInput[] = extraLanguages.value
+      .map((value) => extraSetups.value[value])
+      .filter((setup): setup is LanguageSetupInput => Boolean(setup))
+      .map((setup) => ({
+        language: setup.language,
+        template: setup.template.trim(),
+        templateExplanation: setup.templateExplanation.trim(),
+        runner: setup.runner.trim(),
+        runnerExplanation: setup.runnerExplanation.trim(),
+      }))
+
     return {
       name: name.value.trim(),
       description: description.value.trim(),
@@ -79,6 +141,7 @@ export function useChallengeForm() {
         outputExample: example.outputExample.trim(),
       })),
       numberOfExamples: numberOfExamples.value,
+      languageSetups: [primary, ...extraSetupsPayload],
     }
   }
 
@@ -99,6 +162,11 @@ export function useChallengeForm() {
     toCreateChallengeForm,
     examples,
     numberOfExamples,
-    createNumberOfSamples: createNumberOfSampels
+    createNumberOfSamples: createNumberOfSampels,
+    otherLanguages,
+    extraLanguages,
+    extraSetups,
+    isExtraLanguage,
+    toggleExtraLanguage,
   }
 }

@@ -5,6 +5,10 @@ import { clearCurrentUser } from '@/authenticator/auth'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
 
+defineOptions({
+  name: 'UserLogoutControl',
+})
+
 
 const router = useRouter()
 const logoutError = ref('')

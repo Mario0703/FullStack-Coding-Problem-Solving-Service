@@ -1,37 +1,105 @@
 package minicode.com.controller;
 
+import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.dto.User.SubmissionResponse;
+import minicode.com.entity.Challange.Challenge;
+import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.User.User;
 import minicode.com.entity.Roles.UserRole;
+import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.solvedChallengesRepo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/submission")
 public class submissionController {
     private final SubmissionRepo SubmissionRepo;
     private final UserRepo userRepo;
+    private final solvedChallengesRepo solvedChallengesRepo;
+    private final ChallengeRepo challengeRepo;
 
-
-    public submissionController(SubmissionRepo submissionRepo, UserRepo userRepo) {
+    public submissionController(
+            SubmissionRepo submissionRepo,
+            UserRepo userRepo,
+            solvedChallengesRepo solvedChallengesRepo,
+            ChallengeRepo challengeRepo
+    ) {
         this.SubmissionRepo = submissionRepo;
         this.userRepo = userRepo;
+        this.solvedChallengesRepo = solvedChallengesRepo;
+        this.challengeRepo = challengeRepo;
     }
 
     @GetMapping
     @Transactional(readOnly = true)
     public List<SubmissionResponse> listUserSubmissions(Authentication authentication) {
         UUID userId = authenticatedUserId(authentication);
-        return SubmissionRepo.findAllByUserId(userId).stream()
+        return SubmissionRepo.findReceiptByUserId(userId).stream()
                 .map(SubmissionResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/solved")
+    @Transactional(readOnly = true)
+    public List<SolvedChallengeResponse> listSolvedChallenges(Authentication authentication) {
+        UUID userId = authenticatedUserId(authentication);
+        return buildSolvedChallengeResponses(solvedChallengesRepo.findAllByUserId(userId));
+    }
+
+    /**
+     * Collapses the per-language SolvedChallenges rows into exactly one
+     * response per challenge, keeping the languages the user solved it in
+     * and the most recent solve date.
+     */
+    private List<SolvedChallengeResponse> buildSolvedChallengeResponses(List<SolvedChallenges> solvedChallenges) {
+        Map<UUID, List<SolvedChallenges>> byChallenge = solvedChallenges.stream()
+                .collect(Collectors.groupingBy(
+                        SolvedChallenges::getChallengeId,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+        if (byChallenge.isEmpty()) {
+            return List.of();
+        }
+
+        Map<UUID, Challenge> challenges = challengeRepo.findAllById(byChallenge.keySet()).stream()
+                .collect(Collectors.toMap(Challenge::getId, Function.identity()));
+
+        return byChallenge.entrySet().stream()
+                .filter(entry -> challenges.containsKey(entry.getKey()))
+                .map(entry -> {
+                    Challenge challenge = challenges.get(entry.getKey());
+                    List<SolvedChallenges> rows = entry.getValue();
+                    Instant latestSolve = rows.stream()
+                            .map(SolvedChallenges::getSolvedAt)
+                            .max(Comparator.naturalOrder())
+                            .orElse(null);
+                    List<String> languages = rows.stream()
+                            .map(SolvedChallenges::getLanguage)
+                            .toList();
+                    return new SolvedChallengeResponse(
+                            entry.getKey(),
+                            challenge.getName(),
+                            challenge.getDifficulty().name(),
+                            latestSolve,
+                            languages
+                    );
+                })
                 .toList();
     }
 
@@ -68,7 +136,7 @@ public class submissionController {
     @Transactional(readOnly = true)
     public List<Integer> listNumberOfTotalTestCases(Authentication authentication) {
         UUID userId = authenticatedUserId(authentication);
-        return SubmissionRepo.findTotalTestCasesByUserId(userId);
+        return SubmissionRepo.findReceiptTotalTestCasesByUserId(userId);
     }
 
     private List<Integer> testCaseValuesForUser(
@@ -77,8 +145,8 @@ public class submissionController {
     ) {
         UUID userId = authenticatedUserId(authentication);
         return passed
-                ? SubmissionRepo.findPassedTestCasesByUserId(userId)
-                : SubmissionRepo.findFailedTestCasesByUserId(userId);
+                ? SubmissionRepo.findReceiptPassedTestCasesByUserId(userId)
+                : SubmissionRepo.findReceiptFailedTestCasesByUserId(userId);
     }
 
     private UUID authenticatedUserId(Authentication authentication) {
@@ -105,6 +173,3 @@ public class submissionController {
         }
     }
 }
-
-
-

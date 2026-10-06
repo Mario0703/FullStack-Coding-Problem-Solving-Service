@@ -1,4 +1,8 @@
 <script setup lang="ts">
+defineOptions({
+  name: 'InfoFeedback',
+})
+
 defineProps({
   title: {
     type: String,

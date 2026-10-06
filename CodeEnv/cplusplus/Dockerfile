@@ -1,11 +1,13 @@
-FROM gcc:14
+FROM gcc:14-bookworm
 
 WORKDIR /app
 
 COPY submission.cpp /app/main.cpp
-COPY TestSuite /app/TestSuite
-COPY TestCases /app/TestCases
+RUN chown -R 1000:1000 /app
 
-RUN g++ -std=c++20 -O2 -o main main.cpp
+COPY TestSuite /tests/TestSuite
+COPY TestCases /tests/TestCases
 
-CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "/app/main"]
+ENV COMPILE_CMD="g++ -std=c++20 -O2 -o /app/main /app/main.cpp"
+
+CMD ["sh", "/tests/TestSuite/runCommandTest.bs", "/tests/TestCases", "/app/main"]

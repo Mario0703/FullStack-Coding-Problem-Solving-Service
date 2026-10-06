@@ -1,6 +1,7 @@
 package minicode.com.entity.Challange;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,21 +40,36 @@ public class Challenge {
     @Column(name = "number_of_test_cases", nullable = false, columnDefinition = "integer default 0")
     private int numberOfTestCases;
 
+    // Never serialized: submission history would leak other users' code and
+    // test cases would leak hidden inputs/expected outputs.
+    @JsonIgnore
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Submission> submissions = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestCases> testCases = new ArrayList<>();
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InputOutput> inputOutput = new ArrayList<>();
 
+    // Per-language templates/runners. Never serialized; served through the
+    // template endpoint instead.
+    @JsonIgnore
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChallengeLanguageSetup> languageSetups = new ArrayList<>();
+
+    // Instructor solution and server-side runner: never exposed through the
+    // API. The solution is served by its own guarded endpoint.
+    @JsonIgnore
     @Column( columnDefinition = "TEXT")
     private String solution;
 
+    @JsonIgnore
     @Column( columnDefinition = "TEXT")
     private String runner;
 
+    @JsonIgnore
     @Column(columnDefinition = "TEXT")
     private String runnerExplanation;
 

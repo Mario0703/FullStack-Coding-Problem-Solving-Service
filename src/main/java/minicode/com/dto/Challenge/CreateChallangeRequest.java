@@ -53,6 +53,14 @@ public class CreateChallangeRequest {
 
     @NotEmpty(message = "At least one example is required")
     private List<@Valid CreateExamplesRequest> examples;
+
+    /**
+     * Optional per-language authoring data. When provided, each entry becomes
+     * a solvable language for the challenge. When absent, the single
+     * {@code language}/{@code template}/{@code runner} above is used for that
+     * language only.
+     */
+    private List<@Valid CreateLanguageSetupRequest> languageSetups;
 }
 
 

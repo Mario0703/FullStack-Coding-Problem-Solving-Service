@@ -7,6 +7,8 @@ import InfoFeedback from '@/components/FeedBack/info.vue'
 import {
   languageLabel,
   loadChallengeTemplate,
+  submissionStatusColor,
+  submissionStatusLabel,
   submitCode,
 } from '@/utils/CodeExecutorUtils'
 import { validLanguages } from '@/utils/CodeExecutorUtils'
@@ -20,6 +22,9 @@ const language = ref('')
 const code = ref('')
 const explanation = ref('')
 const output = ref('')
+const submissionStatus = ref('')
+const passedTestCases = ref(0)
+const failedTestCases = ref(0)
 const loadError = ref('')
 const isLoading = ref(false)
 const isExecuting = ref(false)
@@ -29,6 +34,9 @@ async function loadTemplate(challengeId: string | undefined) {
   code.value = ''
   explanation.value = ''
   output.value = ''
+  submissionStatus.value = ''
+  passedTestCases.value = 0
+  failedTestCases.value = 0
   loadError.value = ''
 
   if (!challengeId) {
@@ -40,7 +48,9 @@ async function loadTemplate(challengeId: string | undefined) {
 
   try {
     const result = await loadChallengeTemplate(challengeId)
-    language.value = result.language
+    // The backend may still store the language in upper case; normalize so
+    // the editor picks the right syntax highlighting.
+    language.value = (result.language ?? '').toLowerCase()
     code.value = result.template
     explanation.value = result.explanation
   } catch (error) {
@@ -48,6 +58,28 @@ async function loadTemplate(challengeId: string | undefined) {
       error instanceof Error ? error.message : 'The challenge template could not be loaded.'
   } finally {
     isLoading.value = false
+  }
+}
+
+async function selectLanguage(option: string) {
+  language.value = option
+
+  if (!props.challengeId) {
+    return
+  }
+
+  try {
+    const result = await loadChallengeTemplate(props.challengeId, option)
+    language.value = option
+    // Only replace the editor content when the challenge actually has a
+    // setup for the requested language (the response echoes it back). If it
+    // fell back to the default language, keep whatever the user has typed.
+    if ((result.language ?? '').toLowerCase() === option.toLowerCase()) {
+      code.value = result.template ?? ''
+      explanation.value = result.explanation ?? ''
+    }
+  } catch {
+    // Keep the current code if the per-language template cannot be loaded.
   }
 }
 
@@ -72,6 +104,9 @@ async function executeCode() {
 
   isExecuting.value = true
   output.value = ''
+  submissionStatus.value = ''
+  passedTestCases.value = 0
+  failedTestCases.value = 0
 
   try {
     const result = await submitCode({
@@ -80,6 +115,9 @@ async function executeCode() {
         language: language.value,
         code: code.value,
     })
+    submissionStatus.value = result.status
+    passedTestCases.value = result.passingTestCases
+    failedTestCases.value = result.failingTestCases
     output.value = `Exit code: ${result.exitCode}\n${result.output}`
   } catch (error) {
     output.value = `Could not connect to the backend: ${String(error)}`
@@ -108,7 +146,7 @@ async function executeCode() {
           :color="language === option ? 'primary' : undefined"
           :variant="language === option ? 'flat' : 'outlined'"
           size="small"
-          @click="language = option"
+          @click="selectLanguage(option)"
         >
           {{ languageLabel(option) }}
         </v-btn>
@@ -118,9 +156,35 @@ async function executeCode() {
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
-      <v-card v-if="output" class="mt-4">
-        <v-card-title>Output</v-card-title>
-        <v-card-text>{{ output }}</v-card-text>
+      <v-card v-if="submissionStatus || output" class="mt-4">
+        <v-card-title class="d-flex align-center flex-wrap ga-3">
+          Result
+          <v-chip
+            v-if="submissionStatus"
+            :color="submissionStatusColor(submissionStatus)"
+            size="small"
+            variant="tonal"
+          >
+            {{ submissionStatusLabel(submissionStatus) }}
+          </v-chip>
+          <v-chip
+            v-if="submissionStatus"
+            color="success"
+            size="small"
+            variant="outlined"
+          >
+            Passed: {{ passedTestCases }}
+          </v-chip>
+          <v-chip
+            v-if="submissionStatus"
+            color="error"
+            size="small"
+            variant="outlined"
+          >
+            Failed: {{ failedTestCases }}
+          </v-chip>
+        </v-card-title>
+        <v-card-text v-if="output" class="text-body-2" style="white-space: pre-wrap">{{ output }}</v-card-text>
       </v-card>
     </template>
   </v-container>

@@ -19,7 +19,7 @@ public class SolvedChallenges {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID SolvedChallengeId;
+    private UUID solvedChallengeId;
 
     @Column
     private UUID userId;

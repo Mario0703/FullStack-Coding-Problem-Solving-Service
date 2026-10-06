@@ -4,10 +4,26 @@ import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
-import { languageLabel } from '@/utils/CodeExecutorUtils'
+import {
+  languageLabel,
+  submissionStatusColor,
+  submissionStatusLabel,
+} from '@/utils/CodeExecutorUtils'
+
+interface SubmissionDetails {
+  challengeName: string
+  language: string
+  createdAt: string
+  exitCode: number
+  status: string
+  testCasesPassed: number
+  testCasesFailed: number
+  totalTestCases: number
+  code: string
+}
 
 const route = useRoute()
-const submission = ref<any>(null)
+const submission = ref<SubmissionDetails | null>(null)
 const errorMessage = ref('')
 
 onMounted(async () => {
@@ -28,7 +44,7 @@ onMounted(async () => {
     return
   }
 
-  submission.value = await response.json()
+  submission.value = (await response.json()) as SubmissionDetails
 })
 </script>
 
@@ -71,11 +87,11 @@ onMounted(async () => {
               <v-card-text>
                 <div class="text-caption text-medium-emphasis">Status</div>
                 <v-chip
-                  :color="submission.status === 'ACCEPTED' ? 'success' : 'error'"
+                  :color="submissionStatusColor(submission.status)"
                   size="small"
                   variant="tonal"
                 >
-                  {{ submission.status === 'ACCEPTED' ? 'Solved' : 'Not Solved' }}
+                  {{ submissionStatusLabel(submission.status) }}
                 </v-chip>
               </v-card-text>
             </v-card>

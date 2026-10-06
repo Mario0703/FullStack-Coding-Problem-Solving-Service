@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
-import { getChallengeSolution, listChallenges } from '@/utils/ChallangeUtil'
+import { getChallengeExamples, getChallengeSolution, listChallenges, type ChallengeExample, type ChallengeSummary } from '@/utils/ChallangeUtil'
 import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
@@ -40,7 +39,8 @@ async function loadSolvedByPeople(challengeId: string): Promise<Solver[]> {
 }
 
 const route = useRoute()
-const challenge = ref<Challenge | null>(null)
+const challenge = ref<ChallengeSummary | null>(null)
+const examples = ref<ChallengeExample[]>([])
 const loadError = ref('')
 const isLoading = ref(true)
 const solvedByPeople = ref<Solver[]>([])
@@ -92,8 +92,14 @@ watch(showSolution, async (enabled) => {
 async function loadChallenge() {
   try {
     const challengeId = String(route.params.id)
-    const challenges = await listChallenges()
-    solvedByPeople.value = await loadSolvedByPeople(challengeId)
+    const [challenges, solvedBy, challengeExamples] = await Promise.all([
+      listChallenges(),
+      loadSolvedByPeople(challengeId),
+      // A missing examples endpoint should not take down the whole page.
+      getChallengeExamples(challengeId).catch(() => [] as ChallengeExample[]),
+    ])
+    solvedByPeople.value = solvedBy
+    examples.value = challengeExamples
     challenge.value = challenges.find((item) => item.id === challengeId) ?? null
 
     if (!challenge.value) {
@@ -135,6 +141,28 @@ onMounted(loadChallenge)
         <v-btn to="/challenges" variant="text">Back to challenges</v-btn>
       </v-card-actions>
     </v-card>
+
+    <v-card v-if="examples.length > 0" variant="outlined" class="mt-4">
+      <v-card-title class="text-h5">Examples</v-card-title>
+      <v-list lines="three">
+        <v-list-item v-for="(example, index) in examples" :key="example.id ?? index">
+          <v-list-item-title class="font-weight-bold">
+            Example {{ index + 1 }}
+          </v-list-item-title>
+          <template #subtitle>
+            <div class="d-flex align-center flex-wrap ga-2 mt-2">
+              <v-chip size="small" color="primary" variant="tonal">Input</v-chip>
+              <span>{{ example.inputExample }}</span>
+            </div>
+            <div class="d-flex align-center flex-wrap ga-2 mt-1">
+              <v-chip size="small" color="success" variant="tonal">Output</v-chip>
+              <span>{{ example.outputExample }}</span>
+            </div>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-card>
+
     <ChallangeSolve v-if="challenge" :challenge-id="challenge.id" />
   </v-container>
   <v-container>

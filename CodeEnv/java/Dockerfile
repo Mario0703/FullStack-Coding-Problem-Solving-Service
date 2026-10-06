@@ -1,11 +1,13 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
 COPY submission.java /app/Main.java
-COPY TestSuite /app/TestSuite
-COPY TestCases /app/TestCases
+RUN chown -R 1000:1000 /app
 
-RUN javac Main.java
+COPY TestSuite /tests/TestSuite
+COPY TestCases /tests/TestCases
 
-CMD ["bash", "/app/TestSuite/runCommandTest.bs", "/app/TestCases", "java", "-cp", "/app", "Main"]
+ENV COMPILE_CMD="javac /app/Main.java"
+
+CMD ["sh", "/tests/TestSuite/runCommandTest.bs", "/tests/TestCases", "java", "-cp", "/app", "Main"]

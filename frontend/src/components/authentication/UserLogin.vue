@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { SubmitEventPromise } from 'vuetify'
 import { loadCurrentUser } from '@/authenticator/auth'
 import { getLoginValidationErrors } from '@/utils/UserInputCheck'
 import LoginPage from '@/components/authentication/LoginPage.vue'
@@ -14,7 +13,7 @@ const loginWithEmail = ref(false)
 const loginError = ref('')
 const isSubmitting = ref(false)
 
-async function login(_event: SubmitEventPromise) {
+async function login() {
   loginError.value = ''
 
   const validationErrors = getLoginValidationErrors({

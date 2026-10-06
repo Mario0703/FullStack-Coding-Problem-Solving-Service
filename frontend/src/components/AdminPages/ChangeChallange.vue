@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import {
   categoryOptions,
   difficultyOptions,
-  languageOptions,
   type Challenge,
 } from '@/utils/AdminUtils'
 
