@@ -144,9 +144,10 @@ public class submissionController {
             boolean passed
     ) {
         UUID userId = authenticatedUserId(authentication);
-        return passed
-                ? SubmissionRepo.findReceiptPassedTestCasesByUserId(userId)
-                : SubmissionRepo.findReceiptFailedTestCasesByUserId(userId);
+        if (passed) {
+            return SubmissionRepo.findReceiptPassedTestCasesByUserId(userId);
+        }
+        return SubmissionRepo.findReceiptFailedTestCasesByUserId(userId);
     }
 
     private UUID authenticatedUserId(Authentication authentication) {

@@ -13,8 +13,9 @@ public final class Access {
     }
 
     public static boolean isAuthenticated(Authentication authentication) {
-        return authentication != null
+        boolean hasUsableAuthentication = authentication != null
                 && !(authentication instanceof AnonymousAuthenticationToken);
+        return hasUsableAuthentication;
     }
 
     public static boolean isAdmin(Authentication authentication) {
@@ -54,8 +55,10 @@ public final class Access {
     }
 
     private static boolean hasAuthority(Authentication authentication, String authority) {
-        return isAuthenticated(authentication)
+        boolean hasValidAuthentication = isAuthenticated(authentication);
+        boolean hasRequestedAuthority = hasValidAuthentication
                 && authentication.getAuthorities().stream()
                         .anyMatch(granted -> granted.getAuthority().equals(authority));
+        return hasRequestedAuthority;
     }
 }

@@ -52,9 +52,11 @@ public class UserController {
             HttpServletResponse httpResponse
     ) {
         User user = userService.login(request); // authenticate the user
-        String identifier = request.getEmail() != null && !request.getEmail().isBlank()
-                ? request.getEmail()
-                : request.getUserName();
+        boolean isEmailInputValid = request.getEmail() != null && !request.getEmail().isBlank();
+        String identifier = request.getUserName();
+        if (isEmailInputValid) {
+            identifier = request.getEmail();
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
         );

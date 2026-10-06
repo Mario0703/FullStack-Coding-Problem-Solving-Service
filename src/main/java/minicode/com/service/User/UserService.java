@@ -100,7 +100,9 @@ public class UserService {
         String normalizedUserName = request.newUserName().trim();
 
         Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
-        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+        boolean IsUserConflicting = existingUser.isPresent()
+                && !existingUser.get().getUserId().equals(userId);
+        if (IsUserConflicting) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Username already exists"
@@ -124,7 +126,9 @@ public class UserService {
         String normalizedEmail = request.newEmail().trim();
 
         Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
-        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+        boolean IsUserConflicting = existingUser.isPresent()
+                && !existingUser.get().getUserId().equals(userId);
+        if (IsUserConflicting) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Email already exists"
@@ -164,14 +168,16 @@ public class UserService {
         User user;
 
 
-        if (isBlank(email) && isBlank(userName)) {
+        boolean hasBlankEmailAndUserName = isBlank(email) && isBlank(userName);
+        if (hasBlankEmailAndUserName) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Email or username is required"
             );
         }
 
-        if (!isBlank(email) && !isBlank(userName)) {
+        boolean hasEmailAndUserName = !isBlank(email) && !isBlank(userName);
+        if (hasEmailAndUserName) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Provide either an email or a username"
@@ -257,7 +263,8 @@ public class UserService {
     }
 
     private boolean isBlank(String value) {
-        return value == null || value.isBlank();
+        boolean hasBlankValue = value == null || value.isBlank();
+        return hasBlankValue;
     }
 
 

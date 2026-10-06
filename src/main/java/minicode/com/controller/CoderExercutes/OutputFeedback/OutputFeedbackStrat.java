@@ -63,7 +63,8 @@ public interface OutputFeedbackStrat {
      * block is kept so the user never loses the actual error.
      */
     default String extractFeedback(String output) {
-        if (output == null || output.isBlank()) {
+        boolean hasEmptyOutput = output == null || output.isBlank();
+        if (hasEmptyOutput) {
             return "";
         }
 
@@ -74,14 +75,18 @@ public interface OutputFeedbackStrat {
         boolean inRuntimeBlock = false;
 
         for (String line : output.split("\\R", -1)) {
-            if (!inCompileBlock && !inRuntimeBlock) {
+            boolean hasOpenBlock = !inCompileBlock && !inRuntimeBlock;
+            if (hasOpenBlock) {
                 feedback.append(normalize(line)).append('\n');
                 if (line.startsWith(COMPILE_FAILURE_MARKER)) {
                     inCompileBlock = true;
                     rawBlock.setLength(0);
-                    capturedErrors = deduplicatesFeedback()
-                            ? new LinkedHashSet<>()
-                            : new ArrayList<>();
+                    boolean hasDeduplicatedFeedback = deduplicatesFeedback();
+                    if (hasDeduplicatedFeedback) {
+                        capturedErrors = new LinkedHashSet<>();
+                    } else {
+                        capturedErrors = new ArrayList<>();
+                    }
                 } else if (line.startsWith(RUNTIME_FAILURE_MARKER)) {
                     inRuntimeBlock = true;
                     rawBlock.setLength(0);
@@ -92,7 +97,8 @@ public interface OutputFeedbackStrat {
 
             // The runner's own reporting (further test cases, the summary)
             // ends the runtime error block.
-            if (inRuntimeBlock && isRunnerReportingLine(line)) {
+            boolean hasRuntimeReporting = inRuntimeBlock && isRunnerReportingLine(line);
+            if (hasRuntimeReporting) {
                 appendCapturedOrRawBlock(feedback, rawBlock, capturedErrors);
                 rawBlock.setLength(0);
                 capturedErrors.clear();
@@ -102,15 +108,17 @@ public interface OutputFeedbackStrat {
             }
 
             rawBlock.append(normalize(line)).append('\n');
-            Pattern errorLinePattern = inCompileBlock
-                    ? compileErrorLinePattern()
-                    : runtimeErrorLinePattern();
+            Pattern errorLinePattern = runtimeErrorLinePattern();
+            if (inCompileBlock) {
+                errorLinePattern = compileErrorLinePattern();
+            }
             if (errorLinePattern.matcher(line).find()) {
                 capturedErrors.add(normalize(line));
             }
         }
 
-        if (inCompileBlock || inRuntimeBlock) {
+        boolean hasUnfinishedBlock = inCompileBlock || inRuntimeBlock;
+        if (hasUnfinishedBlock) {
             appendCapturedOrRawBlock(feedback, rawBlock, capturedErrors);
         }
 
@@ -139,10 +147,11 @@ public interface OutputFeedbackStrat {
      */
     private static boolean isRunnerReportingLine(String line) {
         String trimmed = line.stripLeading();
-        return trimmed.startsWith("Test case ")
+        boolean hasRunnerReporting = trimmed.startsWith("Test case ")
                 || trimmed.startsWith("Passed: ")
                 || trimmed.startsWith("Actual output:")
                 || trimmed.startsWith("Expected output:");
+        return hasRunnerReporting;
     }
 
     /**
@@ -155,7 +164,8 @@ public interface OutputFeedbackStrat {
      * actual error.
      */
     default String extractBuildFailure(String buildOutput) {
-        if (buildOutput == null || buildOutput.isBlank()) {
+        boolean hasEmptyBuildOutput = buildOutput == null || buildOutput.isBlank();
+        if (hasEmptyBuildOutput) {
             return "";
         }
 

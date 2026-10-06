@@ -11,7 +11,9 @@ public class TimeLimitError implements CodeError {
 
     @Override
     public boolean matches(int exitCode, String output) {
-        return exitCode == TIMEOUT_EXIT_CODE || output.contains(TIMEOUT_OUTPUT);
+        boolean hasTimedOut = exitCode == TIMEOUT_EXIT_CODE
+                || output.contains(TIMEOUT_OUTPUT);
+        return hasTimedOut;
     }
 
     @Override

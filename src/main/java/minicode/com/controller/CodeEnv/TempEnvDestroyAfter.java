@@ -96,7 +96,8 @@ public class TempEnvDestroyAfter implements EnvStrat {
 
     @Override
     public void destroyEnv(Path path) throws IOException {
-        if (path == null || !Files.exists(path)) {
+        boolean hasMissingPath = path == null || !Files.exists(path);
+        if (hasMissingPath) {
             return;
         }
         try (Stream<Path> paths = Files.walk(path)) {

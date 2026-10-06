@@ -26,8 +26,8 @@ public class AdminService {
         String adminUserName = adminSignUpRequest.getAdminUserName();
         String adminPassword = adminSignUpRequest.getAdminPassword();
 
-
-        if (adminUserName.isBlank() || adminPassword.isBlank()) {
+        boolean hasBlankCredentials = adminUserName.isBlank() || adminPassword.isBlank();
+        if (hasBlankCredentials) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin Username and Password cannot be blank");
         }
 
@@ -47,7 +47,3 @@ public class AdminService {
     }
 
 }
-
-
-
-
