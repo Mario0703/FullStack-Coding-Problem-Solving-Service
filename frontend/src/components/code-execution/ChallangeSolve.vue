@@ -120,7 +120,7 @@ async function executeCode() {
     failedTestCases.value = result.failingTestCases
     output.value = `Exit code: ${result.exitCode}\n${result.output}`
   } catch (error) {
-    output.value = `Could not connect to the backend: ${String(error)}`
+    output.value = error instanceof Error ? error.message : String(error)
   } finally {
     isExecuting.value = false
   }

@@ -10,6 +10,7 @@ import {
   isValidPassword,
 } from '@/utils/signupValidation'
 import { baseUrl } from '@/utils/api'
+import { readErrorMessage } from '@/utils/apiError'
 import type { SignupData } from '@/utils/signupValidation'
 
 const userName = ref("");
@@ -43,7 +44,10 @@ async function sendUserData() {
     })
 
     if (!response.ok) {
-      signupError.value = 'We could not create your account. Please try again.'
+      signupError.value = await readErrorMessage(
+        response,
+        'We could not create your account. Please try again.',
+      )
       return
     }
 

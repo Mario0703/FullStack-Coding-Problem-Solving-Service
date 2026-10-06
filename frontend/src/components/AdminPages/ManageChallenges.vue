@@ -5,6 +5,7 @@ import { onMounted, ref, watch } from "vue";
 import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
 import { listAdminChallenges, type ChallengeSummary } from "@/utils/ChallangeUtil";
 import { baseUrl } from '@/utils/api';
+import { readErrorMessage } from '@/utils/apiError';
 
 const props = defineProps<{
   newChallenge?: Challenge | null;
@@ -64,12 +65,14 @@ async function deleteChallenge(challengeId: string) {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to delete challenge');
+      throw new Error(await readErrorMessage(response, 'Failed to delete challenge'));
     }
 
     challenges.value = challenges.value.filter(({ id }) => id !== challengeId);
-  } catch {
-    loadError.value = 'Unable to delete challenge. Please try again.';
+  } catch (error) {
+    loadError.value = error instanceof Error
+      ? error.message
+      : 'Unable to delete challenge. Please try again.';
   }
 }
 

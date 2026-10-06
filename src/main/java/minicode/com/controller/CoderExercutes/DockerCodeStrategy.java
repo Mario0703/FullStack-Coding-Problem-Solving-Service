@@ -22,12 +22,9 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     private static final int passingTestGroup = 1;
     private static final int failingTestGroup = 2;
     private static final int timeoutSeconds = 30;
-    private static final int passingTestCasesForBuildFailure = 0;
-    private static final int failingTestCasesForBuildFailure = 0;
-
 
     @Override
-    public ExecutionResult execute(String language, Path path) throws IOException, InterruptedException {
+    public ExecutionResult execute(String language, Path path) throws InterruptedException {
         String imageName = "minileetcode-execution-" + UUID.randomUUID();
 
         // The per-language strategy knows how to cut the raw docker output
@@ -36,35 +33,22 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
         CLIBuildCommands commands = new BuildCommands(path);
 
         try {
-            CommandResult buildResult = commands.buildContainer(imageName);
-            Boolean isBuildSuccess = buildResult.exitCode() == 0;
-
-            //build failed so just return the build error and exit code, no need to run the container
-            if (!isBuildSuccess) {
-                CodeError error = CodeErrorCodesFactory.resolve(buildResult.exitCode(), buildResult.output());
-                return new ExecutionResult(
-                        buildResult.exitCode(),
-                        feedback.extractBuildFailure(buildResult.output()),
-                        passingTestCasesForBuildFailure,
-                        failingTestCasesForBuildFailure,
-                        error.errorCode()
-                );
-            }
+            // The build only prepares the image, so a build failure is
+            // infrastructural and surfaces as a ContainerFailureException
+            // (HTTP 500) rather than as a submission result.
+            commands.buildContainer(imageName);
 
             CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
             String output = runResult.output();
 
             int[] testResults = findTestResults(output);
 
-            int passed = testResults[0];
-            int failed = testResults[1];
-
             CodeError error = CodeErrorCodesFactory.resolve(runResult.exitCode(), output);
             return new ExecutionResult(
                     runResult.exitCode(),
                     feedback.extractFeedback(output),
-                    passed,
-                    failed,
+                    testResults[0],
+                    testResults[1],
                     error.errorCode()
             );
         } finally {
@@ -77,10 +61,8 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     private void removeImageQuietly(CLIBuildCommands commands, String imageName) {
         try {
             commands.removeImage(imageName);
-        } catch (IOException cleanupFailure) {
+        } catch (RuntimeException cleanupFailure) {
             // Cleanup must never mask the submission result.
-        } catch (InterruptedException cleanupFailure) {
-            Thread.currentThread().interrupt();
         }
     }
 

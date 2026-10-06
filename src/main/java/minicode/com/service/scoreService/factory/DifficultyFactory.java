@@ -18,7 +18,8 @@ public class DifficultyFactory {
     }
 
     public static Difficulty createDifficulty(String difficultyLevel) {
-        if (difficultyLevel == null || difficultyLevel.isBlank()) {
+        boolean hasBlankDifficulty = difficultyLevel == null || difficultyLevel.isBlank();
+        if (hasBlankDifficulty) {
             throw new RuntimeException("Difficulty level is required");
         }
 

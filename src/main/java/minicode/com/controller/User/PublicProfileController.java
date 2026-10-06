@@ -1,4 +1,4 @@
-package minicode.com.controller;
+package minicode.com.controller.User;
 
 import minicode.com.dto.User.UserSummary;
 import minicode.com.service.User.UserService;

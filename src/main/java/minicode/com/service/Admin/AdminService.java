@@ -3,11 +3,10 @@ package minicode.com.service.Admin;
 import minicode.com.dto.Admin.AdminLoginRequest;
 import minicode.com.entity.User.User;
 import minicode.com.entity.Roles.UserRole;
+import minicode.com.exception.LoginErrorException;
 import minicode.com.repository.UserRepo;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminService {
@@ -26,20 +25,20 @@ public class AdminService {
         String adminUserName = adminSignUpRequest.getAdminUserName();
         String adminPassword = adminSignUpRequest.getAdminPassword();
 
-
-        if (adminUserName.isBlank() || adminPassword.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin Username and Password cannot be blank");
+        boolean hasBlankCredentials = adminUserName.isBlank() || adminPassword.isBlank();
+        if (hasBlankCredentials) {
+            throw LoginErrorException.invalidCredentials("Admin username and password cannot be blank");
         }
 
         User adminUser = userRepo.findFirstByUserName(adminUserName)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin user not found"));
+                .orElseThrow(() -> LoginErrorException.invalidCredentials("Admin user not found"));
 
         if (adminUser.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Admin user not found");
+            throw LoginErrorException.invalidCredentials("Admin user not found");
         }
 
         if (!passwordEncoder.matches(adminPassword, adminUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+            throw LoginErrorException.invalidCredentials("Invalid password");
         }
 
         return adminUser;
@@ -47,7 +46,3 @@ public class AdminService {
     }
 
 }
-
-
-
-

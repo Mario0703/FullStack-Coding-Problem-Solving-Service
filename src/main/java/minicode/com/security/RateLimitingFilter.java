@@ -30,7 +30,8 @@ public class RateLimitingFilter implements Filter {
 
         Long numberOfRequestsSent = redisTemplate.opsForValue().increment(redisKey, 1);
 
-        if (numberOfRequestsSent != null && numberOfRequestsSent == 1) {
+        boolean isFirstRequest = numberOfRequestsSent != null && numberOfRequestsSent == 1;
+        if (isFirstRequest) {
             //Start a 1 minutte timer on the first request
             redisTemplate.expire(redisKey, Duration.ofMinutes(1));
         }
@@ -45,6 +46,3 @@ public class RateLimitingFilter implements Filter {
         chain.doFilter(request, response);
     }
 }
-
-
-

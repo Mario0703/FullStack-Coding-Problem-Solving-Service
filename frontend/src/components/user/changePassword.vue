@@ -4,6 +4,7 @@ import { inputsMatch, isblank, isValidPassword } from "@/utils/UserInputCheck";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 import { baseUrl } from '@/utils/api';
+import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
 
@@ -55,8 +56,7 @@ async function changePassword() {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      saveError.value = error?.detail ?? error?.message ?? "Unable to change password.";
+      saveError.value = await readErrorMessage(response, "Unable to change password.");
       return;
     }
 

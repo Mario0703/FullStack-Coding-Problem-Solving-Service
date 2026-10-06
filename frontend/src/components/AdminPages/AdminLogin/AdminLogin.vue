@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { loadCurrentAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
+import { readErrorMessage } from '@/utils/apiError'
 
 const router = useRouter()
 const adminUserName = ref('')
@@ -30,15 +31,9 @@ async function adminSignIn() {
 
   try {
     const response = await loginAdmin(adminLoginRequest)
-    const isAdminFieldsValid = response.status === 400 || response.status === 401
-
-    if (isAdminFieldsValid) {
-      loginError.value = 'Invalid admin username or password.'
-      return
-    }
 
     if (!response.ok) {
-      loginError.value = 'The server could not log you in. Please try again later.'
+      loginError.value = await readErrorMessage(response, 'Invalid admin username or password.')
       return
     }
 

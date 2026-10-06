@@ -1,10 +1,10 @@
-package minicode.com.controller;
+package minicode.com.controller.Admin;
 
 import minicode.com.dto.Admin.AdminUserStatistics;
+import minicode.com.auth.Access;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.User.User;
 import minicode.com.service.Admin.DashBoardStatsService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.Map;
@@ -32,7 +31,7 @@ public class DashBoardStatsController {
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_STATISTICS')")
     public Map<String, Long> getPlatformStatistics(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getPlatformStatistics();
     }
 
@@ -44,13 +43,13 @@ public class DashBoardStatsController {
 
     @GetMapping("/users")
     public long getNumberOfUsers(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfUsers();
     }
 
     @GetMapping("/users/all")
     public List<User> getAllUsers(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllUsers();
     }
 
@@ -59,7 +58,7 @@ public class DashBoardStatsController {
             @RequestParam String userName,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.searchForUserByName(userName);
     }
 
@@ -68,13 +67,13 @@ public class DashBoardStatsController {
             @PathVariable UUID userId,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         statsService.deleteUser(userId);
     }
 
     @GetMapping("/submissions/all")
     public List<Submission> getAllSubmissions(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllSubmissions();
     }
 
@@ -83,47 +82,33 @@ public class DashBoardStatsController {
             @PathVariable UUID userId,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllSubmissionsByUser(userId);
     }
 
     @GetMapping("/users/list")
     @PreAuthorize("hasAuthority('VIEW_USERS')")
     public List<AdminUserStatistics> getUserStatistics(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getUserStatistics();
     }
 
     @GetMapping("/challenges")
     public long getNumberOfChallenges(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfChallenges();
     }
 
     @GetMapping("/submissions")
     public long getNumberOfSubmittedSolutions(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfSubmittedSolutions();
     }
 
     @GetMapping("/solved-challenges")
     public long getNumberOfSolvedChallenges(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfSolvedChallenges();
-    }
-
-    private void requireAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Admin access required"
-            );
-        }
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        if (!isAdmin) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin access required");
-        }
     }
 }
 

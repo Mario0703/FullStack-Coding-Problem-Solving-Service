@@ -1,6 +1,6 @@
 package minicode.com;
 
-import minicode.com.controller.submissionController;
+import minicode.com.controller.Challenges.submissionController;
 import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;

@@ -16,7 +16,8 @@ public class BcryptPasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (rawPassword == null || encodedPassword == null) {
+        boolean isPasswordNull = rawPassword == null || encodedPassword == null;
+        if (isPasswordNull) {
             return false;
         }
 
@@ -27,6 +28,3 @@ public class BcryptPasswordEncoder implements PasswordEncoder {
         }
     }
 }
-
-
-

@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { baseUrl } from '@/utils/api';
+import { readErrorMessage } from '@/utils/apiError';
 
 
 export type UserData = {
@@ -56,7 +57,7 @@ export async function loadCurrentAdmin(): Promise<string> {
 
   if (!response.ok) {
     currentRole.value = null;
-    throw new Error("Admin is not authenticated");
+    throw new Error(await readErrorMessage(response, "Admin is not authenticated"));
   }
 
   const role = (await response.text()).trim();

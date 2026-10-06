@@ -1,4 +1,5 @@
 import { baseUrl } from '@/utils/api'
+import { readErrorMessage } from '@/utils/apiError'
 import type { SubmissionStatus } from '@/utils/CodeExecutorUtils'
 
 export type UserSubmission = {
@@ -38,7 +39,7 @@ async function loadTestCaseValues(path: 'passed' | 'failed' | 'total'): Promise<
   }
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${path} test cases`)
+    throw new Error(await readErrorMessage(response, `Failed to fetch ${path} test cases`))
   }
 
   return (await response.json()) as number[]
@@ -66,7 +67,7 @@ export async function loadUserSubmissions(): Promise<UserSubmission[]> {
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch submissions')
+    throw new Error(await readErrorMessage(response, 'Failed to fetch submissions'))
   }
 
   return (await response.json()) as UserSubmission[]
@@ -82,7 +83,7 @@ export async function loadSolvedChallenges(): Promise<SolvedChallenge[]> {
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch solved challenges')
+    throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
   }
 
   return (await response.json()) as SolvedChallenge[]
@@ -98,7 +99,7 @@ export async function loadPublicSubmissions(userId: string): Promise<UserSubmiss
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch public submissions')
+    throw new Error(await readErrorMessage(response, 'Failed to fetch public submissions'))
   }
 
   return (await response.json()) as UserSubmission[]
@@ -118,7 +119,7 @@ export async function loadPublicSubmissionTestCaseValues(userId: string): Promis
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch public submission stats')
+    throw new Error(await readErrorMessage(response, 'Failed to fetch public submission stats'))
   }
 
   return (await response.json()) as [number[], number[], number[]]
@@ -134,7 +135,7 @@ export async function loadSolvedChallengeIds(): Promise<Set<string>> {
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch solved challenges')
+    throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
   }
 
   const challengeIds = (await response.json()) as string[]

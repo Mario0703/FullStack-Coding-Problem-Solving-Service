@@ -1,14 +1,14 @@
 package minicode.com.auth;
 
 
+import minicode.com.auth.Access;
 import minicode.com.entity.User.User;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
@@ -27,19 +27,11 @@ public class AuthenticatorUserAcrossTabs {
 
     @GetMapping("/me")
     public userResponse authenticateUserAcrossTabs(Authentication authentication){
-        boolean isAuthenticatedValid = isAuthenticated(authentication);
-        if (!isAuthenticatedValid) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-        }
+        Access.requireAuthenticated(authentication);
         Optional<User> user = userRepo.findFirstByUserName(authentication.getName());
+
         if(!user.isPresent()){
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
+            throw UnauthenticatedException.authenticationRequired();
         }
         String role = getRoleFromAuthentication(authentication);
         UUID id = user.get().getId();
@@ -58,23 +50,8 @@ public class AuthenticatorUserAcrossTabs {
 
     @GetMapping("/admin")
     public String checkIfAdmin(Authentication authentication) {
-        boolean isAuthenticatedValid = isAuthenticated(authentication);
-        if (!isAuthenticatedValid){
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Authentication required"
-            );
-        }
-        String role = getRoleFromAuthentication(authentication);
-
-        if(!role.equals("ROLE_ADMIN")){
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Admin role required"
-            );
-        }
-        return role;
-
+        Access.requireAdmin(authentication);
+        return getRoleFromAuthentication(authentication);
     }
 
     private String getRoleFromAuthentication(Authentication authentication) {
@@ -83,10 +60,6 @@ public class AuthenticatorUserAcrossTabs {
                 .filter(authority -> authority.startsWith("ROLE_"))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private Boolean isAuthenticated(Authentication authentication) {
-        return authentication != null && authentication.isAuthenticated();
     }
 
 

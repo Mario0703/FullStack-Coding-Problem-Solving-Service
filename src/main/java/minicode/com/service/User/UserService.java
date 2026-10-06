@@ -2,6 +2,7 @@ package minicode.com.service.User;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
+import minicode.com.auth.Access;
 import minicode.com.dto.User.ChangeEmailRequest;
 import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
@@ -11,6 +12,9 @@ import minicode.com.dto.User.SolverResponse;
 import minicode.com.dto.User.UserSummary;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.User.User;
+import minicode.com.exception.LoginErrorException;
+import minicode.com.exception.SignupException;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,24 +54,15 @@ public class UserService {
     @Transactional
     public User signup(SignupRequest request) {
         if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Signup request is invalid"
-            );
+            throw SignupException.invalidRequest("Signup request is invalid");
         }
 
         if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Username already exists"
-            );
+            throw SignupException.usernameTaken(request.getUserName());
         }
 
         if (userRepo.findFirstByEmail(request.getEmail()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email already exists"
-            );
+            throw SignupException.emailTaken(request.getEmail());
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -99,7 +94,9 @@ public class UserService {
         String normalizedUserName = request.newUserName().trim();
 
         Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
-        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+        boolean IsUserConflicting = existingUser.isPresent()
+                && !existingUser.get().getUserId().equals(userId);
+        if (IsUserConflicting) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Username already exists"
@@ -123,7 +120,9 @@ public class UserService {
         String normalizedEmail = request.newEmail().trim();
 
         Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
-        if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
+        boolean IsUserConflicting = existingUser.isPresent()
+                && !existingUser.get().getUserId().equals(userId);
+        if (IsUserConflicting) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Email already exists"
@@ -163,38 +162,28 @@ public class UserService {
         User user;
 
 
-        if (isBlank(email) && isBlank(userName)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email or username is required"
-            );
+        boolean hasBlankEmailAndUserName = isBlank(email) && isBlank(userName);
+        if (hasBlankEmailAndUserName) {
+            throw LoginErrorException.invalidCredentials("Email or username is required");
         }
 
-        if (!isBlank(email) && !isBlank(userName)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Provide either an email or a username"
-            );
+        boolean hasEmailAndUserName = !isBlank(email) && !isBlank(userName);
+        if (hasEmailAndUserName) {
+            throw LoginErrorException.invalidCredentials("Provide either an email or a username");
         }
 
         if (isBlank(password)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password is required"
-            );
+            throw LoginErrorException.invalidCredentials("Password is required");
         }
 
         if (!isBlank(email)) {
             user = findUserByEmail(email);
         } else {
-            user = findByUserName(userName);
+            user = findUserByUserName(userName);
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Password is incorrect"
-            );
+            throw LoginErrorException.invalidCredentials("Password is incorrect");
         }
 
         return user;
@@ -203,13 +192,19 @@ public class UserService {
     private User findUserByEmail(String email) {
         Optional<User> userByEmail = userRepo.findFirstByEmail(email);
         if (!userByEmail.isPresent()) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Email does not exist"
-            );
+            throw LoginErrorException.invalidCredentials("Email does not exist");
         }
 
         return userByEmail.get();
+    }
+
+    private User findUserByUserName(String userName) {
+        Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
+        if (!userByUserName.isPresent()) {
+            throw LoginErrorException.invalidCredentials("Username does not exist");
+        }
+
+        return userByUserName.get();
     }
 
     public User findById(UUID userId) {
@@ -241,27 +236,20 @@ public class UserService {
     public User findByUserName(String userName) {
         Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
         if (!userByUserName.isPresent()) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Username does not exist"
-            );
+            throw UnauthenticatedException.notAuthenticated("Username does not exist");
         }
 
         return userByUserName.get();
     }
 
     public UUID getAuthenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-        }
+        Access.requireAuthenticated(authentication);
         return findByUserName(authentication.getName()).getUserId();
     }
 
     private boolean isBlank(String value) {
-        return value == null || value.isBlank();
+        boolean hasBlankValue = value == null || value.isBlank();
+        return hasBlankValue;
     }
 
 

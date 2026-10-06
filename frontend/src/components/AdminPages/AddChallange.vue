@@ -28,16 +28,12 @@ async function createChallenge(challengeData: CreateChallengeForm) {
 
   try {
     const createdChallenge = await createChallengeRequest(challengeData)
-
-    if (!createdChallenge) {
-      formError.value = 'The challenge could not be created. Please check the fields and try again.'
-      return
-    }
-
     emit('created', createdChallenge)
     challengeForm.value?.resetForm()
-  } catch {
-    formError.value = 'Unable to reach the server. Please try again later.'
+  } catch (error) {
+    formError.value = error instanceof Error
+      ? error.message
+      : 'Unable to reach the server. Please try again later.'
   } finally {
     isSubmitting.value = false
   }

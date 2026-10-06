@@ -1,8 +1,7 @@
 package minicode.com.controller.CoderExercutes.OutputFeedback;
 
 import minicode.com.controller.SupportedLanguages;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import minicode.com.exception.UnSupportedLanguage;
 
 import java.util.Locale;
 import java.util.Map;
@@ -24,17 +23,11 @@ public final class OutputFeedbackFactory {
         try {
             key = SupportedLanguages.valueOf(language.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Unsupported language: " + language
-            );
+            throw UnSupportedLanguage.unsupportedLanguage(language);
         }
         OutputFeedbackStrat strategy = STRATEGIES.get(key);
         if (strategy == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Unsupported language: " + language
-            );
+            throw UnSupportedLanguage.unsupportedLanguage(language);
         }
         return strategy;
     }

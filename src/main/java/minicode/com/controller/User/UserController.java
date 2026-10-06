@@ -1,4 +1,4 @@
-package minicode.com.controller;
+package minicode.com.controller.User;
 
 import minicode.com.dto.User.LoginRequest;
 import minicode.com.dto.User.SignupRequest;
@@ -6,20 +6,15 @@ import minicode.com.dto.User.ChangeEmailRequest;
 import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
 import minicode.com.entity.User.User;
+import minicode.com.auth.AuthenticateLogin;
 import minicode.com.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -51,17 +46,20 @@ public class UserController {
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse
     ) {
-        User user = userService.login(request); // authenticate the user
-        String identifier = request.getEmail() != null && !request.getEmail().isBlank()
-                ? request.getEmail()
-                : request.getUserName();
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
+        User user = userService.login(request);
+        boolean isEmailInputValid = request.getEmail() != null && !request.getEmail().isBlank();
+
+        if (isEmailInputValid) {
+
+        }
+        AuthenticateLogin.login(
+                authenticationManager,
+                securityContextRepository,
+                request.getUserName(),
+                request.getPassword(),
+                httpRequest,
+                httpResponse
         );
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
         return user;
 

@@ -5,10 +5,9 @@ import minicode.com.controller.CodeEnv.Submissionfile.SubmissionFileName;
 import minicode.com.entity.Challange.TestCases;
 import minicode.com.entity.Container.Container;
 import minicode.com.entity.TestRunner.TestRunner;
+import minicode.com.exception.ContainerFailureException;
 import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.TestRunnerRepo;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -48,7 +47,7 @@ public class TempEnvDestroyAfter implements EnvStrat {
     }
 
     @Override
-    public Path createEnv() throws IOException {
+    public Path createEnv() {
         try {
             Files.createDirectories(languagePath);
             Path tempEnv = Files.createTempDirectory(languagePath, "tempEnv-");
@@ -89,13 +88,16 @@ public class TempEnvDestroyAfter implements EnvStrat {
 
             return tempEnv;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create temporary environment", e);
+            throw ContainerFailureException.failedToCreateContainer(
+                    "Failed to create temporary environment: " + e.getMessage()
+            );
         }
     }
 
     @Override
     public void destroyEnv(Path path) throws IOException {
-        if (path == null || !Files.exists(path)) {
+        boolean hasMissingPath = path == null || !Files.exists(path);
+        if (hasMissingPath) {
             return;
         }
         try (Stream<Path> paths = Files.walk(path)) {
@@ -114,16 +116,14 @@ public class TempEnvDestroyAfter implements EnvStrat {
 
     private Container resolveContainer(String language) {
         return containerRepo.findById(language).orElseThrow(() ->
-                new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
+                ContainerFailureException.containerFailed(
                         "Container metadata was not found for " + language
                 ));
     }
 
     private TestRunner resolveTestRunner(String language) {
         return testRunnerRepo.findById(language).orElseThrow(() ->
-                new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
+                ContainerFailureException.containerFailed(
                         "Test runner metadata was not found for " + language
                 ));
     }

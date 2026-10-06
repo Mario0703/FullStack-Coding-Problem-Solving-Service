@@ -1,27 +1,24 @@
-package minicode.com.controller;
+package minicode.com.controller.Challenges;
 
 
 import jakarta.validation.Valid;
-import minicode.com.config.SecurityConfig;
+import minicode.com.auth.Access;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.dto.Challenge.ChallengeSummaryResponse;
-import minicode.com.dto.Challenge.CreateTestCaseRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.InputOutput;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Challange.TestCases;
 import minicode.com.entity.Submissions.SubmissionStatus;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.SubmissionRepo;
-import minicode.com.entity.User.User;
 import minicode.com.service.Challange.ChallengeService;
 import minicode.com.service.User.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import minicode.com.dto.User.PublicSubmissionResponse;
 import minicode.com.dto.User.SolverResponse;
-import minicode.com.dto.User.UserSummary;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
@@ -58,7 +55,7 @@ public class ChallengeController {
 
     @GetMapping("/ListChallanges")
     public List<ChallengeSummaryResponse> listChallenges(Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         return toSummaries(challangeService.listChallenges());
     }
 
@@ -90,7 +87,7 @@ public class ChallengeController {
             @PathVariable UUID challengeId,
             Authentication authentication
     ) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         return challangeService.getChallengeTestCases(challengeId);
     }
     @GetMapping("/{challengeId}/getSolvedChallenges")
@@ -134,7 +131,7 @@ public class ChallengeController {
         // The instructor solution is an answer, so it must not be readable
         // before the user actually solves the challenge. Admins keep full
         // access; solvers get it once they have an accepted submission.
-        if (!isAdmin(authentication)) {
+        if (!Access.isAdmin(authentication)) {
             UUID userId = requireAuthenticatedUserId(authentication);
             boolean solved = submissionRepo.existsByUser_UserIdAndChallenge_IdAndStatus(
                     userId,
@@ -156,42 +153,21 @@ public class ChallengeController {
 
     @PostMapping("/create")
     public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         Challenge challenge = challangeService.createChallenge(request);
         return challenge;
     }
 
-    private void checkIfAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
-        if (!isAdmin(authentication)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin access required");
-        }
-    }
-
-    private boolean isAdmin(Authentication authentication) {
-        return authentication != null
-                && authentication.isAuthenticated()
-                && authentication.getAuthorities().stream()
-                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-    }
-
     private UUID requireAuthenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
+        Access.requireAuthenticated(authentication);
         return userRepo.findFirstByUserName(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Authenticated user was not found"
-                ))
+                .orElseThrow(UnauthenticatedException::authenticationRequired)
                 .getUserId();
     }
 
     @DeleteMapping("/delete")
     public void deleteChallenge(@RequestParam UUID challengeId, Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         challangeService.deleteChallenge(challengeId);
     }
 

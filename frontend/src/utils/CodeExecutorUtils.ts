@@ -1,4 +1,5 @@
 import { baseUrl } from '@/utils/api'
+import { readErrorMessage } from '@/utils/apiError'
 
 export interface ChallengeTemplateResponse {
   language: string
@@ -67,7 +68,9 @@ export async function loadChallengeTemplate(
   })
 
   if (!response.ok) {
-    throw new Error('The challenge template could not be loaded.')
+    throw new Error(
+      await readErrorMessage(response, 'The challenge template could not be loaded.'),
+    )
   }
 
   return (await response.json()) as ChallengeTemplateResponse
@@ -84,7 +87,7 @@ export async function submitCode(request: CodeExecutionRequest): Promise<Executi
   })
 
   if (!response.ok) {
-    throw new Error(`Error: ${await response.text()}`)
+    throw new Error(await readErrorMessage(response, 'Could not submit your code. Please try again.'))
   }
 
   return (await response.json()) as ExecutionResult

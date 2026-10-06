@@ -57,7 +57,8 @@ public class ChallengeService {
      * setup is authored.
      */
     public ChallengeTemplateResponse getChallengeTemplate(UUID challengeId, String language) {
-        if (language != null && !language.isBlank()) {
+        boolean IsLanguageValid = language != null && !language.isBlank();
+        if (IsLanguageValid) {
             Optional<ChallengeLanguageSetup> setup =
                     languageSetupRepo.findByChallenge_IdAndLanguage(challengeId, normalizeLanguage(language));
             if (setup.isPresent()) {
@@ -84,7 +85,8 @@ public class ChallengeService {
      * challenges keep working.
      */
     public String getRunnerForLanguage(Challenge challenge, String language) {
-        if (language != null && !language.isBlank()) {
+        boolean hasLanguage = language != null && !language.isBlank();
+        if (hasLanguage) {
             Optional<ChallengeLanguageSetup> setup =
                     languageSetupRepo.findByChallenge_IdAndLanguage(challenge.getId(), normalizeLanguage(language));
             if (setup.isPresent()) {
@@ -95,7 +97,10 @@ public class ChallengeService {
     }
 
     private String normalizeLanguage(String language) {
-        return language == null ? null : language.toLowerCase(Locale.ROOT);
+        if (language == null) {
+            return null;
+        }
+        return language.toLowerCase(Locale.ROOT);
     }
 
     public Challenge createChallenge(CreateChallangeRequest request) {
@@ -156,7 +161,8 @@ public class ChallengeService {
     private void addLanguageSetups(CreateChallangeRequest request, Challenge challenge) {
         List<CreateLanguageSetupRequest> requestedSetups = request.getLanguageSetups();
 
-        if (requestedSetups != null && !requestedSetups.isEmpty()) {
+        boolean hasRequestedSetups = requestedSetups != null && !requestedSetups.isEmpty();
+        if (hasRequestedSetups) {
             for (CreateLanguageSetupRequest setup : requestedSetups) {
                 challenge.getLanguageSetups().add(new ChallengeLanguageSetup(
                         challenge,
