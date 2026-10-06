@@ -4,8 +4,7 @@ import { useRouter } from 'vue-router'
 import { loadCurrentUser } from '@/authenticator/auth'
 import { getLoginValidationErrors } from '@/utils/UserInputCheck'
 import LoginPage from '@/components/authentication/LoginPage.vue'
-import { baseUrl } from '@/utils/api'
-import { readErrorMessage } from '@/utils/apiError'
+import { userLoginStrategies } from '@/utils/loginStrategies'
 
 const router = useRouter()
 const name = ref('')
@@ -28,42 +27,20 @@ async function login() {
     return
   }
 
-  const loginData = {
-    password: password.value,
-    ...(loginWithEmail.value
-      ? { email: name.value.trim() }
-      : { userName: name.value.trim() }),
-  }
+  const loginStrategy = loginWithEmail.value
+    ? userLoginStrategies.email
+    : userLoginStrategies.username
 
   isSubmitting.value = true
 
   try {
-    const response = await fetch(`${baseUrl}/api/user/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(loginData),
-    })
-
-    const isInvalidCredentials = response.status === 400 || response.status === 401
-
-    if (isInvalidCredentials) {
-      loginError.value = await readErrorMessage(response, 'Invalid email/username or password.')
-      return
-    }
-
-    if (!response.ok) {
-      loginError.value = await readErrorMessage(
-        response,
-        'The server could not log you in. Please try again later.',
-      )
-      return
-    }
-
+    await loginStrategy({ identifier: name.value.trim(), password: password.value })
     await loadCurrentUser()
     await router.push({ name: 'loginConfirmed' })
-  } catch {
-    loginError.value = 'Unable to reach the server. Please try again later.'
+  } catch (error) {
+    loginError.value = error instanceof Error
+      ? error.message
+      : 'Unable to reach the server. Please try again later.'
   } finally {
     isSubmitting.value = false
   }

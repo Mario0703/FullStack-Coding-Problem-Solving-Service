@@ -3,8 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadCurrentAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
-import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
-import { readErrorMessage } from '@/utils/apiError'
+import { loginAsAdmin } from '@/utils/loginStrategies'
 
 const router = useRouter()
 const adminUserName = ref('')
@@ -15,12 +14,7 @@ const isSubmitting = ref(false)
 async function adminSignIn() {
   loginError.value = ''
 
-  const adminLoginRequest: AdminLoginCredentials = {
-    adminUserName: adminUserName.value.trim(),
-    adminPassword: adminPassword.value,
-  }
-
-  const hasAdminFilledOutFields = adminLoginRequest.adminUserName && adminLoginRequest.adminPassword
+  const hasAdminFilledOutFields = adminUserName.value.trim() && adminPassword.value
 
   if (!hasAdminFilledOutFields) {
     loginError.value = 'Admin username and password are required.'
@@ -30,17 +24,13 @@ async function adminSignIn() {
   isSubmitting.value = true
 
   try {
-    const response = await loginAdmin(adminLoginRequest)
-
-    if (!response.ok) {
-      loginError.value = await readErrorMessage(response, 'Invalid admin username or password.')
-      return
-    }
-
+    await loginAsAdmin({ identifier: adminUserName.value.trim(), password: adminPassword.value })
     await loadCurrentAdmin()
     await router.push({ name: 'adminLoginConfirmed' })
-  } catch {
-    loginError.value = 'Unable to reach the server. Please try again later.'
+  } catch (error) {
+    loginError.value = error instanceof Error
+      ? error.message
+      : 'Unable to reach the server. Please try again later.'
   } finally {
     isSubmitting.value = false
   }
