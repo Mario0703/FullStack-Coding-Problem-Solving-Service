@@ -27,10 +27,6 @@ public class ForbiddenAccessException extends RuntimeException {
         return new ForbiddenAccessException("Access denied: user privileges required.");
     }
 
-    public static ForbiddenAccessException adminOrUserRequired() {
-        return new ForbiddenAccessException("Access denied: admin or user privileges required.");
-    }
-
     public static ForbiddenAccessException forbidden(String message) {
         return new ForbiddenAccessException(message);
     }

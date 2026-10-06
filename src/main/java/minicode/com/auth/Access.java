@@ -39,14 +39,6 @@ public final class Access {
         requireRole(authentication, Access::isUser, ForbiddenAccessException.userRequired());
     }
 
-    public static void requireAdminOrUser(Authentication authentication) {
-        requireRole(
-                authentication,
-                auth -> isAdmin(auth) || isUser(auth),
-                ForbiddenAccessException.adminOrUserRequired()
-        );
-    }
-
     private static void requireRole(
             Authentication authentication,
             Predicate<Authentication> hasRole,
