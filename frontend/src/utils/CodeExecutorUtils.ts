@@ -9,6 +9,8 @@ export interface ChallengeTemplateResponse {
 export interface ExecutionResult {
   exitCode: number
   output: string
+  passingTestCases: number
+  failingTestCases: number
   status: SubmissionStatus
 }
 
