@@ -38,7 +38,7 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration
-    ) throws Exception {
+    )  {
         return configuration.getAuthenticationManager();
     }
 
@@ -46,7 +46,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             SecurityContextRepository securityContextRepository
-    ) throws Exception {
+    )  {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())

@@ -1,6 +1,7 @@
 package minicode.com.controller.CodeEnv.Submissionfile;
 
 import minicode.com.controller.SupportedLanguages;
+import minicode.com.exception.UnSupportedLanguage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,17 +24,11 @@ public final class SubmissionFileFactory {
         try {
             key = SupportedLanguages.valueOf(language.toUpperCase(java.util.Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Unsupported language: " + language
-            );
+            throw UnSupportedLanguage.unsupportedLanguage(language);
         }
         SubmissionFileName strategy = STRATEGIES.get(key);
         if (strategy == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Unsupported language: " + language
-            );
+            throw UnSupportedLanguage.unsupportedLanguage(language);
         }
         return strategy;
     }

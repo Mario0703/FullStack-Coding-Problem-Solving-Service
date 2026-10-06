@@ -29,6 +29,7 @@ public class AuthenticatorUserAcrossTabs {
     public userResponse authenticateUserAcrossTabs(Authentication authentication){
         Access.requireAuthenticated(authentication);
         Optional<User> user = userRepo.findFirstByUserName(authentication.getName());
+
         if(!user.isPresent()){
             throw UnauthenticatedException.authenticationRequired();
         }
