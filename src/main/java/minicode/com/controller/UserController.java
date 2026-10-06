@@ -6,6 +6,7 @@ import minicode.com.dto.User.ChangeEmailRequest;
 import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
 import minicode.com.entity.User.User;
+import minicode.com.auth.AuthenticateLogin;
 import minicode.com.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,10 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 import java.util.UUID;
@@ -51,19 +49,20 @@ public class UserController {
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse
     ) {
-        User user = userService.login(request); // authenticate the user
+        User user = userService.login(request);
         boolean isEmailInputValid = request.getEmail() != null && !request.getEmail().isBlank();
-        String identifier = request.getUserName();
+
         if (isEmailInputValid) {
-            identifier = request.getEmail();
+
         }
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
+        AuthenticateLogin.login(
+                authenticationManager,
+                securityContextRepository,
+                request.getUserName(),
+                request.getPassword(),
+                httpRequest,
+                httpResponse
         );
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
         return user;
 
