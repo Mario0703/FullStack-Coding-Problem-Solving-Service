@@ -1,4 +1,8 @@
 <script setup lang="ts">
+defineOptions({
+  name: 'SuccessFeedback',
+})
+
 defineProps({
   title: {
     type: String,

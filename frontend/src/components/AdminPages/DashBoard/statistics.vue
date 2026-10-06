@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { PlatformStatistics } from '@/utils/AdminStatisticsUtils'
 
+defineOptions({
+  name: 'DashboardStatistics',
+})
+
 defineProps<{
   statistics: PlatformStatistics | null
   isLoading: boolean

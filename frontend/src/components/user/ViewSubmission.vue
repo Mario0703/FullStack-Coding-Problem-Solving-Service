@@ -10,8 +10,20 @@ import {
   submissionStatusLabel,
 } from '@/utils/CodeExecutorUtils'
 
+interface SubmissionDetails {
+  challengeName: string
+  language: string
+  createdAt: string
+  exitCode: number
+  status: string
+  testCasesPassed: number
+  testCasesFailed: number
+  totalTestCases: number
+  code: string
+}
+
 const route = useRoute()
-const submission = ref<any>(null)
+const submission = ref<SubmissionDetails | null>(null)
 const errorMessage = ref('')
 
 onMounted(async () => {
@@ -32,7 +44,7 @@ onMounted(async () => {
     return
   }
 
-  submission.value = await response.json()
+  submission.value = (await response.json()) as SubmissionDetails
 })
 </script>
 

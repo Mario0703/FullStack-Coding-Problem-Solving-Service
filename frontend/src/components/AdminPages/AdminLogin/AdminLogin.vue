@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { SubmitEventPromise } from 'vuetify'
 import { loadCurrentAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { loginAdmin, type AdminLoginCredentials } from '@/utils/AdminLoginUtils'
@@ -12,7 +11,7 @@ const adminPassword = ref('')
 const loginError = ref('')
 const isSubmitting = ref(false)
 
-async function adminSignIn(_event: SubmitEventPromise) {
+async function adminSignIn() {
   loginError.value = ''
 
   const adminLoginRequest: AdminLoginCredentials = {
