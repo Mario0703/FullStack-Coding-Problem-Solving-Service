@@ -1,6 +1,7 @@
 package minicode.com.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -12,10 +13,6 @@ public class LoginErrorException extends RuntimeException {
 
     private LoginErrorException(String message) {
         super(message);
-    }
-
-    public static LoginErrorException invalidCredentials() {
-        return new LoginErrorException("Invalid username/email or password.");
     }
 
     public static LoginErrorException invalidCredentials(String message) {
