@@ -31,7 +31,7 @@ public class DashBoardStatsController {
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_STATISTICS')")
     public Map<String, Long> getPlatformStatistics(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getPlatformStatistics();
     }
 
@@ -43,13 +43,13 @@ public class DashBoardStatsController {
 
     @GetMapping("/users")
     public long getNumberOfUsers(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfUsers();
     }
 
     @GetMapping("/users/all")
     public List<User> getAllUsers(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllUsers();
     }
 
@@ -58,7 +58,7 @@ public class DashBoardStatsController {
             @RequestParam String userName,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.searchForUserByName(userName);
     }
 
@@ -67,13 +67,13 @@ public class DashBoardStatsController {
             @PathVariable UUID userId,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         statsService.deleteUser(userId);
     }
 
     @GetMapping("/submissions/all")
     public List<Submission> getAllSubmissions(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllSubmissions();
     }
 
@@ -82,37 +82,33 @@ public class DashBoardStatsController {
             @PathVariable UUID userId,
             Authentication authentication
     ) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getAllSubmissionsByUser(userId);
     }
 
     @GetMapping("/users/list")
     @PreAuthorize("hasAuthority('VIEW_USERS')")
     public List<AdminUserStatistics> getUserStatistics(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getUserStatistics();
     }
 
     @GetMapping("/challenges")
     public long getNumberOfChallenges(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfChallenges();
     }
 
     @GetMapping("/submissions")
     public long getNumberOfSubmittedSolutions(Authentication authentication) {
-        requireAdmin(authentication);
+        Access.requireAdmin(authentication);
         return statsService.getNumberOfSubmittedSolutions();
     }
 
     @GetMapping("/solved-challenges")
     public long getNumberOfSolvedChallenges(Authentication authentication) {
-        requireAdmin(authentication);
-        return statsService.getNumberOfSolvedChallenges();
-    }
-
-    private void requireAdmin(Authentication authentication) {
         Access.requireAdmin(authentication);
+        return statsService.getNumberOfSolvedChallenges();
     }
 }
 

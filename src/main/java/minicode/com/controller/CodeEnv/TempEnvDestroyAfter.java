@@ -47,7 +47,7 @@ public class TempEnvDestroyAfter implements EnvStrat {
     }
 
     @Override
-    public Path createEnv() throws IOException {
+    public Path createEnv() {
         try {
             Files.createDirectories(languagePath);
             Path tempEnv = Files.createTempDirectory(languagePath, "tempEnv-");

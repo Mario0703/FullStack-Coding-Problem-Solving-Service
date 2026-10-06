@@ -60,7 +60,7 @@ public class ChallengeController {
 
     @GetMapping("/ListChallanges")
     public List<ChallengeSummaryResponse> listChallenges(Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         return toSummaries(challangeService.listChallenges());
     }
 
@@ -92,7 +92,7 @@ public class ChallengeController {
             @PathVariable UUID challengeId,
             Authentication authentication
     ) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         return challangeService.getChallengeTestCases(challengeId);
     }
     @GetMapping("/{challengeId}/getSolvedChallenges")
@@ -158,13 +158,9 @@ public class ChallengeController {
 
     @PostMapping("/create")
     public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         Challenge challenge = challangeService.createChallenge(request);
         return challenge;
-    }
-
-    private void checkIfAdmin(Authentication authentication) {
-        Access.requireAdmin(authentication);
     }
 
     private UUID requireAuthenticatedUserId(Authentication authentication) {
@@ -176,7 +172,7 @@ public class ChallengeController {
 
     @DeleteMapping("/delete")
     public void deleteChallenge(@RequestParam UUID challengeId, Authentication authentication) {
-        checkIfAdmin(authentication);
+        Access.requireAdmin(authentication);
         challangeService.deleteChallenge(challengeId);
     }
 
