@@ -12,6 +12,9 @@ import minicode.com.dto.User.SolverResponse;
 import minicode.com.dto.User.UserSummary;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.User.User;
+import minicode.com.exception.LoginErrorException;
+import minicode.com.exception.SignupException;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,24 +54,15 @@ public class UserService {
     @Transactional
     public User signup(SignupRequest request) {
         if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Signup request is invalid"
-            );
+            throw SignupException.invalidRequest("Signup request is invalid");
         }
 
         if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Username already exists"
-            );
+            throw SignupException.usernameTaken(request.getUserName());
         }
 
         if (userRepo.findFirstByEmail(request.getEmail()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email already exists"
-            );
+            throw SignupException.emailTaken(request.getEmail());
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -170,38 +164,26 @@ public class UserService {
 
         boolean hasBlankEmailAndUserName = isBlank(email) && isBlank(userName);
         if (hasBlankEmailAndUserName) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email or username is required"
-            );
+            throw LoginErrorException.invalidCredentials("Email or username is required");
         }
 
         boolean hasEmailAndUserName = !isBlank(email) && !isBlank(userName);
         if (hasEmailAndUserName) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Provide either an email or a username"
-            );
+            throw LoginErrorException.invalidCredentials("Provide either an email or a username");
         }
 
         if (isBlank(password)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password is required"
-            );
+            throw LoginErrorException.invalidCredentials("Password is required");
         }
 
         if (!isBlank(email)) {
             user = findUserByEmail(email);
         } else {
-            user = findByUserName(userName);
+            user = findUserByUserName(userName);
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Password is incorrect"
-            );
+            throw LoginErrorException.invalidCredentials("Password is incorrect");
         }
 
         return user;
@@ -210,13 +192,19 @@ public class UserService {
     private User findUserByEmail(String email) {
         Optional<User> userByEmail = userRepo.findFirstByEmail(email);
         if (!userByEmail.isPresent()) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Email does not exist"
-            );
+            throw LoginErrorException.invalidCredentials("Email does not exist");
         }
 
         return userByEmail.get();
+    }
+
+    private User findUserByUserName(String userName) {
+        Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
+        if (!userByUserName.isPresent()) {
+            throw LoginErrorException.invalidCredentials("Username does not exist");
+        }
+
+        return userByUserName.get();
     }
 
     public User findById(UUID userId) {
@@ -248,10 +236,7 @@ public class UserService {
     public User findByUserName(String userName) {
         Optional<User> userByUserName = userRepo.findFirstByUserName(userName);
         if (!userByUserName.isPresent()) {
-            throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Username does not exist"
-            );
+            throw UnauthenticatedException.notAuthenticated("Username does not exist");
         }
 
         return userByUserName.get();
