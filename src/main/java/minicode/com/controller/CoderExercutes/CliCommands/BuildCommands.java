@@ -21,7 +21,10 @@ public class BuildCommands implements CLIBuildCommands {
                 "docker", "build",
                 "--progress=plain",
                 "--network=none",
-                "--resource", "memory=1g,cpu-quota=100000",  // buildx syntax for cpu/memory
+                // buildx takes one key=value per --resource flag, so repeat it.
+                // cpu-quota is microseconds of CPU per 100ms period => 1 CPU.
+                "--resource", "memory=1g",
+                "--resource", "cpu-quota=100000",
                 "-t", imageName, "."
         ));
 
@@ -43,12 +46,13 @@ public class BuildCommands implements CLIBuildCommands {
                 "docker", "run", "--rm", "--name", containerName,
                 "--network=none",
                 "--memory=512m", "--memory-swap=512m",
-                "--cpus=2",
+                "--cpu-period=50000",
+                "--cpu-quota=25000",
                 "--pids-limit=128",
                 "--user=1000:1000",
                 "--cap-drop=ALL",
                 "--security-opt=no-new-privileges",
-                "--tmpfs", "/tmp:rw,size=64m",
+                "--tmpfs", "/tmp:rw,size=256m",
                 imageName
         ));
 

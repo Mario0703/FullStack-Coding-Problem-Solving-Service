@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 test_directory="$1"
 shift
@@ -9,7 +9,7 @@ failing_tests=0
 first_error_shown=0
 
 if [ -n "$COMPILE_CMD" ]; then
-    compile_output=$(bash -c "$COMPILE_CMD" 2>&1)
+    compile_output=$(sh -c "$COMPILE_CMD" 2>&1)
     compile_status=$?
     if [ $compile_status -ne 0 ]; then
         printf "Compilation failed (exit code %s):\n" "$compile_status"
