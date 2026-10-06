@@ -8,6 +8,7 @@ import minicode.com.controller.CoderExercutes.Responses.CodeErrorCodesFactory;
 import minicode.com.controller.CoderExercutes.OutputFeedback.OutputFeedbackFactory;
 import minicode.com.controller.CoderExercutes.OutputFeedback.OutputFeedbackStrat;
 import minicode.com.dto.Challenge.ExecutionResult;
+import minicode.com.exception.CodeExercutorException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -36,7 +37,12 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
         CLIBuildCommands commands = new BuildCommands(path);
 
         try {
-            CommandResult buildResult = commands.buildContainer(imageName);
+            CommandResult buildResult;
+            try {
+                buildResult = commands.buildContainer(imageName);
+            } catch (IOException e) {
+                throw CodeExercutorException.failedToCompileCodeException();
+            }
             Boolean isBuildSuccess = buildResult.exitCode() == 0;
 
             //build failed so just return the build error and exit code, no need to run the container
@@ -51,7 +57,12 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
                 );
             }
 
-            CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
+            CommandResult runResult;
+            try {
+                runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
+            } catch (IOException e) {
+                throw CodeExercutorException.failedToRunCodeException();
+            }
             String output = runResult.output();
 
             int[] testResults = findTestResults(output);

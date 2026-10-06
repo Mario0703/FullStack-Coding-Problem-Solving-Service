@@ -1,28 +1,36 @@
 package minicode.com.exception;
 
-public class ContainerFailureException extends RuntimeException {
-    public ContainerFailureException(String message) {
-        super(message);
-    }
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-    public ContainerFailureException(String message) {
+/**
+ * Thrown when the execution environment itself could not be prepared: missing
+ * seeded container/test-runner metadata, or a failure creating the temporary
+ * environment. Maps to HTTP 500.
+ *
+ * <p>Not used for a submission's build/compile/run outcome — those are expected
+ * results reported as data through the {@code ExecutionResult} status.
+ */
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public class ContainerFailureException extends RuntimeException {
+
+    private ContainerFailureException(String message) {
         super(message);
     }
 
     public static ContainerFailureException containerFailed(String message) {
         return new ContainerFailureException(message);
     }
-    
-    public static failedToCreateContainer(String message) {
+
+    public static ContainerFailureException failedToCreateContainer(String message) {
         return new ContainerFailureException(message);
     }
-    
-    public static failedToStartContainer(String message) {
+
+    public static ContainerFailureException failedToStartContainer(String message) {
         return new ContainerFailureException(message);
     }
-    
-    public static failedToRunContainer(String message) {
+
+    public static ContainerFailureException failedToRunContainer(String message) {
         return new ContainerFailureException(message);
     }
-    
 }

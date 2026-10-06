@@ -14,4 +14,8 @@ public class UnauthenticatedException extends RuntimeException {
     public static UnauthenticatedException authenticationRequired() {
         return new UnauthenticatedException("Authentication required.");
     }
+
+    public static UnauthenticatedException notAuthenticated(String message) {
+        return new UnauthenticatedException(message);
+    }
 }

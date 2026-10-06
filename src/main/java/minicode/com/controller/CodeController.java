@@ -12,7 +12,9 @@ import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.entity.User.User;
+import minicode.com.exception.ForbiddenAccessException;
 import minicode.com.exception.UnauthenticatedException;
+import minicode.com.exception.UnSupportedLanguage;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.ContainerRepo;
 import minicode.com.repository.SubmissionRepo;
@@ -161,20 +163,19 @@ public class CodeController {
         try {
             SupportedLanguages.valueOf(language.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported programming language");
+            throw UnSupportedLanguage.unsupportedLanguage(language);
         }
     }
 
     private void validateSubmissionUser(SubmissionRequest codeSubmission, UUID authenticatedUserId) {
         if (!authenticatedUserId.equals(codeSubmission.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User ID does not match the active session");
+            throw ForbiddenAccessException.forbidden("User ID does not match the active session");
         }
     }
 
     private User findUserOrThrow(UUID userId) {
         return userRepo.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
+                .orElseThrow(() -> UnauthenticatedException.notAuthenticated(
                         "Authenticated user was not found"
                 ));
     }
