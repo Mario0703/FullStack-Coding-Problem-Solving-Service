@@ -1,4 +1,4 @@
-package minicode.com.controller;
+package minicode.com.controller.Admin;
 
 import minicode.com.dto.Admin.AdminUserStatistics;
 import minicode.com.auth.Access;

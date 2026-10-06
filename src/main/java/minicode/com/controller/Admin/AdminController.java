@@ -1,4 +1,4 @@
-package minicode.com.controller;
+package minicode.com.controller.Admin;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,13 +1,11 @@
-package minicode.com.controller;
+package minicode.com.controller.Challenges;
 
 
 import jakarta.validation.Valid;
 import minicode.com.auth.Access;
-import minicode.com.config.SecurityConfig;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.dto.Challenge.ChallengeSummaryResponse;
-import minicode.com.dto.Challenge.CreateTestCaseRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.InputOutput;
 import minicode.com.entity.Challange.SolvedChallenges;
@@ -16,14 +14,11 @@ import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.SubmissionRepo;
-import minicode.com.entity.User.User;
 import minicode.com.service.Challange.ChallengeService;
 import minicode.com.service.User.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import minicode.com.dto.User.PublicSubmissionResponse;
 import minicode.com.dto.User.SolverResponse;
-import minicode.com.dto.User.UserSummary;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;

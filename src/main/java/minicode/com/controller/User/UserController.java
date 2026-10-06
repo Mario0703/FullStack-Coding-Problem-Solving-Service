@@ -1,4 +1,4 @@
-package minicode.com.controller;
+package minicode.com.controller.User;
 
 import minicode.com.dto.User.LoginRequest;
 import minicode.com.dto.User.SignupRequest;
@@ -12,12 +12,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.context.SecurityContextRepository;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")

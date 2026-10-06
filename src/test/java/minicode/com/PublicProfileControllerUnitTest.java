@@ -1,6 +1,6 @@
 package minicode.com;
 
-import minicode.com.controller.PublicProfileController;
+import minicode.com.controller.User.PublicProfileController;
 import minicode.com.dto.User.UserSummary;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
