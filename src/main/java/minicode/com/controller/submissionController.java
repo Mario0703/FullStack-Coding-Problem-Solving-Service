@@ -1,12 +1,12 @@
 package minicode.com.controller;
 
+import minicode.com.auth.Access;
 import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.dto.User.SubmissionResponse;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
-import minicode.com.entity.User.User;
-import minicode.com.entity.Roles.UserRole;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
@@ -150,26 +150,9 @@ public class submissionController {
     }
 
     private UUID authenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User not logged in"
-            );
-        }
-        User user = userRepo.findFirstByUserName(authentication.getName()).orElseThrow(() ->
-                new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in"));
-        ensureNormalUser(user.getUserId());
-        return user.getUserId();
-    }
-
-    private void ensureNormalUser(UUID userId) {
-        User user = userRepo.findById(userId).orElseThrow(() -> new ResponseStatusException(
-                org.springframework.http.HttpStatus.UNAUTHORIZED, "User not logged in"));
-        if (user.getRole() == UserRole.ADMIN) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.FORBIDDEN,
-                    "User access is not permitted for an admin session"
-            );
-        }
+        Access.requireUser(authentication);
+        return userRepo.findFirstByUserName(authentication.getName())
+                .orElseThrow(UnauthenticatedException::authenticationRequired)
+                .getUserId();
     }
 }

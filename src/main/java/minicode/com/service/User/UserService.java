@@ -2,6 +2,7 @@ package minicode.com.service.User;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
+import minicode.com.auth.Access;
 import minicode.com.dto.User.ChangeEmailRequest;
 import minicode.com.dto.User.ChangePasswordRequest;
 import minicode.com.dto.User.ChangeUserNameRequest;
@@ -251,12 +252,7 @@ public class UserService {
     }
 
     public UUID getAuthenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
-        }
+        Access.requireAuthenticated(authentication);
         return findByUserName(authentication.getName()).getUserId();
     }
 

@@ -2,6 +2,7 @@ package minicode.com.controller;
 
 
 import jakarta.validation.Valid;
+import minicode.com.auth.Access;
 import minicode.com.config.SecurityConfig;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
@@ -12,6 +13,7 @@ import minicode.com.entity.Challange.InputOutput;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Challange.TestCases;
 import minicode.com.entity.Submissions.SubmissionStatus;
+import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.entity.User.User;
@@ -134,7 +136,7 @@ public class ChallengeController {
         // The instructor solution is an answer, so it must not be readable
         // before the user actually solves the challenge. Admins keep full
         // access; solvers get it once they have an accepted submission.
-        if (!isAdmin(authentication)) {
+        if (!Access.isAdmin(authentication)) {
             UUID userId = requireAuthenticatedUserId(authentication);
             boolean solved = submissionRepo.existsByUser_UserIdAndChallenge_IdAndStatus(
                     userId,
@@ -162,30 +164,13 @@ public class ChallengeController {
     }
 
     private void checkIfAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
-        if (!isAdmin(authentication)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin access required");
-        }
-    }
-
-    private boolean isAdmin(Authentication authentication) {
-        return authentication != null
-                && authentication.isAuthenticated()
-                && authentication.getAuthorities().stream()
-                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        Access.requireAdmin(authentication);
     }
 
     private UUID requireAuthenticatedUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
+        Access.requireAuthenticated(authentication);
         return userRepo.findFirstByUserName(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Authenticated user was not found"
-                ))
+                .orElseThrow(UnauthenticatedException::authenticationRequired)
                 .getUserId();
     }
 
