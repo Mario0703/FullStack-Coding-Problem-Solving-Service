@@ -14,9 +14,6 @@ public final class Access {
 
     public static boolean isAuthenticated(Authentication authentication) {
         return authentication != null
-                && authentication.isAuthenticated()
-                // AnonymousAuthenticationToken.isAuthenticated() is true, so
-                // exclude it to report 401 instead of 403.
                 && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
