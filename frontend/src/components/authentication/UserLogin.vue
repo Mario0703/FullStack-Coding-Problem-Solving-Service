@@ -5,6 +5,7 @@ import { loadCurrentUser } from '@/authenticator/auth'
 import { getLoginValidationErrors } from '@/utils/UserInputCheck'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { baseUrl } from '@/utils/api'
+import { readErrorMessage } from '@/utils/apiError'
 
 const router = useRouter()
 const name = ref('')
@@ -47,12 +48,15 @@ async function login() {
     const isInvalidCredentials = response.status === 400 || response.status === 401
 
     if (isInvalidCredentials) {
-      loginError.value = 'Invalid email/username or password.'
+      loginError.value = await readErrorMessage(response, 'Invalid email/username or password.')
       return
     }
 
     if (!response.ok) {
-      loginError.value = 'The server could not log you in. Please try again later.'
+      loginError.value = await readErrorMessage(
+        response,
+        'The server could not log you in. Please try again later.',
+      )
       return
     }
 

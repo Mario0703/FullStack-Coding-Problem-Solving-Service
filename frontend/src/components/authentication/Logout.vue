@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { clearCurrentUser } from '@/authenticator/auth'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
+import { readErrorMessage } from '@/utils/apiError'
 
 defineOptions({
   name: 'UserLogoutControl',
@@ -23,7 +24,10 @@ async function logout() {
     })
 
     if (!response.ok) {
-      logoutError.value = 'The server could not log you out. Please try again later.'
+      logoutError.value = await readErrorMessage(
+        response,
+        'The server could not log you out. Please try again later.',
+      )
       return
     }
 

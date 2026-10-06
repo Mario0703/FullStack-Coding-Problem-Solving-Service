@@ -4,6 +4,7 @@ import { currentUser } from "@/authenticator/auth";
 import { inputsMatch, isblank, isValidEmail } from "@/utils/UserInputCheck";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import { baseUrl } from '@/utils/api';
+import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
 const newEmail = ref("");
@@ -42,8 +43,7 @@ async function changeEmail() {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      saveError.value = error?.detail ?? error?.message ?? "Unable to change email.";
+      saveError.value = await readErrorMessage(response, "Unable to change email.");
       return;
     }
 

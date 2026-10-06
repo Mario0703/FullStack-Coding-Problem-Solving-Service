@@ -4,6 +4,7 @@ import { currentUser } from "@/authenticator/auth";
 import {inputsMatch, isblank} from "@/utils/UserInputCheck";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import { baseUrl } from '@/utils/api';
+import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
 const newUserName = ref("");
@@ -37,8 +38,7 @@ async function changeUserName() {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      saveError.value = error?.detail ?? error?.message ?? "Unable to change user name.";
+      saveError.value = await readErrorMessage(response, "Unable to change user name.");
       return;
     }
 
