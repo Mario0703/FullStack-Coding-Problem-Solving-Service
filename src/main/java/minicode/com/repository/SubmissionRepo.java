@@ -1,6 +1,7 @@
 package minicode.com.repository;
 
 import minicode.com.entity.Submissions.Submission;
+import minicode.com.entity.Submissions.SubmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -70,6 +71,16 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     ORDER BY s.createdAt DESC
     """)
     List<Submission> findAcceptedByChallengeId(@Param("challengeId") UUID challengeId);
+
+    /**
+     * Whether a user has an accepted submission for a challenge. Used to
+     * decide if the instructor solution may be revealed to them.
+     */
+    boolean existsByUser_UserIdAndChallenge_IdAndStatus(
+            UUID userId,
+            UUID challengeId,
+            SubmissionStatus status
+    );
 
     @Query("""
     SELECT s

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Challenge } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
-import { getChallengeExamples, getChallengeSolution, listChallenges, type ChallengeExample } from '@/utils/ChallangeUtil'
+import { getChallengeExamples, getChallengeSolution, listChallenges, type ChallengeExample, type ChallengeSummary } from '@/utils/ChallangeUtil'
 import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
@@ -40,7 +39,7 @@ async function loadSolvedByPeople(challengeId: string): Promise<Solver[]> {
 }
 
 const route = useRoute()
-const challenge = ref<Challenge | null>(null)
+const challenge = ref<ChallengeSummary | null>(null)
 const examples = ref<ChallengeExample[]>([])
 const loadError = ref('')
 const isLoading = ref(true)

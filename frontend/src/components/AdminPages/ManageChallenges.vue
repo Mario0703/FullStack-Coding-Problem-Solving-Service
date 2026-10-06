@@ -3,14 +3,14 @@ import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
 import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
-import { listAdminChallenges } from "@/utils/ChallangeUtil";
+import { listAdminChallenges, type ChallengeSummary } from "@/utils/ChallangeUtil";
 import { baseUrl } from '@/utils/api';
 
 const props = defineProps<{
   newChallenge?: Challenge | null;
 }>();
 
-const challenges = ref<Challenge[]>([]);
+const challenges = ref<ChallengeSummary[]>([]);
 const loadError = ref("");
 const isLoading = ref(true);
 import { useRouter } from "vue-router";

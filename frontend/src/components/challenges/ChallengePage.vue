@@ -2,14 +2,14 @@
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { computed, onMounted, ref } from 'vue'
-import type { Challenge, ChallengeDifficulty } from '@/utils/AdminUtils'
+import type { ChallengeDifficulty } from '@/utils/AdminUtils'
 import { formatChallengeValue } from '@/utils/AdminUtils'
-import { listChallenges } from '@/utils/ChallangeUtil'
+import { listChallenges, type ChallengeSummary } from '@/utils/ChallangeUtil'
 import { loadAttemptedChallengeIds, loadSolvedChallengeIds } from '@/utils/SolvedChallengeUtil'
 import SearchComponentChallange from './SearchComponentChallange.vue'
 import FilterComponentChallange from './FilterComponentChallange.vue'
 
-const challenges = ref<Challenge[]>([])
+const challenges = ref<ChallengeSummary[]>([])
 const loadError = ref('')
 const isLoading = ref(true)
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)

@@ -1,5 +1,5 @@
 import type { CreateChallengeForm } from '@/utils/LanguageType'
-import type { Challenge } from '@/utils/AdminUtils'
+import type { Challenge, Language } from '@/utils/AdminUtils'
 import { baseUrl } from '@/utils/api'
 
 const CHALLENGES_URL = `${baseUrl}/api/challenge/list`;
@@ -19,7 +19,22 @@ export type ChallengeTestCase = {
   testOutput: string
 }
 
-export async function listChallenges(): Promise<Challenge[]> {
+/**
+ * Public, non-sensitive view returned by the challenge list endpoints. The
+ * backend never sends hidden test cases, the runner, the instructor solution
+ * or submission history here.
+ */
+export type ChallengeSummary = {
+  id: string
+  name: string
+  description: string
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD'
+  category: 'GENERAL' | 'ARRAYS' | 'STRINGS' | 'TREES'
+  numberOfTestCases: number
+  language: Language
+}
+
+export async function listChallenges(): Promise<ChallengeSummary[]> {
   const response = await fetch(CHALLENGES_URL, {
     credentials: "include",
   });
@@ -28,10 +43,10 @@ export async function listChallenges(): Promise<Challenge[]> {
     throw new Error("Could not load challenges");
   }
 
-  return (await response.json()) as Challenge[];
+  return (await response.json()) as ChallengeSummary[];
 }
 
-export async function listAdminChallenges(): Promise<Challenge[]> {
+export async function listAdminChallenges(): Promise<ChallengeSummary[]> {
   const response = await fetch(ADMIN_CHALLENGES_URL, {
     credentials: "include",
   });
@@ -40,7 +55,7 @@ export async function listAdminChallenges(): Promise<Challenge[]> {
     throw new Error("Could not load admin challenges");
   }
 
-  return (await response.json()) as Challenge[];
+  return (await response.json()) as ChallengeSummary[];
 }
 
 export async function getChallengeExamples(challengeId: string): Promise<ChallengeExample[]> {
