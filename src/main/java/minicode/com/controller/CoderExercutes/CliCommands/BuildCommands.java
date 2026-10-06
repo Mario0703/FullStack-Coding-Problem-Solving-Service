@@ -18,7 +18,11 @@ public class BuildCommands implements CLIBuildCommands {
     @Override
     public CommandResult buildContainer(String imageName) throws IOException, InterruptedException {
         List<String> commands = new ArrayList<>(List.of(
-                "docker", "build","--progress=plain", "-t", imageName, "."
+                "docker", "build",
+                "--progress=plain",
+                "--network=none",
+                "--resource", "memory=1g,cpu-quota=100000",  // buildx syntax for cpu/memory
+                "-t", imageName, "."
         ));
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
@@ -36,7 +40,17 @@ public class BuildCommands implements CLIBuildCommands {
             throws IOException, InterruptedException {
 
         List<String> commands = new ArrayList<>(List.of(
-                "docker", "run", "--rm", "--name", containerName, imageName
+                "docker", "run", "--rm", "--name", containerName,
+                "--network=none",
+                "--memory=512m", "--memory-swap=512m",
+                "--cpus=2",
+                "--pids-limit=128",
+                "--user=1000:1000",
+                "--cap-drop=ALL",
+                "--security-opt=no-new-privileges",
+                "--read-only",
+                "--tmpfs", "/tmp:rw,size=64m",
+                imageName
         ));
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
@@ -48,7 +62,8 @@ public class BuildCommands implements CLIBuildCommands {
 
         if (!finished) {
             process.destroyForcibly();
-            return new CommandResult(124, "Execution timed out");
+            int exitcode = 124; // Custom exit code for timeout
+            return new CommandResult(exitcode, "Execution timed out");
         }
 
         String output = readOutput(process);
