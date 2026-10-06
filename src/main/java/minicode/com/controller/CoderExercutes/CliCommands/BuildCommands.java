@@ -48,7 +48,6 @@ public class BuildCommands implements CLIBuildCommands {
                 "--user=1000:1000",
                 "--cap-drop=ALL",
                 "--security-opt=no-new-privileges",
-                "--read-only",
                 "--tmpfs", "/tmp:rw,size=64m",
                 imageName
         ));
