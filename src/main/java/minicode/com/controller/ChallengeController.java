@@ -71,8 +71,11 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/template")
-    public ChallengeTemplateResponse getChallengeTemplate(@PathVariable UUID challengeId) {
-        return challangeService.getChallengeTemplate(challengeId);
+    public ChallengeTemplateResponse getChallengeTemplate(
+            @PathVariable UUID challengeId,
+            @RequestParam(required = false) String language
+    ) {
+        return challangeService.getChallengeTemplate(challengeId, language);
     }
 
     // Examples are part of the problem statement, so any solver can read them

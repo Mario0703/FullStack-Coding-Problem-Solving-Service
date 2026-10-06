@@ -35,40 +35,53 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
         OutputFeedbackStrat feedback = OutputFeedbackFactory.forLanguage(language);
         CLIBuildCommands commands = new BuildCommands(path);
 
-        CommandResult buildResult = commands.buildContainer(imageName);
-        Boolean isBuildSuccess = buildResult.exitCode() == 0;
+        try {
+            CommandResult buildResult = commands.buildContainer(imageName);
+            Boolean isBuildSuccess = buildResult.exitCode() == 0;
 
-        //build failed so just return the build error and exit code, no need to run the container
-        if (!isBuildSuccess) {
-            CodeError error = CodeErrorCodesFactory.resolve(buildResult.exitCode(), buildResult.output());
-            ExecutionResult executionResult = new ExecutionResult(
-                    buildResult.exitCode(),
-                    feedback.extractBuildFailure(buildResult.output()),
-                    passingTestCasesForBuildFailure,
-                    failingTestCasesForBuildFailure,
+            //build failed so just return the build error and exit code, no need to run the container
+            if (!isBuildSuccess) {
+                CodeError error = CodeErrorCodesFactory.resolve(buildResult.exitCode(), buildResult.output());
+                return new ExecutionResult(
+                        buildResult.exitCode(),
+                        feedback.extractBuildFailure(buildResult.output()),
+                        passingTestCasesForBuildFailure,
+                        failingTestCasesForBuildFailure,
+                        error.errorCode()
+                );
+            }
+
+            CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
+            String output = runResult.output();
+
+            int[] testResults = findTestResults(output);
+
+            int passed = testResults[0];
+            int failed = testResults[1];
+
+            CodeError error = CodeErrorCodesFactory.resolve(runResult.exitCode(), output);
+            return new ExecutionResult(
+                    runResult.exitCode(),
+                    feedback.extractFeedback(output),
+                    passed,
+                    failed,
                     error.errorCode()
             );
-
-            return  executionResult;
+        } finally {
+            // Always delete the one-off image: it is never reused and would
+            // otherwise accumulate on the host.
+            removeImageQuietly(commands, imageName);
         }
-        CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
-        String output = runResult.output();
+    }
 
-        int[] testResults = findTestResults(output);
-
-        int passed = testResults[0];
-        int failed = testResults[1];
-
-        CodeError error = CodeErrorCodesFactory.resolve(runResult.exitCode(), output);
-        ExecutionResult executionResult = new ExecutionResult(
-                runResult.exitCode(),
-                feedback.extractFeedback(output),
-                passed,
-                failed,
-                error.errorCode()
-        );
-
-        return executionResult;
+    private void removeImageQuietly(CLIBuildCommands commands, String imageName) {
+        try {
+            commands.removeImage(imageName);
+        } catch (IOException cleanupFailure) {
+            // Cleanup must never mask the submission result.
+        } catch (InterruptedException cleanupFailure) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private int[] findTestResults(String output) {

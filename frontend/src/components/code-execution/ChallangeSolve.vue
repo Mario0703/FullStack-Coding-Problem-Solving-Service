@@ -44,7 +44,9 @@ async function loadTemplate(challengeId: string | undefined) {
 
   try {
     const result = await loadChallengeTemplate(challengeId)
-    language.value = result.language
+    // The backend may still store the language in upper case; normalize so
+    // the editor picks the right syntax highlighting.
+    language.value = (result.language ?? '').toLowerCase()
     code.value = result.template
     explanation.value = result.explanation
   } catch (error) {
@@ -52,6 +54,28 @@ async function loadTemplate(challengeId: string | undefined) {
       error instanceof Error ? error.message : 'The challenge template could not be loaded.'
   } finally {
     isLoading.value = false
+  }
+}
+
+async function selectLanguage(option: string) {
+  language.value = option
+
+  if (!props.challengeId) {
+    return
+  }
+
+  try {
+    const result = await loadChallengeTemplate(props.challengeId, option)
+    language.value = option
+    // Only replace the editor content when the challenge actually has a
+    // setup for the requested language (the response echoes it back). If it
+    // fell back to the default language, keep whatever the user has typed.
+    if ((result.language ?? '').toLowerCase() === option.toLowerCase()) {
+      code.value = result.template ?? ''
+      explanation.value = result.explanation ?? ''
+    }
+  } catch {
+    // Keep the current code if the per-language template cannot be loaded.
   }
 }
 
@@ -114,7 +138,7 @@ async function executeCode() {
           :color="language === option ? 'primary' : undefined"
           :variant="language === option ? 'flat' : 'outlined'"
           size="small"
-          @click="language = option"
+          @click="selectLanguage(option)"
         >
           {{ languageLabel(option) }}
         </v-btn>

@@ -35,6 +35,11 @@ const {
   numberOfExamples,
   examples,
   createNumberOfSamples,
+  otherLanguages,
+  extraLanguages,
+  extraSetups,
+  isExtraLanguage,
+  toggleExtraLanguage,
 } = useChallengeForm()
 
 function submit() {
@@ -115,6 +120,62 @@ defineExpose({ resetForm })
       :max-rows="8"
       class="mb-6"
     />
+
+    <v-divider class="my-6" />
+    <v-label class="mb-2">Additional languages (optional)</v-label>
+    <div class="text-caption mb-3">
+      Enable any language solvers may also use. Each language needs its own starter template
+      and runner, since the runner wraps the challenge's function for that language.
+    </div>
+    <div class="d-flex flex-wrap ga-2 mb-4">
+      <v-chip
+        v-for="option in otherLanguages"
+        :key="option"
+        :color="isExtraLanguage(option) ? 'primary' : undefined"
+        :variant="isExtraLanguage(option) ? 'flat' : 'outlined'"
+        @click="toggleExtraLanguage(option)"
+      >
+        {{ languageLabel(option) }}
+      </v-chip>
+    </div>
+    <v-card
+      v-for="option in extraLanguages"
+      :key="option"
+      variant="tonal"
+      class="mb-4 pa-4"
+    >
+      <v-card-title class="px-0 pt-0 text-subtitle-1">{{ languageLabel(option) }} setup</v-card-title>
+      <v-label class="mb-2">Starter template</v-label>
+      <CodeEditor
+        v-model="extraSetups[option].template"
+        :language="option"
+        height="220px"
+        class="mb-3"
+      />
+      <v-textarea
+        v-model="extraSetups[option].templateExplanation"
+        label="Template explanation"
+        rows="2"
+        auto-grow
+        :max-rows="6"
+        class="mb-3"
+      />
+      <v-label class="mb-2">Runner</v-label>
+      <CodeEditor
+        v-model="extraSetups[option].runner"
+        :language="option"
+        height="220px"
+        class="mb-3"
+      />
+      <v-textarea
+        v-model="extraSetups[option].runnerExplanation"
+        label="Runner explanation"
+        rows="2"
+        auto-grow
+        :max-rows="6"
+      />
+    </v-card>
+
     <v-number-input
       v-model="numberOfTestCases"
       label="Number of test cases"

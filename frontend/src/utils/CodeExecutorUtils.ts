@@ -57,8 +57,10 @@ export const validLanguages = ['python', 'java', 'cplusplus', 'csharp']
 
 export async function loadChallengeTemplate(
   challengeId: string,
+  language?: string,
 ): Promise<ChallengeTemplateResponse> {
-  const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/template`, {
+  const query = language ? `?language=${encodeURIComponent(language)}` : ''
+  const response = await fetch(`${baseUrl}/api/challenge/${challengeId}/template${query}`, {
     credentials: 'include',
   })
 

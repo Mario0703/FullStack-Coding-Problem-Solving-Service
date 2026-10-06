@@ -53,6 +53,12 @@ public class Challenge {
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InputOutput> inputOutput = new ArrayList<>();
 
+    // Per-language templates/runners. Never serialized; served through the
+    // template endpoint instead.
+    @JsonIgnore
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChallengeLanguageSetup> languageSetups = new ArrayList<>();
+
     // Instructor solution and server-side runner: never exposed through the
     // API. The solution is served by its own guarded endpoint.
     @JsonIgnore

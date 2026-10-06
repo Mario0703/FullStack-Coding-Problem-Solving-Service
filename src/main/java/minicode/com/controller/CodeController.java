@@ -18,6 +18,7 @@ import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.TestRunnerRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.solvedChallengesRepo;
+import minicode.com.service.Challange.ChallengeService;
 import minicode.com.service.scoreService.ScoreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ public class CodeController {
     private final TestRunnerRepo testRunnerRepo;
     private final solvedChallengesRepo solvedChallengesRepository;
     private final ScoreService scoreService;
+    private final ChallengeService challengeService;
 
     public CodeController(
             ChallengeRepo challengeRepo,
@@ -48,7 +50,8 @@ public class CodeController {
             ContainerRepo containerRepo,
             TestRunnerRepo testRunnerRepo,
             solvedChallengesRepo solvedChallengesRepository,
-            ScoreService scoreService
+            ScoreService scoreService,
+            ChallengeService challengeService
     ) {
         this.challengeRepo = challengeRepo;
         this.userRepo = userRepo;
@@ -57,6 +60,7 @@ public class CodeController {
         this.testRunnerRepo = testRunnerRepo;
         this.solvedChallengesRepository = solvedChallengesRepository;
         this.scoreService = scoreService;
+        this.challengeService = challengeService;
     }
 
     @PostMapping("/submit")
@@ -76,7 +80,7 @@ public class CodeController {
         EnvStrat envStrategy = new TempEnvDestroyAfter(
                 language,
                 codeSubmission.getCode(),
-                challenge.getRunner(),
+                challengeService.getRunnerForLanguage(challenge, language),
                 challenge.getTestCases(),
                 containerRepo,
                 testRunnerRepo
