@@ -2,7 +2,7 @@ import OpenAI from 'openai'
 import { ref } from 'vue'
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-const model = import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini'
+const model = import.meta.env.VITE_OPENAI_MODEL || 'gpt-5.6-luna'
 
 
 export const client = new OpenAI({
@@ -26,9 +26,9 @@ const challengeTools: OpenAI.Responses.FunctionTool[] = [
     parameters: {
       type: 'object',
       properties: {
-        challengeName: { type: 'string' },
+        challengeId: { type: 'string' },
       },
-      required: ['challengeName'],
+      required: ['challengeId'],
       additionalProperties: false,
     },
     strict: true,
@@ -40,9 +40,9 @@ const challengeTools: OpenAI.Responses.FunctionTool[] = [
     parameters: {
       type: 'object',
       properties: {
-        challengeName: { type: 'string' },
+        challengeId: { type: 'string' },
       },
-      required: ['challengeName'],
+      required: ['challengeId'],
       additionalProperties: false,
     },
     strict: true,
@@ -54,9 +54,9 @@ const challengeTools: OpenAI.Responses.FunctionTool[] = [
     parameters: {
       type: 'object',
       properties: {
-        challengeName: { type: 'string' },
+        challengeId: { type: 'string' },
       },
-      required: ['challengeName'],
+      required: ['challengeId'],
       additionalProperties: false,
     },
     strict: true,

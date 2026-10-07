@@ -9,17 +9,17 @@ const hasError = ref('')
 
 
 
-const converSations = reactive(new Map<string, string[]>())
-converSations.set('user', [])
-converSations.set('ai', [])
+const conversation = reactive(new Map<string, string[]>())
+conversation.set('user', [])
+conversation.set('ai', [])
 
 
 
 
 
 const messages = computed<{ role: string, text: string }[]>(() => {
-  const userMessages = converSations.get('user') || []
-  const aiMessages = converSations.get('ai') || []
+  const userMessages = conversation.get('user') || []
+  const aiMessages = conversation.get('ai') || []
   const combinedMessages: { role: string; text: string }[] = []
   return combinedMessages.concat(
     userMessages.map((text) => ({ role: 'user', text })),
@@ -36,12 +36,12 @@ async function askAI() {
   hasError.value = ''
   isAsking.value = true
   const question = userInput.value
-  converSations.get('user')?.push(question)
+  conversation.get('user')?.push(question)
   userInput.value = ''
 
   try {
     const answer = await responseFormatter(question)
-    converSations.get('ai')?.push(answer)
+    conversation.get('ai')?.push(answer)
   } catch (error) {
     hasError.value =
       error instanceof Error ? error.message : 'An unknown error occurred'
