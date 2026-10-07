@@ -54,13 +54,6 @@ public class ChallengeController {
         return toSummaries(challangeService.listChallenges());
     }
 
-
-    @GetMapping("/ListChallanges")
-    public List<ChallengeSummaryResponse> listChallenges(Authentication authentication) {
-        Access.requireAdmin(authentication);
-        return toSummaries(challangeService.listChallenges());
-    }
-
     private List<ChallengeSummaryResponse> toSummaries(Iterable<Challenge> challenges) {
         List<ChallengeSummaryResponse> summaries = new ArrayList<>();
         for (Challenge challenge : challenges) {

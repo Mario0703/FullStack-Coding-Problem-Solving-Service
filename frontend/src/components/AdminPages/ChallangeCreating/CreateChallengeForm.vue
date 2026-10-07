@@ -3,10 +3,10 @@ import {
   categoryOptions,
   difficultyOptions,
   languageOptions,
-} from '@/utils/AdminUtils'
-import { languageLabel } from '@/utils/CodeExecutorUtils'
-import type { CreateChallengeForm } from '@/utils/LanguageType'
-import { useChallengeForm } from '@/utils/useChallengeForm'
+} from '@/utils/Challenges/Types/options'
+import { languageLabel } from '@/utils/Challenges/API/execution'
+import type { CreateChallengeForm } from '@/utils/Challenges/Types/authoringTypes'
+import { useChallengeForm } from '@/utils/Challenges/Authoring/useChallengeForm'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 
 defineProps<{

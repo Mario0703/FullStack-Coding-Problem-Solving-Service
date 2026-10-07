@@ -6,7 +6,7 @@ import UsersStatics from '@/components/AdminPages/DashBoard/UsersStatics.vue'
 import type {
   PlatformStatistics as PlatformStatisticsData,
   UserStatistics as UserStatisticsData,
-} from '@/utils/AdminStatisticsUtils'
+} from '@/utils/Admin/AdminStatisticsUtils.ts'
 import { baseUrl } from '@/utils/api'
 
 const statistics = ref<PlatformStatisticsData | null>(null)

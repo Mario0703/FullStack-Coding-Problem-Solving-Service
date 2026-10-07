@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { ChallengeDifficulty } from '@/utils/AdminUtils'
+import type { ChallengeDifficulty } from '@/utils/Challenges/Types/types'
 import {
   loadSolvedChallenges,
   loadSubmissionTestCaseValues,
   loadUserSubmissions,
   type SolvedChallenge,
   type UserSubmission,
-} from '@/utils/SolvedChallengeUtil'
+} from '@/utils/Challenges/API/submissions'
 import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
 import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
 import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
-} from '@/utils/CodeExecutorUtils'
+} from '@/utils/Challenges/API/execution'
 import router from '@/router'
 
 // The dashboard shows one card per solved challenge (from the solved

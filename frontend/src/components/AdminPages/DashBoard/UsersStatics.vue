@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { UserStatistics } from '@/utils/AdminStatisticsUtils'
+import type { UserStatistics } from '@/utils/Admin/AdminStatisticsUtils.ts'
 
 const props = defineProps<{
   users: UserStatistics[]

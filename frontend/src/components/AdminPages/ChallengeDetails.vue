@@ -3,12 +3,13 @@ import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ChangeChallange from '@/components/AdminPages/ChangeChallange.vue'
-import { formatChallengeValue, type Challenge } from '@/utils/AdminUtils'
+import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import type { Challenge } from '@/utils/Challenges/Types/types'
 import {
   getChallengeExamples,
   getChallengeTestCases,
-  listAdminChallenges,
-} from '@/utils/ChallangeUtil'
+  listChallenges,
+} from '@/utils/Challenges/API/api'
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
@@ -20,7 +21,7 @@ async function loadChallenge() {
   try {
     const challengeId = String(route.params.id)
     const [challenges, examples, testCases] = await Promise.all([
-      listAdminChallenges(),
+      listChallenges(),
       getChallengeExamples(challengeId),
       getChallengeTestCases(challengeId),
     ])

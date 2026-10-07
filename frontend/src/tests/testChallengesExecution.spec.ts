@@ -3,7 +3,7 @@ import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
-} from '@/utils/CodeExecutorUtils'
+} from '@/utils/Challenges/API/execution'
 
 describe('submission status labels', () => {
   it('labels known submission statuses', () => {

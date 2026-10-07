@@ -1,6 +1,5 @@
-import type { Language } from '@/utils/AdminUtils'
-import type { LanguageSetup } from '@/utils/LanguageType'
-
+import type { Language } from '../Types/types'
+import type { LanguageSetup } from '../Types/authoringTypes'
 
 export const languageSetups: Record<Language, LanguageSetup> = {
   python: {

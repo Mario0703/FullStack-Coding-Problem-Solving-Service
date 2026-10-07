@@ -11,8 +11,8 @@ import {
   submissionStatusColor,
   submissionStatusLabel,
   submitCode,
-} from '@/utils/CodeExecutorUtils'
-import { validLanguages } from '@/utils/CodeExecutorUtils'
+  validLanguages,
+} from '@/utils/Challenges/API/execution'
 const props = defineProps<{
   challengeId?: string
 }>()

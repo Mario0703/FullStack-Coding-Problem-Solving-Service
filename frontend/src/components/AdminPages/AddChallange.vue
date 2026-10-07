@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createChallenge as createChallengeRequest } from '@/utils/ChallangeUtil'
-import { isChallengeFormValid } from '@/utils/ChallengeValidation'
-import type { CreateChallengeForm } from '@/utils/LanguageType'
-import type { Challenge } from '@/utils/AdminUtils'
+import { createChallenge as createChallengeRequest } from '@/utils/Challenges/API/api'
+import { isChallengeFormValid } from '@/utils/Challenges/Validation/validation'
+import type { CreateChallengeForm } from '@/utils/Challenges/Types/authoringTypes'
+import type { Challenge } from '@/utils/Challenges/Types/types'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import CreateChallengeFormComponent from '@/components/AdminPages/ChallangeCreating/CreateChallengeForm.vue'
 

@@ -2,8 +2,9 @@
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
-import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
-import { listAdminChallenges, type ChallengeSummary } from "@/utils/ChallangeUtil";
+import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import { listChallenges } from '@/utils/Challenges/API/api'
+import type { Challenge, ChallengeSummary } from '@/utils/Challenges/Types/types'
 import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';
 
@@ -27,7 +28,7 @@ async function loadChallenges() {
   isLoading.value = true;
 
   try {
-    const loadedChallenges = await listAdminChallenges();
+    const loadedChallenges = await listChallenges();
     challenges.value = props.newChallenge
       ? [
           props.newChallenge,

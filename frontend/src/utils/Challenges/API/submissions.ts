@@ -1,6 +1,6 @@
 import { baseUrl } from '@/utils/api'
 import { readErrorMessage } from '@/utils/apiError'
-import type { SubmissionStatus } from '@/utils/CodeExecutorUtils'
+import type { SubmissionStatus } from './execution'
 
 export type UserSubmission = {
   id: string
@@ -45,11 +45,7 @@ async function loadTestCaseValues(path: 'passed' | 'failed' | 'total'): Promise<
   return (await response.json()) as number[]
 }
 
-export function loadSubmissionTestCaseValues(): Promise<[
-  number[],
-  number[],
-  number[],
-]> {
+export function loadSubmissionTestCaseValues(): Promise<[number[], number[], number[]]> {
   return Promise.all([
     loadTestCaseValues('passed'),
     loadTestCaseValues('failed'),
@@ -105,11 +101,9 @@ export async function loadPublicSubmissions(userId: string): Promise<UserSubmiss
   return (await response.json()) as UserSubmission[]
 }
 
-export async function loadPublicSubmissionTestCaseValues(userId: string): Promise<[
-  number[],
-  number[],
-  number[],
-]> {
+export async function loadPublicSubmissionTestCaseValues(
+  userId: string,
+): Promise<[number[], number[], number[]]> {
   const response = await fetch(`${baseUrl}/api/challenge/users/${userId}/submission-stats`, {
     credentials: 'include',
   })

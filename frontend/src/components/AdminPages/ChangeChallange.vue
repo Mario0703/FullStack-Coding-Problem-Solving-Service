@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-  categoryOptions,
-  difficultyOptions,
-  type Challenge,
-} from '@/utils/AdminUtils'
+import { categoryOptions, difficultyOptions } from '@/utils/Challenges/Types/options'
+import type { Challenge } from '@/utils/Challenges/Types/types'
 
 const props = defineProps<{
   current: Challenge

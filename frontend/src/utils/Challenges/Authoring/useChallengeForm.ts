@@ -1,16 +1,7 @@
 import { computed, ref, watch } from 'vue'
-import { languageSetups } from '@/utils/LanguageTemplet'
-import type {
-  CreateChallengeForm,
-  Example,
-  LanguageSetupInput,
-  TestCase,
-} from '@/utils/LanguageType'
-import type {
-  ChallengeCategory,
-  ChallengeDifficulty,
-  Language,
-} from '@/utils/AdminUtils'
+import { languageSetups } from './languageSetups'
+import type { CreateChallengeForm, Example, LanguageSetupInput, TestCase } from '../Types/authoringTypes'
+import type { ChallengeCategory, ChallengeDifficulty, Language } from '../Types/types'
 
 export function useChallengeForm() {
   const name = ref('')
@@ -94,11 +85,9 @@ export function useChallengeForm() {
   }
 
   function createNumberOfSampels<T>(arr: T[], newSize: number, defaultValue: T) {
-    while(newSize > arr.length)
-      arr.push({ ...defaultValue });
-    arr.length = newSize;
+    while (newSize > arr.length) arr.push({ ...defaultValue })
+    arr.length = newSize
   }
-
 
   function toCreateChallengeForm(): CreateChallengeForm {
     const primary: LanguageSetupInput = {

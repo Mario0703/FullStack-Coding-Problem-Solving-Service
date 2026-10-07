@@ -8,7 +8,7 @@ import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
-} from '@/utils/CodeExecutorUtils'
+} from '@/utils/Challenges/API/execution'
 
 interface SubmissionDetails {
   challengeName: string
