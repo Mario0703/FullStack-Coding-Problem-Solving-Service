@@ -4,12 +4,14 @@ package minicode.com.controller.Challenges;
 import jakarta.validation.Valid;
 import minicode.com.auth.Access;
 import minicode.com.dto.Challenge.CreateChallangeRequest;
+import minicode.com.dto.Challenge.ChallengeAiContextResponse;
 import minicode.com.dto.Challenge.ChallengeTemplateResponse;
 import minicode.com.dto.Challenge.ChallengeSummaryResponse;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.InputOutput;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Challange.TestCases;
+import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.Submissions.SubmissionStatus;
 import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.UserRepo;
@@ -147,6 +149,58 @@ public class ChallengeController {
         }
         Challenge challenge = challangeService.getChallenge(challengeId);
         return challenge.getSolution();
+    }
+
+    /**
+     * Single, authenticated feed for the MiniCode AI helper: the challenge
+     * description, examples, test cases, hints, the caller's own latest code
+     * and, once allowed, the instructor solution.
+     */
+    @GetMapping("/{challengeId}/ai-context")
+    public ChallengeAiContextResponse getChallengeAiContext(
+            @PathVariable UUID challengeId,
+            Authentication authentication
+    ) {
+        UUID userId = requireAuthenticatedUserId(authentication);
+        Challenge challenge = challangeService.getChallenge(challengeId);
+
+        boolean admin = Access.isAdmin(authentication);
+        boolean solved = submissionRepo.existsByUser_UserIdAndChallenge_IdAndStatus(
+                userId,
+                challengeId,
+                SubmissionStatus.ACCEPTED
+        );
+
+        // Mirror /Solution/{id}: the instructor solution stays hidden until the
+        // user has solved the challenge (admins keep full access).
+        boolean solutionAvailable = admin || solved;
+        String solution = solutionAvailable ? challenge.getSolution() : null;
+
+        Submission latestSubmission = submissionRepo
+                .findFirstByUser_UserIdAndChallenge_IdOrderByCreatedAtDesc(userId, challengeId)
+                .orElse(null);
+
+        return ChallengeAiContextResponse.from(
+                challenge,
+                splitHints(challenge.getHints()),
+                solution,
+                latestSubmission,
+                solved
+        );
+    }
+
+    private List<String> splitHints(String hints) {
+        if (hints == null || hints.isBlank()) {
+            return List.of();
+        }
+        List<String> parsed = new ArrayList<>();
+        for (String line : hints.split("\\r?\\n")) {
+            String trimmed = line.trim();
+            if (!trimmed.isEmpty()) {
+                parsed.add(trimmed);
+            }
+        }
+        return parsed;
     }
 
 

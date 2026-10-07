@@ -189,7 +189,12 @@ async function executeCode() {
       </v-card>
 
       <!-- MiniCode AI chat helper: lets the user ask for hints while solving. -->
-      <Chatwindow class="mt-6 px-0" />
+      <Chatwindow
+        :challenge-id="challengeId"
+        :code="code"
+        :language="language"
+        class="mt-6 px-0"
+      />
     </template>
   </v-container>
 </template>

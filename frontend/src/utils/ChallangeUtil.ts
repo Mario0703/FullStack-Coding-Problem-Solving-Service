@@ -94,6 +94,45 @@ export async function getChallengeSolution(challengeId: string): Promise<string>
   return await response.text()
 }
 
+export type ChallengeAiExample = {
+  input: string
+  output: string
+}
+
+export type ChallengeAiTestCase = {
+  input: string
+  expectedOutput: string
+}
+
+/** Aggregated data the MiniCode AI helper is allowed to read for a challenge. */
+export type ChallengeAiContext = {
+  id: string
+  name: string
+  description: string
+  difficulty: string
+  category: string
+  language: string
+  examples: ChallengeAiExample[]
+  testCases: ChallengeAiTestCase[]
+  hints: string[]
+  solution: string | null
+  userCode: string | null
+  userLanguage: string | null
+  solved: boolean
+}
+
+export async function getChallengeAiContext(challengeId: string): Promise<ChallengeAiContext> {
+  const response = await fetch(`${CHALLENGE_URL}/${encodeURIComponent(challengeId)}/ai-context`, {
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, 'Could not load the AI context'))
+  }
+
+  return (await response.json()) as ChallengeAiContext
+}
+
 export async function createChallenge(challengeData: CreateChallengeForm): Promise<Challenge> {
   const response = await fetch(CREATE_CHALLENGE_URL, {
     method: 'POST',

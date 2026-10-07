@@ -1,130 +1,37 @@
-import OpenAI from 'openai'
 import { ref } from 'vue'
+import { askMiniHelper } from '@/utils/miniHelper'
 
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-const model = import.meta.env.VITE_OPENAI_MODEL || 'gpt-5.6-luna'
+/**
+ * The MiniCode AI client. It is deliberately thin: all OpenAI access happens on
+ * the backend, so no API key (and no OpenAI SDK) ever reaches the browser.
+ */
 
-
-export const client = new OpenAI({
-  apiKey: apiKey || 'missing-api-key',
-  dangerouslyAllowBrowser: true,
-})
+/** The context the chat window passes in; the question is passed separately. */
+export type ResponseContext = {
+  challengeId: string
+  currentCode?: string
+  currentLanguage?: string
+}
 
 export const greetings = ref<string[]>([
-  'Hi, I am MiniCodeAI, your coding assistant. How can I help you today? ' +
+  'Hi, I am miniHelper, your coding assistant. How can I help you today? ' +
     'I can help you with hints and guides towards the given challenge. ' +
     'I can also help you with code snippets and explanations. Please provide me ' +
     'with the challenge details and I will do my best to assist you.',
 ])
 
-
-const challengeTools: OpenAI.Responses.FunctionTool[] = [
-  {
-    type: 'function',
-    name: 'getChallengeDescription',
-    description: 'Get the description of the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-  {
-    type: 'function',
-    name: 'getChallengeSolution',
-    description: 'Get the solution of the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-  {
-    type: 'function',
-    name: 'getChallengeHint',
-    description: 'Get the hint of the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-  {
-    type: "function",
-    name: 'getUserCode',
-    description: 'Get the user code for the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-  {
-    type: "function",
-    name: 'getChallengeTestCases',
-    description: 'Get the test cases of the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-  {
-    type: "function",
-    name: 'getChallengeExamples',
-    description: 'Get the examples of the challenge',
-    parameters: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-      required: ['challengeId'],
-      additionalProperties: false,
-    },
-    strict: true,
-  }
-
-]
-
-export async function responseFormatter(response: string): Promise<string> {
-  if (!apiKey) {
-    throw new Error(
-      'Missing VITE_OPENAI_API_KEY. Add it to the .env file to use the AI helper.',
-    )
-  }
-
-  const userQuestion = await client.responses.create({
-    model,
-    instructions:
-      'You are MiniCodeAI, a helpful coding assistant embedded in a coding challenge ' +
-      'platform. Give hints and guidance about the challenge the user is working on.',
-    input: response,
-    tools: challengeTools,
+/**
+ * Sends the user's question to the backend, which assembles the challenge
+ * context and asks OpenAI for a hint.
+ */
+export async function responseFormatter(
+  question: string,
+  context: ResponseContext,
+): Promise<string> {
+  return askMiniHelper({
+    challengeId: context.challengeId,
+    question,
+    code: context.currentCode,
+    language: context.currentLanguage,
   })
-
-  if(!userQuestion.output_text) {
-    throw new Error('No response from MiniCodeAI. Please try again later.')
-  }
-
-  return userQuestion.output_text
 }

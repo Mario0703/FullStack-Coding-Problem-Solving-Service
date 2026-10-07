@@ -3,6 +3,15 @@ import { computed, reactive, ref } from 'vue'
 import { greetings, responseFormatter } from './AIClient'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
+const props = defineProps<{
+  /** The challenge being solved, so the AI tools know what to look up. */
+  challengeId?: string
+  /** The code currently in the editor, passed to the AI as context. */
+  code?: string
+  /** The language currently selected in the editor. */
+  language?: string
+}>()
+
 const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
@@ -33,6 +42,11 @@ async function askAI() {
     return
   }
 
+  if (!props.challengeId) {
+    hasError.value = 'Open a challenge before asking the AI for help.'
+    return
+  }
+
   hasError.value = ''
   isAsking.value = true
   const question = userInput.value
@@ -40,7 +54,11 @@ async function askAI() {
   userInput.value = ''
 
   try {
-    const answer = await responseFormatter(question)
+    const answer = await responseFormatter(question, {
+      challengeId: props.challengeId,
+      currentCode: props.code,
+      currentLanguage: props.language,
+    })
     conversation.get('ai')?.push(answer)
   } catch (error) {
     hasError.value =

@@ -1,10 +1,4 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_OPENAI_API_KEY?: string
-  readonly VITE_OPENAI_MODEL?: string
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv
-}
+// No OpenAI settings live here anymore: the API key and the OpenAI SDK are
+// backend-only. The browser talks to the backend over the REST API instead.

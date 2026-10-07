@@ -48,6 +48,9 @@ public class CreateChallangeRequest {
     @NotBlank(message = "Language is required")
     private String language;
 
+    /** Optional newline-separated hints used by the MiniCode AI helper. */
+    private String hints;
+
     @NotEmpty(message = "At least one test case is required")
     private List<@Valid CreateTestCaseRequest> testCases;
 

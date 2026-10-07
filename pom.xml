@@ -79,6 +79,13 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- Official OpenAI Java SDK. Used only on the backend; the API key is
+             never sent to the browser. -->
+        <dependency>
+            <groupId>com.openai</groupId>
+            <artifactId>openai-java</artifactId>
+            <version>4.78.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
