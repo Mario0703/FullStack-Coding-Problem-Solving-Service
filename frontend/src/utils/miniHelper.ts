@@ -1,11 +1,7 @@
 import { baseUrl } from '@/utils/api'
 import { readErrorMessage } from '@/utils/apiError'
 
-/**
- * Request sent to the backend miniHelper endpoint. The OpenAI call and the API
- * key live entirely on the server; the browser only sends the question and the
- * code the user is currently editing.
- */
+
 export type MiniHelperContext = {
   challengeId: string
   question: string

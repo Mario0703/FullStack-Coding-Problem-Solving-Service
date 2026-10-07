@@ -1,4 +1,4 @@
-import { watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { FormSetup } from '@/utils/Challenges/Authoring/FormSetup.ts'
 import { Languages } from './Languages'
 import { ChallengeFormBuilder } from './ChallengeFormBuilder'
@@ -16,26 +16,55 @@ export function useChallengeForm() {
     }
   })
 
-  function createNumberOfSamples<T>(arr: T[], newSize: number, defaultValue: T) {
-    while (newSize > arr.length) arr.push({ ...defaultValue })
-    arr.length = newSize
-  }
+  /**
+   * Every value the user edits. `reactive` unwraps the FormSetup refs, so the
+   * template binds them directly: `fields.name`, `fields.testCases`, and so on.
+   */
+  const fields = reactive({
+    name: setup.name,
+    description: setup.description,
+    difficulty: setup.difficulty,
+    category: setup.category,
+    language: setup.language,
+    solution: setup.solution,
+    template: setup.template,
+    templateExplanation: setup.templateExplanation,
+    runner: setup.runner,
+    runnerExplanation: setup.runnerExplanation,
+    numberOfTestCases: setup.numberOfTestCases,
+    testCases: setup.testCases,
+    numberOfExamples: setup.numberOfExamples,
+    examples: setup.examples,
+    extraLanguages: setup.extraLanguages,
+    extraSetups: setup.extraSetups,
+  })
 
-  function resetForm() {
-    setup.resetForm()
-  }
-
-  function toCreateChallengeForm(): CreateChallengeForm {
-    return builder.toCreateChallengeForm()
+  /**
+   * Everything that acts on the form. `toCreateChallengeForm` is the single
+   * place that maps the user's input to the outgoing API payload.
+   */
+  const actions = {
+    resetForm(): void {
+      setup.resetForm()
+    },
+    toCreateChallengeForm(): CreateChallengeForm {
+      return builder.toCreateChallengeForm()
+    },
+    createNumberOfSamples<T>(arr: T[], newSize: number, defaultValue: T): void {
+      while (newSize > arr.length) arr.push({ ...defaultValue })
+      arr.length = newSize
+    },
+    isExtraLanguage(value: Language): boolean {
+      return languages.isExtraLanguage(value)
+    },
+    toggleExtraLanguage(value: Language): void {
+      languages.toggleExtraLanguage(value)
+    },
   }
 
   return {
-    ...setup,
-    resetForm,
-    toCreateChallengeForm,
-    createNumberOfSamples,
+    fields,
+    actions,
     otherLanguages: languages.otherLanguages,
-    isExtraLanguage: (value: Language) => languages.isExtraLanguage(value),
-    toggleExtraLanguage: (value: Language) => languages.toggleExtraLanguage(value),
   }
 }
