@@ -3,11 +3,6 @@ import { computed, reactive, ref } from 'vue'
 import { greetings, responseFormatter } from './AIClient'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 
-type ChatMessage = {
-  role: 'user' | 'ai'
-  text: string
-}
-
 const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
@@ -19,20 +14,17 @@ converSations.set('user', [])
 converSations.set('ai', [])
 
 
-const messages = computed<ChatMessage[]>(() => {
-  const questions = converSations.get('user') ?? []
-  const answers = converSations.get('ai') ?? []
-  const transcript: ChatMessage[] = []
 
-  questions.forEach((question, index) => {
-    transcript.push({ role: 'user', text: question })
-    const answer = answers[index]
-    if (answer !== undefined) {
-      transcript.push({ role: 'ai', text: answer })
-    }
-  })
 
-  return transcript
+
+const messages = computed<{ role: string, text: string }[]>(() => {
+  const userMessages = converSations.get('user') || []
+  const aiMessages = converSations.get('ai') || []
+  const combinedMessages: { role: string; text: string }[] = []
+  return combinedMessages.concat(
+    userMessages.map((text) => ({ role: 'user', text })),
+    aiMessages.map((text) => ({ role: 'ai', text }))
+  )
 })
 
 async function askAI() {
@@ -44,12 +36,12 @@ async function askAI() {
   hasError.value = ''
   isAsking.value = true
   const question = userInput.value
+  converSations.get('user')?.push(question)
+  userInput.value = ''
 
   try {
     const answer = await responseFormatter(question)
-    converSations.get('user')?.push(question)
     converSations.get('ai')?.push(answer)
-    userInput.value = ''
   } catch (error) {
     hasError.value =
       error instanceof Error ? error.message : 'An unknown error occurred'
