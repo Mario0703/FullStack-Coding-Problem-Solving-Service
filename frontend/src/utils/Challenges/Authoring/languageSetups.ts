@@ -1,31 +1,54 @@
 import type { Language } from '../Types/types'
 import type { LanguageSetup } from '../Types/authoringTypes'
 
-export const languageSetups: Record<Language, LanguageSetup> = {
-  python: {
-    userTemplate: `def add(a, b):
+
+export interface LanguageTempleteSetup {
+  getTemplate(): string
+  getExplanation(): string
+  getRunner(): string
+  getRunnerExplanation(): string
+}
+
+export class Python implements LanguageTempleteSetup {
+  public getTemplate(): string {
+    return `def add(a, b):
     # Write your solution here.
     pass
-`,
-    userTemplateExplanation:
-      'The user only changes the function body. The function name and arguments must stay compatible with the runner.',
-    runner: `a, b = map(int, input().split())
-print(add(a, b))
-`,
-    runnerExplanation:
-      'The runner reads two integers from standard input, calls add(a, b), and prints the returned value. It is appended by the server when the submission runs.',
-  },
-  java: {
-    userTemplate: `class Solution {
+`
+  }
+
+  public getExplanation(): string {
+    return 'The user only changes the function body. The function name and arguments must stay compatible with the runner.'
+  }
+
+  public getRunner(): string {
+    return `a, b = map(int, input().split())
+    print(add(a, b))
+    `
+  }
+
+  public getRunnerExplanation(): string {
+    return 'The runner reads two integers from standard input, calls add(a, b), and prints the returned value. It is appended by the server when the submission runs.'
+  }
+}
+
+export class Java implements LanguageTempleteSetup {
+  public getTemplate(): string {
+    return `class Solution {
     public static int add(int a, int b) {
         // Write your solution here.
         return 0;
     }
 }
-`,
-    userTemplateExplanation:
-      'The user implements Solution.add. The class name, method name, and argument types must stay compatible with the runner.',
-    runner: `import java.util.Scanner;
+`
+  }
+
+  public getExplanation(): string {
+    return 'The user implements Solution.add. The class name, method name, and argument types must stay compatible with the runner.'
+  }
+
+  public getRunner(): string {
+    return `import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,22 +58,32 @@ public class Main {
         System.out.println(Solution.add(a, b));
     }
 }
-`,
-    runnerExplanation:
-      'The runner reads two integers, calls Solution.add(a, b), and prints the result. The server combines it with the user template before compiling.',
-  },
-  cplusplus: {
-    userTemplate: `class Solution {
+`
+  }
+
+  public getRunnerExplanation(): string {
+    return 'The runner reads two integers, calls Solution.add(a, b), and prints the result. The server combines it with the user template before compiling.'
+  }
+}
+
+export class CPlusPlus implements LanguageTempleteSetup {
+  public getTemplate(): string {
+    return `class Solution {
 public:
     int add(int a, int b) {
         // Write your solution here.
         return 0;
     }
 };
-`,
-    userTemplateExplanation:
-      'The user implements Solution::add. The class name, method name, and argument types must stay compatible with the runner.',
-    runner: `#include <iostream>
+`
+  }
+
+  public getExplanation(): string {
+    return 'The user implements Solution::add. The class name, method name, and argument types must stay compatible with the runner.'
+  }
+
+  public getRunner(): string {
+    return `#include <iostream>
 
 int main() {
     int a, b;
@@ -60,21 +93,31 @@ int main() {
     std::cout << solution.add(a, b) << '\\n';
     return 0;
 }
-`,
-    runnerExplanation:
-      'The runner reads two integers, calls Solution::add, and prints the result. The server combines it with the user template before compiling.',
-  },
-  csharp: {
-    userTemplate: `public class Solution {
+`
+  }
+
+  public getRunnerExplanation(): string {
+    return 'The runner reads two integers, calls Solution::add, and prints the result. The server combines it with the user template before compiling.'
+  }
+}
+
+export class CSharp implements LanguageTempleteSetup {
+  public getTemplate(): string {
+    return `public class Solution {
     public int Add(int a, int b) {
         // Write your solution here.
         return 0;
     }
 }
-`,
-    userTemplateExplanation:
-      'The user implements Solution.Add. The class name, method name, and argument types must stay compatible with the runner.',
-    runner: `using System;
+`
+  }
+
+  public getExplanation(): string {
+    return 'The user implements Solution.Add. The class name, method name, and argument types must stay compatible with the runner.'
+  }
+
+  public getRunner(): string {
+    return `using System;
 
 public class Main {
     public static void Main(string[] args) {
@@ -86,8 +129,61 @@ public class Main {
         Console.WriteLine(solution.Add(a, b));
     }
 }
-`,
-    runnerExplanation:
-      'The runner reads two integers, calls Solution.Add, and prints the result. The server combines it with the user template before compiling.',
-  },
+`
+  }
+
+  public getRunnerExplanation(): string {
+    return 'The runner reads two integers, calls Solution.Add, and prints the result. The server combines it with the user template before compiling.'
+  }
+}
+
+/** Abstract factory that constructs the `LanguageTempleteSetup` product per language. */
+export interface LanguageSetupsFactory {
+  constructPythonTemplate(): LanguageTempleteSetup
+  constructJavaTemplate(): LanguageTempleteSetup
+  constructCsharpTemplate(): LanguageTempleteSetup
+  constructCPlusPlusTemplate(): LanguageTempleteSetup
+}
+
+export class LanguageSetupsFactoryImpl implements LanguageSetupsFactory {
+  public constructPythonTemplate(): LanguageTempleteSetup {
+    return new Python()
+  }
+
+  public constructJavaTemplate(): LanguageTempleteSetup {
+    return new Java()
+  }
+
+  public constructCsharpTemplate(): LanguageTempleteSetup {
+    return new CSharp()
+  }
+
+  public constructCPlusPlusTemplate(): LanguageTempleteSetup {
+    return new CPlusPlus()
+  }
+}
+
+
+const languageSetupsFactory: LanguageSetupsFactory = new LanguageSetupsFactoryImpl()
+
+const languageTemplateBuilders: Record<Language, () => LanguageTempleteSetup> = {
+  python: () => languageSetupsFactory.constructPythonTemplate(),
+  java: () => languageSetupsFactory.constructJavaTemplate(),
+  cplusplus: () => languageSetupsFactory.constructCPlusPlusTemplate(),
+  csharp: () => languageSetupsFactory.constructCsharpTemplate(),
+}
+
+export function getSupportedLanguages(): Language[] {
+  return Object.keys(languageTemplateBuilders) as Language[]
+}
+
+export function createLanguageSetup(language: Language): LanguageSetup {
+  const setup = languageTemplateBuilders[language]()
+
+  return {
+    userTemplate: setup.getTemplate(),
+    userTemplateExplanation: setup.getExplanation(),
+    runner: setup.getRunner(),
+    runnerExplanation: setup.getRunnerExplanation(),
+  }
 }

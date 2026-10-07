@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { languageSetups } from './languageSetups'
+import { createLanguageSetup, getSupportedLanguages } from './languageSetups'
 import type { CreateChallengeForm, Example, LanguageSetupInput, TestCase } from '../Types/authoringTypes'
 import type { ChallengeCategory, ChallengeDifficulty, Language } from '../Types/types'
 
@@ -26,7 +26,7 @@ export function useChallengeForm() {
   )
 
   const otherLanguages = computed(() =>
-    (Object.keys(languageSetups) as Language[]).filter((value) => value !== language.value),
+    getSupportedLanguages().filter((value) => value !== language.value),
   )
 
   function isExtraLanguage(value: Language): boolean {
@@ -39,7 +39,7 @@ export function useChallengeForm() {
       return
     }
 
-    const setup = languageSetups[value]
+    const setup = createLanguageSetup(value)
     extraSetups.value = {
       ...extraSetups.value,
       [value]: {
@@ -57,7 +57,7 @@ export function useChallengeForm() {
     // A language cannot be both the primary and an additional language.
     if (selectedLanguage) {
       extraLanguages.value = extraLanguages.value.filter((item) => item !== selectedLanguage)
-      const setup = languageSetups[selectedLanguage]
+      const setup = createLanguageSetup(selectedLanguage)
       template.value = setup.userTemplate
       templateExplanation.value = setup.userTemplateExplanation
       runner.value = setup.runner
