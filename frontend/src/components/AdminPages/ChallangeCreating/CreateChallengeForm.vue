@@ -30,16 +30,16 @@ const {
   runnerExplanation,
   numberOfTestCases,
   testCases,
-  resetForm,
   toCreateChallengeForm,
   numberOfExamples,
   examples,
-  createNumberOfSamples,
   otherLanguages,
   extraLanguages,
   extraSetups,
   isExtraLanguage,
   toggleExtraLanguage,
+  createNumberOfSamples,
+  resetForm,
 } = useChallengeForm()
 
 function submit() {

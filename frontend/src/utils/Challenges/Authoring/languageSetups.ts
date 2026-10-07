@@ -2,14 +2,14 @@ import type { Language } from '../Types/types'
 import type { LanguageSetup } from '../Types/authoringTypes'
 
 
-export interface LanguageTempleteSetup {
+export interface LanguageTemplateSetup {
   getTemplate(): string
   getExplanation(): string
   getRunner(): string
   getRunnerExplanation(): string
 }
 
-export class Python implements LanguageTempleteSetup {
+export class Python implements LanguageTemplateSetup {
   public getTemplate(): string {
     return `def add(a, b):
     # Write your solution here.
@@ -32,7 +32,7 @@ export class Python implements LanguageTempleteSetup {
   }
 }
 
-export class Java implements LanguageTempleteSetup {
+export class Java implements LanguageTemplateSetup {
   public getTemplate(): string {
     return `class Solution {
     public static int add(int a, int b) {
@@ -66,7 +66,7 @@ public class Main {
   }
 }
 
-export class CPlusPlus implements LanguageTempleteSetup {
+export class CPlusPlus implements LanguageTemplateSetup {
   public getTemplate(): string {
     return `class Solution {
 public:
@@ -101,7 +101,7 @@ int main() {
   }
 }
 
-export class CSharp implements LanguageTempleteSetup {
+export class CSharp implements LanguageTemplateSetup {
   public getTemplate(): string {
     return `public class Solution {
     public int Add(int a, int b) {
@@ -137,28 +137,27 @@ public class Main {
   }
 }
 
-/** Abstract factory that constructs the `LanguageTempleteSetup` product per language. */
 export interface LanguageSetupsFactory {
-  constructPythonTemplate(): LanguageTempleteSetup
-  constructJavaTemplate(): LanguageTempleteSetup
-  constructCsharpTemplate(): LanguageTempleteSetup
-  constructCPlusPlusTemplate(): LanguageTempleteSetup
+  constructPythonTemplate(): LanguageTemplateSetup
+  constructJavaTemplate(): LanguageTemplateSetup
+  constructCsharpTemplate(): LanguageTemplateSetup
+  constructCPlusPlusTemplate(): LanguageTemplateSetup
 }
 
 export class LanguageSetupsFactoryImpl implements LanguageSetupsFactory {
-  public constructPythonTemplate(): LanguageTempleteSetup {
+  public constructPythonTemplate(): LanguageTemplateSetup {
     return new Python()
   }
 
-  public constructJavaTemplate(): LanguageTempleteSetup {
+  public constructJavaTemplate(): LanguageTemplateSetup {
     return new Java()
   }
 
-  public constructCsharpTemplate(): LanguageTempleteSetup {
+  public constructCsharpTemplate(): LanguageTemplateSetup {
     return new CSharp()
   }
 
-  public constructCPlusPlusTemplate(): LanguageTempleteSetup {
+  public constructCPlusPlusTemplate(): LanguageTemplateSetup {
     return new CPlusPlus()
   }
 }
@@ -166,7 +165,7 @@ export class LanguageSetupsFactoryImpl implements LanguageSetupsFactory {
 
 const languageSetupsFactory: LanguageSetupsFactory = new LanguageSetupsFactoryImpl()
 
-const languageTemplateBuilders: Record<Language, () => LanguageTempleteSetup> = {
+const languageTemplateBuilders: Record<Language, () => LanguageTemplateSetup> = {
   python: () => languageSetupsFactory.constructPythonTemplate(),
   java: () => languageSetupsFactory.constructJavaTemplate(),
   cplusplus: () => languageSetupsFactory.constructCPlusPlusTemplate(),
