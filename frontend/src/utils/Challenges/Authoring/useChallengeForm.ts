@@ -1,11 +1,52 @@
 import { reactive, watch } from 'vue'
+import type { ComputedRef } from 'vue'
 import { FormSetup } from '@/utils/Challenges/Authoring/FormSetup.ts'
 import { Languages } from './Languages'
 import { ChallengeFormBuilder } from './ChallengeFormBuilder'
-import type { CreateChallengeForm } from '../Types/authoringTypes'
-import type { Language } from '../Types/types'
+import type {
+  CreateChallengeForm,
+  Example,
+  LanguageSetupInput,
+  TestCase,
+} from '../Types/authoringTypes'
+import type { ChallengeCategory, ChallengeDifficulty, Language } from '../Types/types'
 
-export function useChallengeForm() {
+/** Every value the user edits on the challenge form. */
+export interface ChallengeFormFields {
+  name: string
+  description: string
+  difficulty: ChallengeDifficulty | null
+  category: ChallengeCategory | null
+  language: Language | null
+  solution: string
+  template: string
+  templateExplanation: string
+  runner: string
+  runnerExplanation: string
+  numberOfTestCases: number
+  testCases: TestCase[]
+  numberOfExamples: number
+  examples: Example[]
+  extraLanguages: Language[]
+  extraSetups: Record<Language, LanguageSetupInput>
+}
+
+export interface ChallengeFormActions {
+  resetForm(): void
+  toCreateChallengeForm(): CreateChallengeForm
+  createNumberOfSamples<T>(arr: T[], newSize: number, defaultValue: T): void
+  isExtraLanguage(value: Language): boolean
+  toggleExtraLanguage(value: Language): void
+}
+
+/** The shape returned by {@link useChallengeForm}. */
+export interface ChallengeFormController {
+  fields: ChallengeFormFields
+  actions: ChallengeFormActions
+  otherLanguages: ComputedRef<Language[]>
+}
+
+export function useChallengeForm(): ChallengeFormController {
   const setup = new FormSetup()
   const languages = new Languages(setup)
   const builder = new ChallengeFormBuilder(setup)
