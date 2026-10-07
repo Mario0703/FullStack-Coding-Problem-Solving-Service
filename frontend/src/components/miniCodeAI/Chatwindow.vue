@@ -47,7 +47,6 @@ async function askAI() {
 
   try {
     const answer = await responseFormatter(question)
-    // Push the question BEFORE clearing the input, otherwise you store ''.
     converSations.get('user')?.push(question)
     converSations.get('ai')?.push(answer)
     userInput.value = ''
