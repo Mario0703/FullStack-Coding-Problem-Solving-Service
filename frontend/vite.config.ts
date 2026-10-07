@@ -5,6 +5,9 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
+  // Reuse the repository-root `.env` (shared with the Spring Boot backend)
+  // instead of keeping a second frontend-only file in sync.
+  envDir: fileURLToPath(new URL('..', import.meta.url)),
   plugins: [
     vue({
       template: { transformAssetUrls },
