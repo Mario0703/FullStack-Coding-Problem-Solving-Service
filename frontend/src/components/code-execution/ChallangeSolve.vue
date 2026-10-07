@@ -4,6 +4,7 @@ import { currentUser } from '@/authenticator/auth'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
+import Chatwindow from '@/components/miniCodeAI/Chatwindow.vue'
 import {
   languageLabel,
   loadChallengeTemplate,
@@ -186,6 +187,9 @@ async function executeCode() {
         </v-card-title>
         <v-card-text v-if="output" class="text-body-2" style="white-space: pre-wrap">{{ output }}</v-card-text>
       </v-card>
+
+      <!-- MiniCode AI chat helper: lets the user ask for hints while solving. -->
+      <Chatwindow class="mt-6 px-0" />
     </template>
   </v-container>
 </template>
