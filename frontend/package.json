@@ -27,7 +27,6 @@
     "@mdi/font": "^7.4.47",
     "@replit/codemirror-lang-csharp": "^6.2.0",
     "gsap": "^3.15.0",
-    "openai": "^7.28.0",
     "vue": "rc",
     "vue-codemirror": "^6.1.1",
     "vue-router": "^5.3.1",

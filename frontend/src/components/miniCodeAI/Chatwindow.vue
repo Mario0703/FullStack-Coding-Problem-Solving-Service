@@ -12,6 +12,8 @@ const props = defineProps<{
   language?: string
 }>()
 
+defineOptions({ name: 'MiniHelperChat' })
+
 const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
@@ -30,10 +32,19 @@ const messages = computed<{ role: string, text: string }[]>(() => {
   const userMessages = conversation.get('user') || []
   const aiMessages = conversation.get('ai') || []
   const combinedMessages: { role: string; text: string }[] = []
-  return combinedMessages.concat(
-    userMessages.map((text) => ({ role: 'user', text })),
-    aiMessages.map((text) => ({ role: 'ai', text }))
-  )
+  // Interleave question and answer so the chat reads in the order it happened.
+  const length = Math.max(userMessages.length, aiMessages.length)
+  for (let index = 0; index < length; index += 1) {
+    const userMessage = userMessages[index]
+    const aiMessage = aiMessages[index]
+    if (userMessage !== undefined) {
+      combinedMessages.push({ role: 'user', text: userMessage })
+    }
+    if (aiMessage !== undefined) {
+      combinedMessages.push({ role: 'ai', text: aiMessage })
+    }
+  }
+  return combinedMessages
 })
 
 async function askAI() {
