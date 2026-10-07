@@ -6,10 +6,14 @@ import minicode.com.dto.Ai.MiniHelperRequest;
 import minicode.com.dto.Ai.MiniHelperResponse;
 import minicode.com.repository.UserRepo;
 import minicode.com.service.Ai.MiniHelperService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -38,5 +42,16 @@ public class MiniHelperController {
     ) {
         UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
         return new MiniHelperResponse(miniHelperService.ask(request, userId));
+    }
+
+    /** Forgets the stored turns when the user leaves the challenge page. */
+    @DeleteMapping("/conversation/{conversationId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void clearConversation(
+            @PathVariable String conversationId,
+            Authentication authentication
+    ) {
+        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
+        miniHelperService.clearConversation(userId, conversationId);
     }
 }

@@ -11,6 +11,7 @@ export type ResponseContext = {
   challengeId: string
   currentCode?: string
   currentLanguage?: string
+  conversationId?: string
 }
 
 export const greetings = ref<string[]>([
@@ -33,5 +34,6 @@ export async function responseFormatter(
     question,
     code: context.currentCode,
     language: context.currentLanguage,
+    conversationId: context.conversationId,
   })
 }

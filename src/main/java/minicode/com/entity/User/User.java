@@ -39,6 +39,10 @@ public class User {
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int numberOfHardChallengesSolved = 0;
 
+    /** Total OpenAI tokens the user has spent through miniHelper. */
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long tokenUsage = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;

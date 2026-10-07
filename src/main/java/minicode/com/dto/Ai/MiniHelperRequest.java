@@ -11,6 +11,7 @@ public record MiniHelperRequest(
         @NotBlank(message = "challengeId is required") String challengeId,
         @NotBlank(message = "question is required") String question,
         String code,
-        String language
+        String language,
+        String conversationId
 ) {
 }

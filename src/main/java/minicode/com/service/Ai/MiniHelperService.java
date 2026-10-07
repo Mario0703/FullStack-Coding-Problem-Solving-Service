@@ -53,23 +53,28 @@ public class MiniHelperService {
 
     private final ChallengeService challengeService;
     private final SubmissionRepo submissionRepo;
+    private final TokenUsageRateLimiter tokenUsageRateLimiter;
     private final OpenAIClient client;
     private final String model;
 
     /**
-     * Conversation history keyed by {@code userId + ":" + challengeId}. Bounded
-     * per key so a long session cannot grow without limit.
+     * Conversation history keyed by {@code userId + ":" + sessionId}, where the
+     * session id is the frontend conversation id (falling back to the challenge
+     * id for older clients). Bounded per key so a long session cannot grow
+     * without limit, and dropped when the user leaves the page.
      */
     private final Map<String, Deque<Turn>> history = new ConcurrentHashMap<>();
 
     public MiniHelperService(
             ChallengeService challengeService,
             SubmissionRepo submissionRepo,
+            TokenUsageRateLimiter tokenUsageRateLimiter,
             @Value("${OPENAI_API_KEY:}") String apiKey,
             @Value("${MINIHELPER_MODEL:gpt-4o-mini}") String model
     ) {
         this.challengeService = challengeService;
         this.submissionRepo = submissionRepo;
+        this.tokenUsageRateLimiter = tokenUsageRateLimiter;
         this.model = model;
         this.client = (apiKey == null || apiKey.isBlank())
                 ? null
@@ -77,17 +82,22 @@ public class MiniHelperService {
     }
 
     public String ask(MiniHelperRequest request, UUID userId) {
+
         if (client == null) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "miniHelper is not configured on the server."
             );
         }
+
+
+        tokenUsageRateLimiter.ensureWithinBudget(userId);
+
         UUID challengeId = parseChallengeId(request.challengeId());
         Challenge challenge = challengeService.getChallenge(challengeId);
 
         Deque<Turn> turns = history.computeIfAbsent(
-                userId + ":" + challengeId,
+                historyKey(userId, sessionId(request, challengeId)),
                 key -> new ArrayDeque<>()
         );
 
@@ -121,6 +131,9 @@ public class MiniHelperService {
                     "miniHelper could not generate a response. Please try again."
             );
         }
+
+        completion.usage().ifPresent(usage ->
+                tokenUsageRateLimiter.recordUsage(userId, usage.totalTokens()));
 
         turns.addLast(new Turn(request.question(), answer));
         while (turns.size() > MAX_TURNS) {
@@ -186,6 +199,25 @@ public class MiniHelperService {
                 .append(code == null || code.isBlank() ? "(none written yet)" : code).append('\n');
         context.append("User's question:").append(request.question());
         return context.toString();
+    }
+
+    /** Drops the stored turns for a conversation; called when the user leaves. */
+    public void clearConversation(UUID userId, String conversationId) {
+        if (conversationId == null || conversationId.isBlank()) {
+            return;
+        }
+        history.remove(historyKey(userId, conversationId));
+    }
+
+    private String sessionId(MiniHelperRequest request, UUID challengeId) {
+        String conversationId = request.conversationId();
+        return (conversationId == null || conversationId.isBlank())
+                ? challengeId.toString()
+                : conversationId;
+    }
+
+    private String historyKey(UUID userId, String sessionId) {
+        return userId + ":" + sessionId;
     }
 
     private UUID parseChallengeId(String challengeId) {

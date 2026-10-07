@@ -11,6 +11,7 @@ export type MiniHelperContext = {
   question: string
   code?: string
   language?: string
+  conversationId?: string
 }
 
 type MiniHelperResponse = {
@@ -27,6 +28,7 @@ export async function askMiniHelper(context: MiniHelperContext): Promise<string>
       question: context.question,
       code: context.code,
       language: context.language,
+      conversationId: context.conversationId,
     }),
   })
 
@@ -38,4 +40,16 @@ export async function askMiniHelper(context: MiniHelperContext): Promise<string>
 
   const data = (await response.json()) as MiniHelperResponse
   return data.answer
+}
+
+/**
+ * Tells the backend to forget a conversation. Best-effort: called when the
+ * user leaves the challenge page or closes the tab.
+ */
+export async function clearMiniHelperConversation(conversationId: string): Promise<void> {
+  await fetch(`${baseUrl}/api/ai/conversation/${encodeURIComponent(conversationId)}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    keepalive: true,
+  })
 }

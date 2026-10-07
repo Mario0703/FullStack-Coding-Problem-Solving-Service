@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { greetings, responseFormatter } from './AIClient'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import { clearMiniHelperConversation } from '@/utils/miniHelper'
 
 const props = defineProps<{
   challengeId?: string
@@ -14,6 +15,25 @@ defineOptions({ name: 'MiniHelperChat' })
 const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
+
+// Identifies this page visit so the backend keeps hints separate per session
+// and can forget them when the user leaves.
+const conversationId = crypto.randomUUID()
+
+function resetServerConversation() {
+  void clearMiniHelperConversation(conversationId).catch(() => {
+    // Best-effort cleanup while leaving the page; nothing to do on failure.
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('pagehide', resetServerConversation)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pagehide', resetServerConversation)
+  resetServerConversation()
+})
 
 
 
@@ -64,6 +84,7 @@ async function askAI() {
       challengeId: props.challengeId,
       currentCode: props.code,
       currentLanguage: props.language,
+      conversationId,
     })
     conversation.get('ai')?.push(answer)
   } catch (error) {
