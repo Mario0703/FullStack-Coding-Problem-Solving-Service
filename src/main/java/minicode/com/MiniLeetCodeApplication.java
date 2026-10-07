@@ -27,6 +27,29 @@ public class MiniLeetCodeApplication {
         registration.addUrlPatterns("/api/user/signup");
         return registration;
     }
+    @Bean
+    public FilterRegistrationBean<RateLimitingFilter> rateLimiterFilterForUserLogin(
+            StringRedisTemplate redisTemplate
+    ) {
+        FilterRegistrationBean<RateLimitingFilter> registration = new FilterRegistrationBean<>();
+        int MAX_REQUESTS_PER_MINUTE = 1000;
+        String WINDOW_SECONDS = "60";
+        registration.setFilter(new RateLimitingFilter(redisTemplate, WINDOW_SECONDS, MAX_REQUESTS_PER_MINUTE));
+        registration.addUrlPatterns("/api/user/login");
+        return registration;
+    }
+    @Bean
+    public FilterRegistrationBean<RateLimitingFilter> rateLimiterFilterForAi(
+            StringRedisTemplate redisTemplate
+    ) {
+        FilterRegistrationBean<RateLimitingFilter> registration = new FilterRegistrationBean<>();
+        int MAX_REQUESTS_PER_MINUTE = 1000;
+        String WINDOW_SECONDS = "60";
+        registration.setFilter(new RateLimitingFilter(redisTemplate, WINDOW_SECONDS, MAX_REQUESTS_PER_MINUTE));
+        registration.addUrlPatterns("/api/ai/hint");
+        return registration;
+    }
+
 }
 
 

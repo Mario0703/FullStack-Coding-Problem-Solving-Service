@@ -80,6 +80,12 @@ public class Challenge {
     @Column(columnDefinition = "TEXT")
     private String templeteExplanation;
 
+    // Optional newline-separated hints used by the MiniCode AI helper. Kept out
+    // of normal entity serialization; served through the ai-context endpoint.
+    @JsonIgnore
+    @Column(columnDefinition = "TEXT")
+    private String hints;
+
     @Column
     private String language;
 

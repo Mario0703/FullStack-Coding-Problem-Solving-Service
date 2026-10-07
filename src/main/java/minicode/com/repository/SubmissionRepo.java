@@ -7,9 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
+
+    /** The user's most recent submission for a challenge, used by the AI helper. */
+    Optional<Submission> findFirstByUser_UserIdAndChallenge_IdOrderByCreatedAtDesc(
+            UUID userId,
+            UUID challengeId
+    );
 
     java.util.Optional<Submission> findByIdAndUser_UserId(UUID id, UUID userId);
 

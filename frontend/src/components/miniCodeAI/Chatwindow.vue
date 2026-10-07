@@ -1,30 +1,65 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { greetings, responseFormatter } from './AIClient'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import { clearMiniHelperConversation } from '@/utils/miniHelper'
+
+const props = defineProps<{
+  challengeId?: string
+  code?: string
+  language?: string
+}>()
+
+defineOptions({ name: 'MiniHelperChat' })
 
 const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
 
+// Identifies this page visit so the backend keeps hints separate per session
+// and can forget them when the user leaves.
+const conversationId = crypto.randomUUID()
+
+function resetServerConversation() {
+  void clearMiniHelperConversation(conversationId).catch(() => {
+    // Best-effort cleanup while leaving the page; nothing to do on failure.
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('pagehide', resetServerConversation)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pagehide', resetServerConversation)
+  resetServerConversation()
+})
 
 
-const converSations = reactive(new Map<string, string[]>())
-converSations.set('user', [])
-converSations.set('ai', [])
 
-
+const conversation = reactive(new Map<string, string[]>())
+conversation.set('user', [])
+conversation.set('ai', [])
 
 
 
 const messages = computed<{ role: string, text: string }[]>(() => {
-  const userMessages = converSations.get('user') || []
-  const aiMessages = converSations.get('ai') || []
+  const userMessages = conversation.get('user') || []
+  const aiMessages = conversation.get('ai') || []
   const combinedMessages: { role: string; text: string }[] = []
-  return combinedMessages.concat(
-    userMessages.map((text) => ({ role: 'user', text })),
-    aiMessages.map((text) => ({ role: 'ai', text }))
-  )
+  // Interleave question and answer so the chat reads in the order it happened.
+  const length = Math.max(userMessages.length, aiMessages.length)
+  for (let index = 0; index < length; index += 1) {
+    const userMessage = userMessages[index]
+    const aiMessage = aiMessages[index]
+    if (userMessage !== undefined) {
+      combinedMessages.push({ role: 'user', text: userMessage })
+    }
+    if (aiMessage !== undefined) {
+      combinedMessages.push({ role: 'ai', text: aiMessage })
+    }
+  }
+  return combinedMessages
 })
 
 async function askAI() {
@@ -33,15 +68,25 @@ async function askAI() {
     return
   }
 
+  if (!props.challengeId) {
+    hasError.value = 'Open a challenge before asking the AI for help.'
+    return
+  }
+
   hasError.value = ''
   isAsking.value = true
   const question = userInput.value
-  converSations.get('user')?.push(question)
+  conversation.get('user')?.push(question)
   userInput.value = ''
 
   try {
-    const answer = await responseFormatter(question)
-    converSations.get('ai')?.push(answer)
+    const answer = await responseFormatter(question, {
+      challengeId: props.challengeId,
+      currentCode: props.code,
+      currentLanguage: props.language,
+      conversationId,
+    })
+    conversation.get('ai')?.push(answer)
   } catch (error) {
     hasError.value =
       error instanceof Error ? error.message : 'An unknown error occurred'

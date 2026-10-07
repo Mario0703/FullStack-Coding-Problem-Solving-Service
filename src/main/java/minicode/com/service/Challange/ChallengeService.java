@@ -131,6 +131,8 @@ public class ChallengeService {
                 request.getLanguage()
         );
 
+        challenge.setHints(request.getHints());
+
         for (CreateExamplesRequest example : request.getExamples()) {
             InputOutput inputOutput = new InputOutput();
             inputOutput.setInputExample(example.getInputExample());
