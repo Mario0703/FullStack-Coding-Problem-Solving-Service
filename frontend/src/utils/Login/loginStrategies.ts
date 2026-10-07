@@ -60,13 +60,3 @@ export class LoginAsAdmin implements LoginStrategy {
   }
 }
 
-/** Ready-to-use strategy instances (the strategies are stateless). */
-export const loginWithUserName = new LoginWithUserName()
-export const loginWithEmail = new LoginWithEmail()
-export const loginAsAdmin = new LoginAsAdmin()
-
-/** User login strategies, keyed by the identifier type. */
-export const userLoginStrategies = {
-  username: loginWithUserName,
-  email: loginWithEmail,
-} satisfies Record<'username' | 'email', LoginStrategy>
