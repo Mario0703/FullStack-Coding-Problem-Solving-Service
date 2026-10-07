@@ -61,6 +61,49 @@ const challengeTools: OpenAI.Responses.FunctionTool[] = [
     },
     strict: true,
   },
+  {
+    type: "function",
+    name: 'getUserCode',
+    description: 'Get the user code for the challenge',
+    parameters: {
+      type: 'object',
+      properties: {
+        challengeId: { type: 'string' },
+      },
+      required: ['challengeId'],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+  {
+    type: "function",
+    name: 'getChallengeTestCases',
+    description: 'Get the test cases of the challenge',
+    parameters: {
+      type: 'object',
+      properties: {
+        challengeId: { type: 'string' },
+      },
+      required: ['challengeId'],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+  {
+    type: "function",
+    name: 'getChallengeExamples',
+    description: 'Get the examples of the challenge',
+    parameters: {
+      type: 'object',
+      properties: {
+        challengeId: { type: 'string' },
+      },
+      required: ['challengeId'],
+      additionalProperties: false,
+    },
+    strict: true,
+  }
+
 ]
 
 export async function responseFormatter(response: string): Promise<string> {
