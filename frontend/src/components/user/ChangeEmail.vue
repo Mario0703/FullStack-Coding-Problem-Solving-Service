@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { currentUser } from "@/authenticator/auth";
-import { inputsMatch, isblank, isValidEmail } from "@/utils/UserInputCheck";
+import { inputsMatch, isblank, isValidEmail } from "@/utils/Login/UserInputCheck.ts";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';

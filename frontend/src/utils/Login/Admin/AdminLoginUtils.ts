@@ -1,4 +1,4 @@
-import { baseUrl } from '@/utils/api'
+import { baseUrl } from '@/utils/api.ts'
 
 export interface AdminLoginCredentials {
   adminUserName: string

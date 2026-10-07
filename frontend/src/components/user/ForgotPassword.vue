@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { isblank, isValidEmail } from "@/utils/UserInputCheck";
+import { isblank, isValidEmail } from "@/utils/Login/UserInputCheck.ts";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 

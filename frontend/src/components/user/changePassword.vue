@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { inputsMatch, isblank, isValidPassword } from "@/utils/UserInputCheck";
+import { inputsMatch, isblank, isValidPassword } from "@/utils/Login/UserInputCheck.ts";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 import { baseUrl } from '@/utils/api';

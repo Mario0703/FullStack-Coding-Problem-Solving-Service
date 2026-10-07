@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadCurrentAdmin } from '@/authenticator/auth'
 import LoginPage from '@/components/authentication/LoginPage.vue'
-import { loginAsAdmin } from '@/utils/loginStrategies'
+import { loginAsAdmin } from '@/utils/Login/loginStrategies.ts'
 
 const router = useRouter()
 const adminUserName = ref('')
@@ -24,7 +24,7 @@ async function adminSignIn() {
   isSubmitting.value = true
 
   try {
-    await loginAsAdmin({ identifier: adminUserName.value.trim(), password: adminPassword.value })
+    await loginAsAdmin.LoginAction({ identifier: adminUserName.value.trim(), password: adminPassword.value })
     await loadCurrentAdmin()
     await router.push({ name: 'adminLoginConfirmed' })
   } catch (error) {

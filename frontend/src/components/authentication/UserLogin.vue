@@ -2,9 +2,9 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadCurrentUser } from '@/authenticator/auth'
-import { getLoginValidationErrors } from '@/utils/UserInputCheck'
+import { getLoginValidationErrors } from '@/utils/Login/UserInputCheck.ts'
 import LoginPage from '@/components/authentication/LoginPage.vue'
-import { userLoginStrategies } from '@/utils/loginStrategies'
+import { userLoginStrategies } from '@/utils/Login/loginStrategies.ts'
 
 const router = useRouter()
 const name = ref('')
@@ -34,7 +34,7 @@ async function login() {
   isSubmitting.value = true
 
   try {
-    await loginStrategy({ identifier: name.value.trim(), password: password.value })
+    await loginStrategy.LoginAction({ identifier: name.value.trim(), password: password.value })
     await loadCurrentUser()
     await router.push({ name: 'loginConfirmed' })
   } catch (error) {
