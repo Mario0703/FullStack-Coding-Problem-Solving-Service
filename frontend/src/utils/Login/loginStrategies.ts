@@ -1,6 +1,5 @@
 import { baseUrl } from '@/utils/api.ts'
 import { readErrorMessage } from '@/utils/apiError.ts'
-import { loginAdmin } from '@/utils/Login/Admin/AdminLoginUtils.ts'
 
 export type LoginCredentials = {
   identifier: string
@@ -47,16 +46,9 @@ export class LoginWithEmail implements LoginStrategy {
 
 export class LoginAsAdmin implements LoginStrategy {
   public async LoginAction({ identifier, password }: LoginCredentials): Promise<void> {
-    let response: Response
-    try {
-      response = await loginAdmin({ adminUserName: identifier, adminPassword: password })
-    } catch {
-      throw new Error('Unable to reach the server. Please try again later.')
-    }
-
-    if (!response.ok) {
-      throw new Error(await readErrorMessage(response, 'Invalid admin username or password.'))
-    }
+    const URL = `${baseUrl}/api/admin/login`
+    const feedback = 'Invalid admin username or password.'
+    await postLogin(URL, { adminUserName: identifier, adminPassword: password }, feedback)
   }
 }
 
