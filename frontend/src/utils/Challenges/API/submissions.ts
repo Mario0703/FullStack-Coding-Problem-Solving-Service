@@ -37,8 +37,8 @@ async function loadTestCaseValues(path: 'passed' | 'failed' | 'total'): Promise<
     throw new Error(await readErrorMessage(response, `Failed to fetch ${path} test cases`))
   }
 
-  const responseData = await response.json()
-  const isResponseDataArray = responseData instanceof Array
+  const responseData: unknown = await response.json()
+  const isResponseDataArray = responseData instanceof Array && responseData.every((item) => typeof item === 'number')
 
   if (!isResponseDataArray) {
     throw new Error(await readErrorMessage(response, `Expected array for ${path} test cases`))
