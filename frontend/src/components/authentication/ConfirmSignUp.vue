@@ -12,6 +12,8 @@ function goToLogin() {
   <v-container class="d-flex align-center justify-center h-screen">
     <v-sheet
       class="pa-4 text-center mx-auto"
+      border
+      color="surface"
       elevation="4"
       max-width="600"
       rounded="lg"
