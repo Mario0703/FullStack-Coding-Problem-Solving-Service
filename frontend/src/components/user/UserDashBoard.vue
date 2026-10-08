@@ -1,100 +1,55 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { ChallengeDifficulty } from '@/utils/AdminUtils'
+import type { ChallengeDifficulty } from '@/utils/Challenges/Types/types'
 import {
   loadSolvedChallenges,
   loadSubmissionTestCaseValues,
   loadUserSubmissions,
   type SolvedChallenge,
   type UserSubmission,
-} from '@/utils/SolvedChallengeUtil'
+} from '@/utils/Challenges/API/submissions'
 import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
 import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
 import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
-} from '@/utils/CodeExecutorUtils'
+} from '@/utils/Challenges/API/execution'
+import {
+  createSolvedCards,
+  createReceiptCards,
+  filterCards,
+  getChallengeFilterItems,
+  countSolvedByDifficulty,
+  calculateTotalPoints,
+  mergeSubmissionsWithTestCases,
+  formatSolvedDate as formatDate,
+} from '@/utils/Users/dashboard'
+import type { DashboardCard } from '@/utils/Users/types'
 import router from '@/router'
 
 // The dashboard shows one card per solved challenge (from the solved
 // challenges table, never duplicated) followed by one card per failed
 // attempt from the submission receipt.
-type DashboardCard = {
-  key: string
-  challengeId: string
-  challengeName: string
-  difficulty: ChallengeDifficulty
-  status: string
-  isSolved: boolean
-  languages: string[]
-  solvedAt: string
-  testCasesPassed: number
-  testCasesFailed: number
-  totalTestCases: number
-  submissionId?: string
-}
-
 const submissions = ref<UserSubmission[]>([])
 const solvedChallenges = ref<SolvedChallenge[]>([])
 const search = ref('')
 const selectedDifficulty = ref<ChallengeDifficulty | null>(null)
 const selectedChallengeId = ref<string | null>(null)
 
-const solvedCards = computed<DashboardCard[]>(() =>
-  solvedChallenges.value.map((solved) => ({
-    key: `solved-${solved.challengeId}`,
-    challengeId: solved.challengeId,
-    challengeName: solved.challengeName,
-    difficulty: solved.difficulty,
-    status: 'ACCEPTED',
-    isSolved: true,
-    languages: solved.languages,
-    solvedAt: solved.solvedAt,
-    testCasesPassed: 0,
-    testCasesFailed: 0,
-    totalTestCases: 0,
-  })),
-)
+const solvedCards = computed<DashboardCard[]>(() => createSolvedCards(solvedChallenges.value))
 
-const receiptCards = computed<DashboardCard[]>(() =>
-  submissions.value.map((submission) => ({
-    key: submission.id,
-    challengeId: submission.challengeId,
-    challengeName: submission.challengeName,
-    difficulty: submission.difficulty,
-    status: submission.status,
-    isSolved: false,
-    languages: [],
-    solvedAt: '',
-    testCasesPassed: submission.testCasesPassed,
-    testCasesFailed: submission.testCasesFailed,
-    totalTestCases: submission.totalTestCases,
-    submissionId: submission.id,
-  })),
-)
+const receiptCards = computed<DashboardCard[]>(() => createReceiptCards(submissions.value))
 
 const cards = computed(() => [...solvedCards.value, ...receiptCards.value])
 
-const challengeFilterItems = computed(() =>
-  [
-    ...new Map(cards.value.map((card) => [card.challengeId, card.challengeName])),
-  ]
-    .map(([value, title]) => ({ value, title }))
-    .sort((a, b) => a.title.localeCompare(b.title)),
-)
+const challengeFilterItems = computed(() => getChallengeFilterItems(cards.value))
 
 const filteredCards = computed(() =>
-  cards.value.filter((card) => {
-    const matchesDifficulty =
-      !selectedDifficulty.value || card.difficulty === selectedDifficulty.value
-    const matchesChallenge =
-      !selectedChallengeId.value || card.challengeId === selectedChallengeId.value
-    const matchesSearch = card.challengeName
-      .toLowerCase()
-      .includes(search.value.trim().toLowerCase())
-
-    return matchesDifficulty && matchesChallenge && matchesSearch
+  filterCards(cards.value, {
+    search: search.value,
+    selectedDifficulty: selectedDifficulty.value,
+    selectedChallengeId: selectedChallengeId.value,
   }),
 )
 
@@ -103,7 +58,7 @@ function viewSubmissionDetails(submissionId: string) {
 }
 
 function formatSolvedDate(value: string): string {
-  return new Date(value).toLocaleDateString()
+  return formatDate(value)
 }
 
 onMounted(async () => {
@@ -114,12 +69,7 @@ onMounted(async () => {
       loadSolvedChallenges(),
     ])
 
-    submissions.value = loadedSubmissions.map((submission, index) => ({
-      ...submission,
-      testCasesPassed: passed[index] ?? 0,
-      testCasesFailed: failed[index] ?? 0,
-      totalTestCases: total[index] ?? 0,
-    }))
+    submissions.value = mergeSubmissionsWithTestCases(loadedSubmissions, passed, failed, total)
     solvedChallenges.value = solved
   } catch {
     submissions.value = []
@@ -128,7 +78,7 @@ onMounted(async () => {
 })
 
 function solvedCount(difficulty: ChallengeDifficulty): number {
-  return solvedChallenges.value.filter((solved) => solved.difficulty === difficulty).length
+  return countSolvedByDifficulty(solvedChallenges.value, difficulty)
 }
 
 const easyQuestionsSolved = computed(() => solvedCount('EASY'))
@@ -137,8 +87,12 @@ const hardQuestionsSolved = computed(() => solvedCount('HARD'))
 const totalQuestionsSolved = computed(
   () => easyQuestionsSolved.value + mediumQuestionsSolved.value + hardQuestionsSolved.value,
 )
-const totalPoints = computed(
-  () => easyQuestionsSolved.value + mediumQuestionsSolved.value * 2 + hardQuestionsSolved.value * 3,
+const totalPoints = computed(() =>
+  calculateTotalPoints(
+    easyQuestionsSolved.value,
+    mediumQuestionsSolved.value,
+    hardQuestionsSolved.value,
+  ),
 )
 </script>
 

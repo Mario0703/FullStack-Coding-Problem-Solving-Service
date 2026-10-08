@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import AddChallange from '@/components/AdminPages/AddChallange.vue'
 import ManageChallenges from '@/components/AdminPages/ManageChallenges.vue'
 import Logout from '@/components/authentication/Logout.vue'
-import type { Challenge } from '@/utils/AdminUtils'
+import type { Challenge } from '@/utils/Challenges/Types/types'
 import { useRouter } from 'vue-router'
 import SuccessFeedback from '@/components/FeedBack/Succes.vue'
 

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { currentUser, hasCheckedUser, loadCurrentAdmin, loadCurrentUser } from '@/authenticator/auth'
+import { currentUser, hasCheckedUser, loadCurrentAdmin, loadCurrentUser } from '@/utils/Users/state'
 import {routes} from '@/router/routes.ts'
 
 const router = createRouter({

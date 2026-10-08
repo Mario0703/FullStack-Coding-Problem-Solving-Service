@@ -72,8 +72,9 @@ export async function loadChallengeTemplate(
       await readErrorMessage(response, 'The challenge template could not be loaded.'),
     )
   }
+  const responseData: ChallengeTemplateResponse = await response.json()
 
-  return (await response.json()) as ChallengeTemplateResponse
+  return responseData
 }
 
 export async function submitCode(request: CodeExecutionRequest): Promise<ExecutionResult> {
@@ -89,6 +90,10 @@ export async function submitCode(request: CodeExecutionRequest): Promise<Executi
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'Could not submit your code. Please try again.'))
   }
+  const responseData: ExecutionResult = await response.json()
+  if (!responseData || typeof responseData !== 'object') {
+    throw new Error(await readErrorMessage(response, 'Invalid response from the server.'))
+  }
 
-  return (await response.json()) as ExecutionResult
+  return responseData
 }

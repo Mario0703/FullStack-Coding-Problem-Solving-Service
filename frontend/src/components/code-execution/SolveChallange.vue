@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { formatChallengeValue } from '@/utils/AdminUtils'
-import { getChallengeExamples, getChallengeSolution, listChallenges, type ChallengeExample, type ChallengeSummary } from '@/utils/ChallangeUtil'
+import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import { getChallengeExamples, getChallengeSolution, listChallenges } from '@/utils/Challenges/API/api'
+import type { ChallengeExample, ChallengeSummary } from '@/utils/Challenges/Types/types'
 import { baseUrl } from '@/utils/api'
 import ChallangeSolve from '@/components/code-execution/ChallangeSolve.vue'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
-import { languageLabel, validLanguages } from '@/utils/CodeExecutorUtils'
+import { languageLabel, validLanguages } from '@/utils/Challenges/API/execution'
 
 type Solver = {
   userId: string

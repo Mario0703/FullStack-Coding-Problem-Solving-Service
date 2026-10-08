@@ -2,8 +2,9 @@
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
-import { formatChallengeValue, type Challenge } from "@/utils/AdminUtils";
-import { listAdminChallenges, type ChallengeSummary } from "@/utils/ChallangeUtil";
+import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import { listChallenges } from '@/utils/Challenges/API/api'
+import type { Challenge, ChallengeSummary } from '@/utils/Challenges/Types/types'
 import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';
 
@@ -18,16 +19,16 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-function viewChallangeDetails(challengeId: string) {
+function viewChallengeDetails(challengeId: string) {
   router.push(`/admin/challenge/${challengeId}`);
 }
 
-async function loadChallenges() {
+async function loadChallengeSummery() {
   loadError.value = "";
   isLoading.value = true;
 
   try {
-    const loadedChallenges = await listAdminChallenges();
+    const loadedChallenges = await listChallenges();
     challenges.value = props.newChallenge
       ? [
           props.newChallenge,
@@ -52,7 +53,7 @@ watch(
 );
 
 
-onMounted(loadChallenges);
+onMounted(loadChallengeSummery);
 
 async function deleteChallenge(challengeId: string) {
   try {
@@ -84,7 +85,7 @@ async function deleteChallenge(challengeId: string) {
     <v-card class="d-flex align-center justify-space-between mb-4" variant="text">
       <v-card-title class="text-h5 font-weight-bold px-0">Challenges</v-card-title>
       <v-card-actions class="pa-0">
-        <v-btn variant="text" :loading="isLoading" @click="loadChallenges">Refresh</v-btn>
+        <v-btn variant="text" :loading="isLoading" @click="loadChallengeSummery">Refresh</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -120,7 +121,7 @@ async function deleteChallenge(challengeId: string) {
           <v-container>
             <v-list class="d-flex">
               <v-list-item class="flex-none">
-                <v-btn @click="viewChallangeDetails(challenge.id)" color="primary">View Details</v-btn>
+                <v-btn @click="viewChallengeDetails(challenge.id)" color="primary">View Details</v-btn>
               </v-list-item>
               <v-list-item class="flex-none">
                 <v-btn @click="deleteChallenge(challenge.id)" color="red">Delete Challenge</v-btn>

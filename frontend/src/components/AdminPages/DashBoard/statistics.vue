@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PlatformStatistics } from '@/utils/AdminStatisticsUtils'
+import type { PlatformStatistics } from '@/utils/Admin/AdminStatisticsUtils.ts'
 
 defineOptions({
   name: 'DashboardStatistics',

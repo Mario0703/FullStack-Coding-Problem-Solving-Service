@@ -3,12 +3,13 @@ import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ChangeChallange from '@/components/AdminPages/ChangeChallange.vue'
-import { formatChallengeValue, type Challenge } from '@/utils/AdminUtils'
+import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import type { Challenge } from '@/utils/Challenges/Types/types'
 import {
   getChallengeExamples,
   getChallengeTestCases,
-  listAdminChallenges,
-} from '@/utils/ChallangeUtil'
+  listChallenges,
+} from '@/utils/Challenges/API/api'
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
@@ -16,24 +17,24 @@ const isLoading = ref(true)
 const loadError = ref('')
 const editMode = ref(false)
 
-async function loadChallenge() {
+async function loadChallangeWithExamplesAndTestCases() {
   try {
     const challengeId = String(route.params.id)
     const [challenges, examples, testCases] = await Promise.all([
-      listAdminChallenges(),
+      listChallenges(),
       getChallengeExamples(challengeId),
       getChallengeTestCases(challengeId),
     ])
     const challengeSummary = challenges.find((item) => item.id === challengeId)
 
-    challenge.value = challengeSummary
-      ? {
-          ...challengeSummary,
-          inputOutput: examples,
-          testCases,
-          numberOfTestCases: testCases.length,
-        }
-      : null
+    if (challengeSummary){
+      challenge.value = {
+        ...challengeSummary,
+        inputOutput: examples,
+        testCases,
+        numberOfTestCases: testCases.length,
+      }
+    }
 
     if (!challenge.value) {
       loadError.value = 'The requested challenge could not be found.'
@@ -49,7 +50,7 @@ async function alterChallenge(updatedChallenge: Challenge) {
   console.log('Updated challenge:', updatedChallenge)
 }
 
-onMounted(loadChallenge)
+onMounted(loadChallangeWithExamplesAndTestCases)
 </script>
 
 <template>

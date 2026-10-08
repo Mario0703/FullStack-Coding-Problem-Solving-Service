@@ -16,25 +16,8 @@ const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
 
-// Identifies this page visit so the backend keeps hints separate per session
-// and can forget them when the user leaves.
+
 const conversationId = crypto.randomUUID()
-
-function resetServerConversation() {
-  void clearMiniHelperConversation(conversationId).catch(() => {
-    // Best-effort cleanup while leaving the page; nothing to do on failure.
-  })
-}
-
-onMounted(() => {
-  window.addEventListener('pagehide', resetServerConversation)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('pagehide', resetServerConversation)
-  resetServerConversation()
-})
-
 
 
 const conversation = reactive(new Map<string, string[]>())
@@ -47,7 +30,7 @@ const messages = computed<{ role: string, text: string }[]>(() => {
   const userMessages = conversation.get('user') || []
   const aiMessages = conversation.get('ai') || []
   const combinedMessages: { role: string; text: string }[] = []
-  // Interleave question and answer so the chat reads in the order it happened.
+
   const length = Math.max(userMessages.length, aiMessages.length)
   for (let index = 0; index < length; index += 1) {
     const userMessage = userMessages[index]

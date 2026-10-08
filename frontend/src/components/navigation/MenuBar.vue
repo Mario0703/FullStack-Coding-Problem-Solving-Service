@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { currentRole, currentUser } from "@/authenticator/auth";
+import { currentRole, currentUser } from "@/utils/Users/state";
 </script>
 
 <template>

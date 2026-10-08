@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { UserStatistics } from '@/utils/AdminStatisticsUtils'
+import type { UserStatistics } from '@/utils/Admin/AdminStatisticsUtils.ts'
+import { filterUsersBySearch } from '@/utils/Users/dashboard'
 
 const props = defineProps<{
   users: UserStatistics[]
@@ -8,10 +9,7 @@ const props = defineProps<{
 }>()
 
 const searchQuery = ref('')
-const filteredUsers = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase()
-  return query ? props.users.filter((user) => user.name.toLowerCase().includes(query)) : props.users
-})
+const filteredUsers = computed(() => filterUsersBySearch(props.users, searchQuery.value))
 </script>
 
 <template>

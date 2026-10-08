@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { currentUser } from "@/authenticator/auth";
+import { currentUser } from "@/utils/Users/state";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 
 const router = useRouter();

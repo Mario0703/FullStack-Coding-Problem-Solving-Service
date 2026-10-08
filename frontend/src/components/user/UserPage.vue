@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { currentUser } from "@/authenticator/auth";
+import { currentUser } from "@/utils/Users/state";
+import type { ActiveForm } from "@/utils/Users/types";
 import Logout from "@/components/authentication/Logout.vue";
 import UserDashBoard from "@/components/user/UserDashBoard.vue";
 import ChangeEmail from "@/components/user/ChangeEmail.vue";
 import ChangeUserName from "@/components/user/ChangeUserName.vue";
 import ChangePassword from "@/components/user/changePassword.vue";
-
-type ActiveForm = "username" | "email" | "password" | null;
 
 const activeForm = ref<ActiveForm>(null);
 

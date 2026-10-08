@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ChallengeDifficulty } from '@/utils/AdminUtils'
+import type { ChallengeDifficulty } from '@/utils/Challenges/Types/types'
 
 defineProps<{
   modelValue: ChallengeDifficulty | null

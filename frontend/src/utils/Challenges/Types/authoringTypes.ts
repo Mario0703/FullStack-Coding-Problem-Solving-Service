@@ -1,8 +1,4 @@
-import type {
-  ChallengeCategory,
-  ChallengeDifficulty,
-  Language,
-} from '@/utils/AdminUtils'
+import type { ChallengeCategory, ChallengeDifficulty, Language } from './types'
 
 export interface TestCase {
   input: string
@@ -21,7 +17,6 @@ export interface LanguageSetup {
   runnerExplanation: string
 }
 
-/** One language's authored template/runner, as sent when creating a challenge. */
 export interface LanguageSetupInput {
   language: Language
   template: string
@@ -45,9 +40,5 @@ export interface CreateChallengeForm {
   numberOfTestCases: number
   examples: Example[]
   numberOfExamples: number
-  /**
-   * Per-language templates/runners. The first entry is the primary language;
-   * the rest are the optional additional languages the challenge supports.
-   */
   languageSetups: LanguageSetupInput[]
 }

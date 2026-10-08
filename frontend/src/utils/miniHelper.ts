@@ -1,11 +1,7 @@
 import { baseUrl } from '@/utils/api'
 import { readErrorMessage } from '@/utils/apiError'
 
-/**
- * Request sent to the backend miniHelper endpoint. The OpenAI call and the API
- * key live entirely on the server; the browser only sends the question and the
- * code the user is currently editing.
- */
+
 export type MiniHelperContext = {
   challengeId: string
   question: string
@@ -38,14 +34,10 @@ export async function askMiniHelper(context: MiniHelperContext): Promise<string>
     )
   }
 
-  const data = (await response.json()) as MiniHelperResponse
-  return data.answer
+  const reposeData: MiniHelperResponse = await response.json()
+  return reposeData.answer
 }
 
-/**
- * Tells the backend to forget a conversation. Best-effort: called when the
- * user leaves the challenge page or closes the tab.
- */
 export async function clearMiniHelperConversation(conversationId: string): Promise<void> {
   await fetch(`${baseUrl}/api/ai/conversation/${encodeURIComponent(conversationId)}`, {
     method: 'DELETE',

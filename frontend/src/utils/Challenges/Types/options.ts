@@ -1,27 +1,9 @@
-import type { ChallengeExample, ChallengeTestCase } from '@/utils/ChallangeUtil.ts'
-
-export type ChallengeDifficulty = 'EASY' | 'MEDIUM' | 'HARD'
-
-export type ChallengeCategory = 'GENERAL' | 'ARRAYS' | 'STRINGS' | 'TREES'
-
-export type Language = 'python' | 'java' | 'csharp' | 'cplusplus'
-
-export type Challenge = {
-  id: string
-  name: string
-  description: string
-  difficulty: ChallengeDifficulty
-  category: ChallengeCategory
-  numberOfTestCases: number
-  testCases: ChallengeTestCase[]
-  inputOutput: ChallengeExample[]
-  language: Language
-}
-
-export type ChallengeOption<T extends string> = {
-  title: string
-  value: T
-}
+import type {
+  ChallengeCategory,
+  ChallengeDifficulty,
+  ChallengeOption,
+  Language,
+} from './types'
 
 export const languageOptions: ChallengeOption<Language>[] = [
   { title: 'Python', value: 'python' },

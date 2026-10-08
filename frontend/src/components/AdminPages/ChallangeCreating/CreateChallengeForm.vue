@@ -3,10 +3,10 @@ import {
   categoryOptions,
   difficultyOptions,
   languageOptions,
-} from '@/utils/AdminUtils'
-import { languageLabel } from '@/utils/CodeExecutorUtils'
-import type { CreateChallengeForm } from '@/utils/LanguageType'
-import { useChallengeForm } from '@/utils/useChallengeForm'
+} from '@/utils/Challenges/Types/options'
+import { languageLabel } from '@/utils/Challenges/API/execution'
+import type { CreateChallengeForm } from '@/utils/Challenges/Types/authoringTypes'
+import { useChallengeForm } from '@/utils/Challenges/Authoring/useChallengeForm'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 
 defineProps<{
@@ -17,42 +17,20 @@ const emit = defineEmits<{
   submit: [challenge: CreateChallengeForm]
 }>()
 
-const {
-  name,
-  description,
-  difficulty,
-  category,
-  language,
-  solution,
-  template,
-  templateExplanation,
-  runner,
-  runnerExplanation,
-  numberOfTestCases,
-  testCases,
-  resetForm,
-  toCreateChallengeForm,
-  numberOfExamples,
-  examples,
-  createNumberOfSamples,
-  otherLanguages,
-  extraLanguages,
-  extraSetups,
-  isExtraLanguage,
-  toggleExtraLanguage,
-} = useChallengeForm()
+// `fields` holds the user's input; `actions` holds the behavior on it.
+const { fields, actions, otherLanguages } = useChallengeForm()
 
 function submit() {
-  emit('submit', toCreateChallengeForm())
+  emit('submit', actions.toCreateChallengeForm())
 }
 
-defineExpose({ resetForm })
+defineExpose({ resetForm: actions.resetForm })
 </script>
 
 <template>
   <v-form @submit.prevent="submit">
     <v-text-field
-      v-model="name"
+      v-model="fields.name"
       label="Challenge name"
       placeholder="Two Sum"
       :counter="50"
@@ -60,7 +38,7 @@ defineExpose({ resetForm })
       required
     />
     <v-textarea
-      v-model="description"
+      v-model="fields.description"
       label="Description"
       placeholder="Describe what the user needs to solve."
       :counter="500"
@@ -68,32 +46,32 @@ defineExpose({ resetForm })
       rows="4"
       required
     />
-    <v-select v-model="difficulty" label="Difficulty" :items="difficultyOptions" required />
-    <v-select v-model="category" label="Category" :items="categoryOptions" required />
-    <v-select v-model="language" label="Language" :items="languageOptions" required />
+    <v-select v-model="fields.difficulty" label="Difficulty" :items="difficultyOptions" required />
+    <v-select v-model="fields.category" label="Category" :items="categoryOptions" required />
+    <v-select v-model="fields.language" label="Language" :items="languageOptions" required />
     <v-label class="mb-2">Reference solution</v-label>
     <CodeEditor
-      v-model="solution"
-      :language="language ?? ''"
+      v-model="fields.solution"
+      :language="fields.language ?? ''"
       height="300px"
       class="mb-6"
     />
     <v-label class="mb-2">User starter template</v-label>
     <CodeEditor
-      v-model="template"
-      :language="language ?? ''"
+      v-model="fields.template"
+      :language="fields.language ?? ''"
       height="300px"
       class="mb-3"
     />
     <div class="text-caption mb-3">
       {{
-        language
-          ? `Template shown to users for ${languageLabel(language)}`
+        fields.language
+          ? `Template shown to users for ${languageLabel(fields.language)}`
           : 'Select a language to load a starter template'
       }}
     </div>
     <v-textarea
-      v-model="templateExplanation"
+      v-model="fields.templateExplanation"
       label="User template explanation"
       placeholder="Explain what the user should implement and which names or arguments must stay unchanged."
       rows="3"
@@ -103,8 +81,8 @@ defineExpose({ resetForm })
     />
     <v-label class="mb-2">Runner</v-label>
     <CodeEditor
-      v-model="runner"
-      :language="language ?? ''"
+      v-model="fields.runner"
+      :language="fields.language ?? ''"
       height="300px"
       class="mb-3"
     />
@@ -112,7 +90,7 @@ defineExpose({ resetForm })
       The server uses this code to read test input, call the user's function, and print its result.
     </div>
     <v-textarea
-      v-model="runnerExplanation"
+      v-model="fields.runnerExplanation"
       label="Runner explanation"
       placeholder="Explain how input is parsed, how the user function is called, and what is printed."
       rows="3"
@@ -131,15 +109,15 @@ defineExpose({ resetForm })
       <v-chip
         v-for="option in otherLanguages"
         :key="option"
-        :color="isExtraLanguage(option) ? 'primary' : undefined"
-        :variant="isExtraLanguage(option) ? 'flat' : 'outlined'"
-        @click="toggleExtraLanguage(option)"
+        :color="actions.isExtraLanguage(option) ? 'primary' : undefined"
+        :variant="actions.isExtraLanguage(option) ? 'flat' : 'outlined'"
+        @click="actions.toggleExtraLanguage(option)"
       >
         {{ languageLabel(option) }}
       </v-chip>
     </div>
     <v-card
-      v-for="option in extraLanguages"
+      v-for="option in fields.extraLanguages"
       :key="option"
       variant="tonal"
       class="mb-4 pa-4"
@@ -147,13 +125,13 @@ defineExpose({ resetForm })
       <v-card-title class="px-0 pt-0 text-subtitle-1">{{ languageLabel(option) }} setup</v-card-title>
       <v-label class="mb-2">Starter template</v-label>
       <CodeEditor
-        v-model="extraSetups[option].template"
+        v-model="fields.extraSetups[option].template"
         :language="option"
         height="220px"
         class="mb-3"
       />
       <v-textarea
-        v-model="extraSetups[option].templateExplanation"
+        v-model="fields.extraSetups[option].templateExplanation"
         label="Template explanation"
         rows="2"
         auto-grow
@@ -162,13 +140,13 @@ defineExpose({ resetForm })
       />
       <v-label class="mb-2">Runner</v-label>
       <CodeEditor
-        v-model="extraSetups[option].runner"
+        v-model="fields.extraSetups[option].runner"
         :language="option"
         height="220px"
         class="mb-3"
       />
       <v-textarea
-        v-model="extraSetups[option].runnerExplanation"
+        v-model="fields.extraSetups[option].runnerExplanation"
         label="Runner explanation"
         rows="2"
         auto-grow
@@ -177,18 +155,18 @@ defineExpose({ resetForm })
     </v-card>
 
     <v-number-input
-      v-model="numberOfTestCases"
+      v-model="fields.numberOfTestCases"
       label="Number of test cases"
       :min="1"
       :max="50"
-      @update:model-value="createNumberOfSamples(testCases, $event, { input: '', expectedOutput: '' })"
+      @update:model-value="actions.createNumberOfSamples(fields.testCases, $event, { input: '', expectedOutput: '' })"
       control-variant="default"
       required
       class="mb-4"
     />
 
     <v-card
-      v-for="(testCase, index) in testCases"
+      v-for="(testCase, index) in fields.testCases"
       :key="index"
       variant="tonal"
       class="mb-4 pa-4"
@@ -214,15 +192,20 @@ defineExpose({ resetForm })
     </v-card>
 
     <v-number-input
-      v-model="numberOfExamples"
+      v-model="fields.numberOfExamples"
       label="Number of examples"
       :min="0"
       :max="15"
-      @update:model-value="createNumberOfSamples(examples, $event, { inputExample: '', outputExample: '' })"
+      @update:model-value="actions.createNumberOfSamples(fields.examples, $event, { inputExample: '', outputExample: '' })"
       control-variant="default"
       required
     />
-    <v-card v-for="(example, index) in examples" :key="index" variant="tonal" class="mb-4 pa-4">
+    <v-card
+      v-for="(example, index) in fields.examples"
+      :key="index"
+      variant="tonal"
+      class="mb-4 pa-4"
+    >
       <v-card-title class="px-0 pt-0 text-subtitle-1">Example {{ index + 1 }}</v-card-title>
       <v-textarea
         v-model="example.inputExample"

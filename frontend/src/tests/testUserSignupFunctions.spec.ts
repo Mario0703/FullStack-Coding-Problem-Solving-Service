@@ -5,7 +5,7 @@ import {
   inputsMatch,
   isValidEmail,
   isValidPassword,
-} from '@/utils/UserInputCheck'
+} from '@/utils/Login/UserInputCheck.ts'
 
 describe('signup validation', () => {
   it('accepts matching non-empty confirmation values', () => {

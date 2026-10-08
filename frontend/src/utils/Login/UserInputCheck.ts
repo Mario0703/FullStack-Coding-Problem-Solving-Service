@@ -1,4 +1,4 @@
-import { isblank, isValidEmail } from './signupValidation'
+import { isblank, isValidEmail } from '../signupValidation.ts'
 
 export {
   hasValidSignupDetails,
@@ -6,9 +6,9 @@ export {
   isValidEmail,
   inputsMatch,
   isValidPassword,
-} from './signupValidation'
+} from '../signupValidation.ts'
 
-export type { SignupDetails } from './signupValidation'
+export type { SignupDetails } from '../signupValidation.ts'
 
 export type LoginDetails = {
   identifier: string

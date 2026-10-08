@@ -3,24 +3,13 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
-import { baseUrl } from '@/utils/api'
+import { getSubmissionDetails } from '@/utils/Users/api'
+import type { SubmissionDetails } from '@/utils/Users/types'
 import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
-} from '@/utils/CodeExecutorUtils'
-
-interface SubmissionDetails {
-  challengeName: string
-  language: string
-  createdAt: string
-  exitCode: number
-  status: string
-  testCasesPassed: number
-  testCasesFailed: number
-  totalTestCases: number
-  code: string
-}
+} from '@/utils/Challenges/API/execution'
 
 const route = useRoute()
 const submission = ref<SubmissionDetails | null>(null)
@@ -34,17 +23,11 @@ onMounted(async () => {
     return
   }
 
-  const response = await fetch(
-    `${baseUrl}/api/submission/details?submissionId=${submissionId}`,
-    { credentials: 'include' },
-  )
-
-  if (!response.ok) {
+  try {
+    submission.value = await getSubmissionDetails(submissionId)
+  } catch {
     errorMessage.value = 'Failed to load submission'
-    return
   }
-
-  submission.value = (await response.json()) as SubmissionDetails
 })
 </script>
 

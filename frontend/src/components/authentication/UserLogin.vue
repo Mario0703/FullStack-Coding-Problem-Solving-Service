@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loadCurrentUser } from '@/authenticator/auth'
-import { getLoginValidationErrors } from '@/utils/UserInputCheck'
+import { loadCurrentUser } from '@/utils/Users/state'
+import { getLoginValidationErrors } from '@/utils/Login/UserInputCheck.ts'
 import LoginPage from '@/components/authentication/LoginPage.vue'
-import { userLoginStrategies } from '@/utils/loginStrategies'
+import { loginFactory } from '@/utils/Login/LoginFactory.ts'
 
 const router = useRouter()
 const name = ref('')
@@ -27,14 +27,16 @@ async function login() {
     return
   }
 
-  const loginStrategy = loginWithEmail.value
-    ? userLoginStrategies.email
-    : userLoginStrategies.username
+  const loginCredentials = { identifier: name.value.trim(), password: password.value }
 
   isSubmitting.value = true
 
   try {
-    await loginStrategy({ identifier: name.value.trim(), password: password.value })
+    if (loginWithEmail.value) {
+      await loginFactory.createUserLoginWithEmailAndPassword(loginCredentials)
+    } else {
+      await loginFactory.createUserLoginWithUsernameAndPassword(loginCredentials)
+    }
     await loadCurrentUser()
     await router.push({ name: 'loginConfirmed' })
   } catch (error) {
