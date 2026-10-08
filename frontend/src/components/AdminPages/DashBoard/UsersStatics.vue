@@ -10,7 +10,14 @@ const props = defineProps<{
 const searchQuery = ref('')
 const filteredUsers = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
-  return query ? props.users.filter((user) => user.name.toLowerCase().includes(query)) : props.users
+  const filteredProps = props.users.filter((user) => user.name.toLowerCase().includes(query))
+
+  if (query){
+    return filteredProps
+  }
+
+  return props.users
+
 })
 </script>
 

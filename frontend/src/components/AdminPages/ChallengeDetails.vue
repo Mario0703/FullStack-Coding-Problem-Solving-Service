@@ -17,7 +17,7 @@ const isLoading = ref(true)
 const loadError = ref('')
 const editMode = ref(false)
 
-async function loadChallenge() {
+async function loadChallangeWithExamplesAndTestCases() {
   try {
     const challengeId = String(route.params.id)
     const [challenges, examples, testCases] = await Promise.all([
@@ -27,14 +27,14 @@ async function loadChallenge() {
     ])
     const challengeSummary = challenges.find((item) => item.id === challengeId)
 
-    challenge.value = challengeSummary
-      ? {
-          ...challengeSummary,
-          inputOutput: examples,
-          testCases,
-          numberOfTestCases: testCases.length,
-        }
-      : null
+    if (challengeSummary){
+      challenge.value = {
+        ...challengeSummary,
+        inputOutput: examples,
+        testCases,
+        numberOfTestCases: testCases.length,
+      }
+    }
 
     if (!challenge.value) {
       loadError.value = 'The requested challenge could not be found.'
@@ -50,7 +50,7 @@ async function alterChallenge(updatedChallenge: Challenge) {
   console.log('Updated challenge:', updatedChallenge)
 }
 
-onMounted(loadChallenge)
+onMounted(loadChallangeWithExamplesAndTestCases)
 </script>
 
 <template>
