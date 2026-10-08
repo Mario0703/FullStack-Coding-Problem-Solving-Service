@@ -1,7 +1,8 @@
 ---
-name: Design Pattern Skill
-description: This skill focuses on understanding and applying design patterns in software development. It covers various design patterns, their use cases, and best practices for implementing them effectively.
+name: Design Patterns
+description: Understand and apply software design patterns (creational, structural, behavioral), with emphasis on the Strategy and State patterns, when designing or implementing a new feature.
 ---
+
 Design patterns are typical solutions to common problems in software design. Each pattern is like a blueprint.
 There are three different types of design patterns to consider when implementing a new feature.
 1. Creational Patterns: These patterns provide various object creation mechanisms, which increase flexibility and reuse of existing code.
@@ -33,14 +34,14 @@ class ConcreteStrategyMultiply implements Strategy is
         return a * b
 ```
 
-The intend of the Strategy Define a family of business rules or algorithms, encapsulate each one, and make them interchangeable.
-Strategy lets the algorithms vary independently from clients that use it
+The intent of the Strategy pattern is to define a family of business rules or algorithms, encapsulate each one, and make them interchangeable.
+Strategy lets the algorithms vary independently from the clients that use them.
 
-Use the patteren when The product must support variable algorithms or business rules and you want a flexible and reliable way of controlling the variability
+Use the pattern when the product must support variable algorithms or business rules and you want a flexible and reliable way of controlling that variability.
 
-Strategy specifies the responsibility and interface of the algorithm. ConcreteStrategies defines concrete behavior fulfilling the responsibility. Context performs its work for Client by delegating to an instance of type Strategy.
+Strategy specifies the responsibility and interface of the algorithm. ConcreteStrategies define concrete behavior that fulfills the responsibility. Context performs its work for the client by delegating to an instance of type Strategy.
 
-The benefits are: Strategies eliminate conditional statements. It is an alternative to subclassing. It facilitates separate testing of Context and ConcreteStrategy. Strategies may be changed at run-time
+The benefits are: strategies eliminate conditional statements, are an alternative to subclassing, facilitate separate testing of Context and ConcreteStrategy, and can be changed at run-time.
 
 DO NOT ADD CODE TO THE INTERFACE WHEN IMPLEMENTING A NEW FEATURE.
 The interface should say what a class should do, not how it should do it.
@@ -62,4 +63,10 @@ interface Strategy{
     method execute(a, b)    
     }
 ```
-
+The next good patteren to consider is the State patteren.
+The state is a behavioral design pattern that lets an object alter its behavior when its internal state changes. It appears as if the object changed its class.
+The state patteren is used to create an interface STATE that encapsulates the behavior associated with a particular state of the context.
+State specifies
+responsibilities of the
+behavior that varies
+according to state

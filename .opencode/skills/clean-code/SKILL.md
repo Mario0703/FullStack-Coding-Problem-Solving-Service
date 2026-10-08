@@ -1,3 +1,8 @@
+---
+name: Clean Code
+description: Apply Clean Code principles when writing, reviewing, or refactoring code — small functions that do one thing, descriptive names, few arguments, no flag arguments or hidden side effects, no duplication, no magic values, shallow nesting, and named boolean expressions.
+---
+
 The code should be self-documented, and should be clean according to the clean code principles.
 
 1. Small
@@ -81,14 +86,14 @@ if (isUserAuthorized) {
 ```
 
 DO NOT WRITE SLOP CODE THAT CONTAINS NO SPACES
-THis can simply not be read and understood.
+This simply cannot be read and understood.
 
 BAD
 ```java
 public class X{private int y;public X(){y=0;}public int z(){return y;}public void z1(int z0){y+=z0;}public static void main(String[]args){X y=new X();y.z1(200);y.z1(3400);System.out.println("Result is "+y.z());}}
 ```
 
-**ALLWAYS WHEN INSPECTING A PIECE OF CODE ALLWAYS FILL OUT IF THESE HOLDS**
+**ALWAYS, WHEN INSPECTING A PIECE OF CODE, CHECK WHETHER THESE HOLD**
 
 1. Small
 2. Do One Thing
