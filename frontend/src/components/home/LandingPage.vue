@@ -5,8 +5,8 @@ import Footer from '@/components/navigation/Footer.vue'
 <template>
   <v-container>
     <v-card variant="text">
-      <v-card-title class="px-0">MiniLeetCode</v-card-title>
-      <v-card-text class="px-0">
+      <v-card-title class="px-0 text-display-large">MiniLeetCode</v-card-title>
+      <v-card-text class="px-0 text-body-medium">
         MiniLeetCode is designed for anyone wanting to learn programming fundamentals through
         bite-sized problems. Build skills and practice solving common algorithmic tasks efficiently
       </v-card-text>
@@ -19,7 +19,7 @@ import Footer from '@/components/navigation/Footer.vue'
   </v-container>
   <v-container>
     <v-card variant="text">
-      <v-card-title class="px-0">What does this service offer</v-card-title>
+      <v-card-title class="px-0 font-weight-bold">What does this service offer</v-card-title>
       <v-card-text class="px-0 py-0">
         This service offers a variety of coding challenges you can solve.
       </v-card-text>
@@ -39,7 +39,7 @@ import Footer from '@/components/navigation/Footer.vue'
   </v-container>
   <v-container>
     <v-card variant="text">
-      <v-card-title class="px-0">What this service supports</v-card-title>
+      <v-card-title class="px-0 font-weight-bold">What this service supports</v-card-title>
       <v-card-text class="text-body-1 px-0 py-0">
         This platform provides a wide selection of coding challenges to enhance your programming
         skills.
