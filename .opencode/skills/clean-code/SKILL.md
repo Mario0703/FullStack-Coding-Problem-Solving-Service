@@ -5,6 +5,18 @@ description: Apply Clean Code principles when writing, reviewing, or refactoring
 
 The code should be self-documented, and should be clean according to the clean code principles.
 
+**DO NOT OVERCOMMENT CODE**
+the code should be again self-documenting, and should be clean according to the clean code principles.
+Comments should be used to explain "why" something is done, not "what" is done. The code itself should be clear enough to convey the "what".
+do not comment a function if it can be seen what is happening easily from the function name and its parameters. If you feel the need to comment a function, consider renaming it to make it more descriptive.
+
+**DO NOT OVERCOMMENT INTERFACES**
+Interfaces should be self-explanatory and should not require comments to explain their purpose. If you feel the need to comment an interface, consider renaming it to make it more descriptive.
+
+**WHEN TO ADD COMMENTS**
+Only add a comment when somehting is very complex and cannot be understood easily from the code itself. In such cases, add a comment to explain the "why" behind the code.
+
+
 1. Small
 2. Do one thing
 3. One level of abstraction per function
@@ -43,6 +55,10 @@ This will make your code more readable and easier to maintain.
 
 **DO NOT USE DEEP NESTING**
 Don't use nested if statements or loops that are more than 2 levels deep. This can make your code hard to read and understand.
+
+**DO NOT USE THE TERNARY OPERATOR FOR LONG EXPRESSIONS**
+Avoid using the ternary operator for long expressions, as it can make your code hard to read
+use only if it less then 40 characters, otherwise use if else statements.
 
 BAD
 ```

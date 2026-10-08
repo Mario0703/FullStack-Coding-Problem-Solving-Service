@@ -4,15 +4,8 @@ import java.util.regex.Pattern;
 
 public class CplusplusOutputFeedback implements OutputFeedbackStrat {
 
-    // g++ output has no banners, so the diagnostics, the "In function..."
-    // context, the quoted source lines (with their | markers), the carets
-    // and the fatal-error terminator are all captured:
-    //   /app/main.cpp: In function 'int main()':
-    //   /app/main.cpp:4:5: error: expected ',' or ';' before 'int'
-    //       4 |     int y = x +;
-    //         |     ^~~
-    //   /app/main.cpp:1:10: fatal error: iostream2: No such file or directory
-    //   compilation terminated.
+    // g++ prints no banners: the diagnostics, the "In function..." context,
+    // the | source markers and the fatal-error terminator are all feedback.
     private static final Pattern GPP_ERRORS = Pattern.compile(
             "^(?:"
                     + "\\S+\\.(?:cpp|cc|cxx|h|hpp):\\d+:\\d+:\\s*(?:fatal\\s+)?(?:error|warning):.*"
@@ -31,6 +24,6 @@ public class CplusplusOutputFeedback implements OutputFeedbackStrat {
 
     @Override
     public String normalize(String line) {
-        return line.replace("/app/", "");
+        return line.replace(CONTAINER_ROOT, "");
     }
 }
