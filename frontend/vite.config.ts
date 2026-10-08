@@ -12,13 +12,19 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls },
     }),
-    vuetify({ autoImport: true }),
+    vuetify({ autoImport: true, styles: { configFile: 'src/styles/settings.scss' } }),
     vueDevTools(),
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  // The Vuetify plugin rewrites component styles to virtual SASS modules when a
+  // configFile is used. Vite's dependency pre-bundler cannot resolve those
+  // virtual modules, so keep Vuetify out of the optimized deps.
+  optimizeDeps: {
+    exclude: ['vuetify'],
   },
   test: {
     environment: 'node',

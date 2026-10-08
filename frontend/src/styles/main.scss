@@ -1,0 +1,28 @@
+// Application-wide font tweaks.
+//
+// Vuetify's $body-font-family / $heading-font-family (see settings.scss) cover
+// body text and headings. This file assigns the monospace font to the
+// code-related sections: inline code, preformatted output and the CodeMirror
+// editor used by the challenge solver.
+
+:root {
+  --app-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+}
+
+// Inline code, keyboard keys and preformatted/code output.
+code,
+kbd,
+pre,
+samp,
+.v-code,
+.v-code__content {
+  font-family: var(--app-font-mono);
+}
+
+// CodeMirror editor (challenge solving / submission view).
+.cm-editor,
+.cm-editor .cm-scroller,
+.cm-editor .cm-content,
+.cm-editor .cm-gutters {
+  font-family: var(--app-font-mono);
+}
