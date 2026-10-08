@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 public class DockerCodeStrategy implements CodeExecuteStrat {
 
     private static final Pattern TEST_RESULT = Pattern.compile("Passed: (\\d+), Failed: (\\d+)");
-    // Regex group indexes inside TEST_RESULT; group 0 is the whole match.
     private static final int passingTestGroup = 1;
     private static final int failingTestGroup = 2;
     private static final int timeoutSeconds = 30;
@@ -27,15 +26,10 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     public ExecutionResult execute(String language, Path path) throws InterruptedException {
         String imageName = "minileetcode-execution-" + UUID.randomUUID();
 
-        // The per-language strategy knows how to cut the raw docker output
-        // down to the feedback that is relevant to the user.
         OutputFeedbackStrat feedback = OutputFeedbackFactory.forLanguage(language);
         CLIBuildCommands commands = new BuildCommands(path);
 
         try {
-            // The build only prepares the image, so a build failure is
-            // infrastructural and surfaces as a ContainerFailureException
-            // (HTTP 500) rather than as a submission result.
             commands.buildContainer(imageName);
 
             CommandResult runResult = commands.runContainer(imageName, imageName, timeoutSeconds);
@@ -52,8 +46,6 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
                     error.errorCode()
             );
         } finally {
-            // Always delete the one-off image: it is never reused and would
-            // otherwise accumulate on the host.
             removeImageQuietly(commands, imageName);
         }
     }
@@ -61,8 +53,8 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     private void removeImageQuietly(CLIBuildCommands commands, String imageName) {
         try {
             commands.removeImage(imageName);
-        } catch (RuntimeException cleanupFailure) {
-            // Cleanup must never mask the submission result.
+        } catch (Exception e) {
+            System.err.println("Failed to remove Docker image: " + e.getMessage());
         }
     }
 
@@ -73,6 +65,6 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
             int failed = Integer.parseInt(matcher.group(failingTestGroup));
             return new int[]{passed, failed};
         }
-        return new int[]{0, 0}; // just return empty if we did not find any test results
+        return new int[]{0, 0};
     }
 }
