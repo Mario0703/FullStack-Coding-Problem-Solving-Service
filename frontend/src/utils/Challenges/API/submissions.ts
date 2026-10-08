@@ -17,8 +17,6 @@ export type UserSubmission = {
   testCasesFailed: number
 }
 
-type testCase = 'passed' | 'failed' | 'total'
-
 
 export type SolvedChallenge = {
   challengeId: string
@@ -66,7 +64,14 @@ export async function loadUserSubmissions(): Promise<UserSubmission[]> {
     throw new Error(await readErrorMessage(response, 'Failed to fetch submissions'))
   }
 
-  return (await response.json()) as UserSubmission[]
+  const responseData: UserSubmission[] = await response.json()
+  const isResponseDataArray = responseData instanceof Array
+
+  if (!isResponseDataArray) {
+    throw new Error(await readErrorMessage(response, 'Expected array for submissions'))
+  }
+
+  return responseData
 }
 
 export async function loadSolvedChallenges(): Promise<SolvedChallenge[]> {
@@ -78,7 +83,14 @@ export async function loadSolvedChallenges(): Promise<SolvedChallenge[]> {
     throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
   }
 
-  return (await response.json()) as SolvedChallenge[]
+  const responseData: SolvedChallenge[] = await response.json()
+  const isResponseDataArray = responseData instanceof Array
+
+  if (!isResponseDataArray) {
+    throw new Error(await readErrorMessage(response, 'Expected array for solved challenges'))
+  }
+
+  return responseData
 }
 
 
@@ -91,8 +103,14 @@ export async function loadSolvedChallengeIds(): Promise<Set<string>> {
     throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
   }
 
-  const challengeIds = (await response.json()) as string[]
-  return new Set(challengeIds)
+  const responseData: string[] = await response.json()
+  const isResponseDataArray = responseData instanceof Array
+
+  if (!isResponseDataArray) {
+    throw new Error(await readErrorMessage(response, 'Expected array for solved challenge IDs'))
+  }
+
+  return new Set(responseData)
 }
 
 export async function loadAttemptedChallengeIds(): Promise<Set<string>> {
@@ -107,3 +125,4 @@ export async function loadAttemptedChallengeIds(): Promise<Set<string>> {
     ...submissions.map((submission) => submission.challengeId),
   ])
 }
+
