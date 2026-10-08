@@ -1,6 +1,7 @@
 package minicode.com;
 
 import minicode.com.controller.Challenges.submissionController;
+import minicode.com.controller.User.UserController;
 import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;
@@ -12,7 +13,9 @@ import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.solvedChallengesRepo;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.Instant;
 import java.util.List;
@@ -60,9 +63,11 @@ public class SubmissionControllerUnitTest {
         when(mockUserRepo.findFirstByUserName("TestUser")).thenReturn(Optional.of(user));
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("TestUser");
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "TestUser",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
 
         submissionController controller = new submissionController(
                 mock(SubmissionRepo.class),
@@ -113,9 +118,11 @@ public class SubmissionControllerUnitTest {
         when(mockUserRepo.findFirstByUserName("TestUser")).thenReturn(Optional.of(user));
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("TestUser");
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "TestUser",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
 
         submissionController controller = new submissionController(
                 mock(SubmissionRepo.class),

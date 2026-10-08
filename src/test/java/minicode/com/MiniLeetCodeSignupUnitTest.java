@@ -2,6 +2,7 @@ package minicode.com;
 
 import minicode.com.dto.User.SignupRequest;
 import minicode.com.entity.User.User;
+import minicode.com.exception.SignupException;
 import minicode.com.repository.UserRepo;
 import minicode.com.security.BcryptPasswordEncoder;
 import minicode.com.service.User.UserService;
@@ -13,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 
 
@@ -69,11 +69,11 @@ public class MiniLeetCodeSignupUnitTest {
         UserRepo mockUserRepo = mock(UserRepo.class);
         UserService userService = createUserService(mockUserRepo);
         // Test the signup method with the invalid user
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(signupRequest)
         );
-        assertEquals(400, exception.getStatusCode().value());
+        assertEquals("Signup request is invalid", exception.getMessage());
     }
 
     @Test
@@ -100,13 +100,12 @@ public class MiniLeetCodeSignupUnitTest {
 
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(signupRequest)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
-        assertEquals("Username already exists", exception.getReason());
+        assertEquals("Username already exists: " + userName, exception.getMessage());
 
         verify(mockUserRepo, never()).save(any(User.class));
     }
@@ -137,13 +136,12 @@ public class MiniLeetCodeSignupUnitTest {
 
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(request)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
-        assertEquals("Email already exists", exception.getReason());
+        assertEquals("Email already exists: " + email, exception.getMessage());
 
         verify(mockUserRepo, never()).save(any(User.class));
     }
@@ -157,12 +155,12 @@ public class MiniLeetCodeSignupUnitTest {
         UserRepo mockUserRepo = mock(UserRepo.class);
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(request)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
+        assertEquals("Signup request is invalid", exception.getMessage());
         verify(mockUserRepo, never()).save(any(User.class));
     }
     @Test
@@ -175,12 +173,12 @@ public class MiniLeetCodeSignupUnitTest {
         UserRepo mockUserRepo = mock(UserRepo.class);
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(request)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
+        assertEquals("Signup request is invalid", exception.getMessage());
         verify(mockUserRepo, never()).save(any(User.class));
     }
     @Test
@@ -193,12 +191,12 @@ public class MiniLeetCodeSignupUnitTest {
         UserRepo mockUserRepo = mock(UserRepo.class);
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(request)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
+        assertEquals("Signup request is invalid", exception.getMessage());
         verify(mockUserRepo, never()).save(any(User.class));
     }
 }
