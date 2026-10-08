@@ -20,8 +20,8 @@ export async function listChallenges(): Promise<ChallengeSummary[]> {
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'Could not load challenges'))
   }
-
-  return (await response.json()) as ChallengeSummary[]
+  const responseData: ChallengeSummary[] = await response.json()
+  return responseData
 }
 
 export async function getChallengeExamples(challengeId: string): Promise<ChallengeExample[]> {
@@ -33,7 +33,8 @@ export async function getChallengeExamples(challengeId: string): Promise<Challen
     throw new Error(await readErrorMessage(response, 'Could not load challenge examples'))
   }
 
-  return (await response.json()) as ChallengeExample[]
+  const responseData: ChallengeExample[] = await response.json()
+  return responseData
 }
 
 export async function getChallengeTestCases(challengeId: string): Promise<ChallengeTestCase[]> {
@@ -45,7 +46,8 @@ export async function getChallengeTestCases(challengeId: string): Promise<Challe
     throw new Error(await readErrorMessage(response, 'Could not load challenge test cases'))
   }
 
-  return (await response.json()) as ChallengeTestCase[]
+  const responseData: ChallengeTestCase[] = await response.json()
+  return responseData
 }
 
 export async function getChallengeSolution(challengeId: string): Promise<string> {
@@ -55,7 +57,8 @@ export async function getChallengeSolution(challengeId: string): Promise<string>
     throw new Error(await readErrorMessage(response, 'Could not load the challenge solution'))
   }
 
-  return await response.text()
+  const responseData: string = await response.text()
+  return responseData
 }
 
 export async function createChallenge(challengeData: CreateChallengeForm): Promise<Challenge> {
@@ -69,6 +72,10 @@ export async function createChallenge(challengeData: CreateChallengeForm): Promi
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'The challenge could not be created.'))
   }
+  const responseData: unknown = await response.json()
+  if (!responseData || typeof responseData !== 'object') {
+    throw new Error(await readErrorMessage(response, 'Invalid response from the server.'))
+  }
 
-  return (await response.json()) as Challenge
+  return responseData as Challenge
 }
