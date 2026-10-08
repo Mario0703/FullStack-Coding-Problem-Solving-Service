@@ -79,3 +79,30 @@ if (isUserAuthorized) {
     // do something
 }
 ```
+
+DO NOT WRITE SLOP CODE THAT CONTAINS NO SPACES
+THis can simply not be read and understood.
+
+BAD
+```java
+public class X{private int y;public X(){y=0;}public int z(){return y;}public void z1(int z0){y+=z0;}public static void main(String[]args){X y=new X();y.z1(200);y.z1(3400);System.out.println("Result is "+y.z());}}
+```
+
+**ALLWAYS WHEN INSPECTING A PIECE OF CODE ALLWAYS FILL OUT IF THESE HOLDS**
+
+1. Small
+2. Do One Thing
+3. One Level of Abstraction
+4. Use Descriptive Names
+5. Keep Number of Arguments Low
+6. Avoid Flag Arguments
+7. Have No Side Effects
+8. Command Query Separation
+9. Prefer Exceptions to Error Codes
+10. Don't Repeat Yourself
+11. Do the Same Thing, the Same Way
+12. Name Boolean Expressions
+13. Bail Out Fast
+14. Arguments in Argument Lists
+
+If one fails, the code is not clean and should be refactored.
