@@ -3,49 +3,9 @@ import { onMounted, ref } from 'vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import Statistics from '@/components/AdminPages/DashBoard/statistics.vue'
 import UsersStatics from '@/components/AdminPages/DashBoard/UsersStatics.vue'
-import type {
-  PlatformStatistics as PlatformStatisticsData,
-  UserStatistics as UserStatisticsData,
-} from '@/utils/Admin/AdminStatisticsUtils.ts'
-import { baseUrl } from '@/utils/api'
+import { loadStatistics, isLoading, users, statistics, loadError } from '@/utils/Admin/AdminStatisticsUtils.ts'
 
-const statistics = ref<PlatformStatisticsData | null>(null)
-const users = ref<UserStatisticsData[]>([])
-const isLoading = ref(true)
-const loadError = ref('')
 
-async function loadStatistics() {
-  try {
-    const permissionResponse = await fetch(`${baseUrl}/api/admin/stats/permission`, {
-      credentials: 'include',
-    })
-
-    if (permissionResponse.status === 403) {
-      loadError.value = 'You do not have permission to view platform statistics.'
-      return
-    }
-
-    if (!permissionResponse.ok) {
-      throw new Error('Could not check statistics permission')
-    }
-
-    const [statisticsResponse, usersResponse] = await Promise.all([
-      fetch(`${baseUrl}/api/admin/stats`, { credentials: 'include' }),
-      fetch(`${baseUrl}/api/admin/stats/users/list`, { credentials: 'include' }),
-    ])
-
-    if (!statisticsResponse.ok || !usersResponse.ok) {
-      throw new Error('Could not load platform statistics')
-    }
-
-    statistics.value = (await statisticsResponse.json()) as PlatformStatisticsData
-    users.value = (await usersResponse.json()) as UserStatisticsData[]
-  } catch {
-    loadError.value = 'Unable to load platform statistics. Please try again later.'
-  } finally {
-    isLoading.value = false
-  }
-}
 
 onMounted(loadStatistics)
 </script>
