@@ -19,10 +19,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Stateless helpers for {@link submissionController}. The controller owns the
- * repositories, so they are passed in and every method is static.
- */
+
 public final class SubmissionHelper {
 
     private SubmissionHelper() {
@@ -48,11 +45,6 @@ public final class SubmissionHelper {
         return submissionRepo.findReceiptFailedTestCasesByUserId(userId);
     }
 
-    /**
-     * Collapses the per-language SolvedChallenges rows into exactly one
-     * response per challenge, keeping the languages the user solved it in
-     * and the most recent solve date.
-     */
     public static List<SolvedChallengeResponse> buildSolvedChallengeResponses(
             ChallengeRepo challengeRepo,
             List<SolvedChallenges> solvedChallenges

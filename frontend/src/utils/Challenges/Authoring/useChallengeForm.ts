@@ -11,7 +11,6 @@ import type {
 } from '../Types/authoringTypes'
 import type { ChallengeCategory, ChallengeDifficulty, Language } from '../Types/types'
 
-/** Every value the user edits on the challenge form. */
 export interface ChallengeFormFields {
   name: string
   description: string
@@ -39,7 +38,7 @@ export interface ChallengeFormActions {
   toggleExtraLanguage(value: Language): void
 }
 
-/** The shape returned by {@link useChallengeForm}. */
+
 export interface ChallengeFormController {
   fields: ChallengeFormFields
   actions: ChallengeFormActions
@@ -57,10 +56,7 @@ export function useChallengeForm(): ChallengeFormController {
     }
   })
 
-  /**
-   * Every value the user edits. `reactive` unwraps the FormSetup refs, so the
-   * template binds them directly: `fields.name`, `fields.testCases`, and so on.
-   */
+
   const fields = reactive({
     name: setup.name,
     description: setup.description,
@@ -80,10 +76,7 @@ export function useChallengeForm(): ChallengeFormController {
     extraSetups: setup.extraSetups,
   })
 
-  /**
-   * Everything that acts on the form. `toCreateChallengeForm` is the single
-   * place that maps the user's input to the outgoing API payload.
-   */
+
   const actions = {
     resetForm(): void {
       setup.resetForm()

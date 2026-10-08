@@ -17,8 +17,9 @@ export type UserSubmission = {
   testCasesFailed: number
 }
 
-// One entry per solved challenge, extracted from the solved challenges
-// table: no matter how often the user re-solves it or in how many languages.
+type testCase = 'passed' | 'failed' | 'total'
+
+
 export type SolvedChallenge = {
   challengeId: string
   challengeName: string
@@ -34,15 +35,18 @@ async function loadTestCaseValues(path: 'passed' | 'failed' | 'total'): Promise<
     credentials: 'include',
   })
 
-  if (response.status === 401) {
-    return []
-  }
-
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, `Failed to fetch ${path} test cases`))
   }
 
-  return (await response.json()) as number[]
+  const responseData = await response.json()
+  const isResponseDataArray = responseData instanceof Array
+
+  if (!isResponseDataArray) {
+    throw new Error(await readErrorMessage(response, `Expected array for ${path} test cases`))
+  }
+
+  return responseData
 }
 
 export function loadSubmissionTestCaseValues(): Promise<[number[], number[], number[]]> {
@@ -58,10 +62,6 @@ export async function loadUserSubmissions(): Promise<UserSubmission[]> {
     credentials: 'include',
   })
 
-  if (response.status === 401) {
-    return []
-  }
-
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'Failed to fetch submissions'))
   }
@@ -73,10 +73,6 @@ export async function loadSolvedChallenges(): Promise<SolvedChallenge[]> {
   const response = await fetch(`${SUBMISSIONS_URL}/solved`, {
     credentials: 'include',
   })
-
-  if (response.status === 401) {
-    return []
-  }
 
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
@@ -91,10 +87,6 @@ export async function loadSolvedChallengeIds(): Promise<Set<string>> {
     credentials: 'include',
   })
 
-  if (response.status === 401) {
-    return new Set()
-  }
-
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, 'Failed to fetch solved challenges'))
   }
@@ -104,8 +96,7 @@ export async function loadSolvedChallengeIds(): Promise<Set<string>> {
 }
 
 export async function loadAttemptedChallengeIds(): Promise<Set<string>> {
-  // The submission receipt only lists failed attempts, so solved challenges
-  // have to be merged in from the solved challenges table.
+
   const [submissions, solvedIds] = await Promise.all([
     loadUserSubmissions(),
     loadSolvedChallengeIds(),
