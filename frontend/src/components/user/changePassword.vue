@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { inputsMatch, isblank, isValidPassword } from "@/utils/Login/UserInputCheck.ts";
+import { changePassword as changePasswordApi } from "@/utils/Users/api";
+import { validatePasswordChange } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
-import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
@@ -16,44 +16,25 @@ const saveError = ref("");
 const validationSuccess = ref("");
 const isSubmitting = ref(false);
 
-async function changePassword() {
+async function handleChangePassword() {
   validationError.value = "";
   saveError.value = "";
   validationSuccess.value = "";
 
-  if (isblank(currentPassword.value)) {
-    validationError.value = "Current password cannot be blank.";
-    return;
-  }
-
-  if (isblank(newPassword.value)) {
-    validationError.value = "New password cannot be blank.";
-    return;
-  }
-
-  if (!isValidPassword(newPassword.value)) {
-    validationError.value =
-      "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, and number.";
-    return;
-  }
-
-  if (!inputsMatch(newPassword.value, confirmNewPassword.value)) {
-    validationError.value = "New password and confirmation do not match.";
+  const validation = validatePasswordChange(
+    currentPassword.value,
+    newPassword.value,
+    confirmNewPassword.value,
+  );
+  if (!validation.isValid) {
+    validationError.value = validation.error;
     return;
   }
 
   isSubmitting.value = true;
 
   try {
-    const response = await fetch(`${baseUrl}/api/user/change-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        currentPassword: currentPassword.value,
-        newPassword: newPassword.value,
-      }),
-    });
+    const response = await changePasswordApi(currentPassword.value, newPassword.value);
 
     if (!response.ok) {
       saveError.value = await readErrorMessage(response, "Unable to change password.");
@@ -81,7 +62,7 @@ function abortChange() {
   <ErrorFeedback v-if="saveError" :message="saveError" />
   <SuccessFeedback v-if="validationSuccess" :message="validationSuccess" />
 
-  <v-form @submit.prevent="changePassword">
+  <v-form @submit.prevent="handleChangePassword">
     <v-text-field
       v-model="currentPassword"
       label="Current password"

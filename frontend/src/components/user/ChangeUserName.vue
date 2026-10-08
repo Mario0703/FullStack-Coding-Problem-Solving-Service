@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { currentUser } from "@/authenticator/auth";
-import {inputsMatch, isblank} from "@/utils/Login/UserInputCheck.ts";
+import { currentUser } from "@/utils/Users/state";
+import { changeUserName } from "@/utils/Users/api";
+import { validateUserNameChange } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
-import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
@@ -13,29 +13,20 @@ const validationError = ref("");
 const saveError = ref("");
 const isSubmitting = ref(false);
 
-async function changeUserName() {
+async function handleChangeUserName() {
   validationError.value = "";
   saveError.value = "";
 
-  if (isblank(newUserName.value)) {
-    validationError.value = "New user name cannot be blank.";
-    return;
-  }
-
-  if (!inputsMatch(newUserName.value, confirmNewUserName.value)) {
-    validationError.value = "New user name and confirmation do not match.";
+  const validation = validateUserNameChange(newUserName.value, confirmNewUserName.value);
+  if (!validation.isValid) {
+    validationError.value = validation.error;
     return;
   }
 
   isSubmitting.value = true;
 
   try {
-    const response = await fetch(`${baseUrl}/api/user/change-username`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ newUserName: newUserName.value.trim() }),
-    });
+    const response = await changeUserName(newUserName.value);
 
     if (!response.ok) {
       saveError.value = await readErrorMessage(response, "Unable to change user name.");
@@ -60,7 +51,7 @@ function abortChange() {
   <ErrorFeedback v-if="validationError" :message="validationError" />
   <ErrorFeedback v-if="saveError" :message="saveError" />
 
-  <v-form @submit.prevent="changeUserName">
+  <v-form @submit.prevent="handleChangeUserName">
     <v-text-field
       :model-value="currentUser?.userName ?? ''"
       label="Current user name"

@@ -1,49 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { baseUrl } from '@/utils/api'
 import SortComponentScoreBoard from '@/components/ScoreBoard/SortComponentScoreBoard.vue'
-
-type UserStats = {
-  userName: string
-  score: number
-  numberOfEasyChallengesSolved: number
-  numberOfMediumChallengesSolved: number
-  numberOfHardChallengesSolved: number
-  totalChallengesSolved: number
-}
+import type { UserStats } from '@/utils/ScoreBoard/types'
+import { sortUsers } from '@/utils/ScoreBoard/sorting'
+import { loadUserStats } from '@/utils/ScoreBoard/api'
 
 const users = ref<UserStats[]>([])
 const sortBy = ref('score')
 
-const sortGetters: Record<string, (user: UserStats) => number> = {
-  score: (user) => user.score,
-  totalChallengesSolved: (user) => user.totalChallengesSolved,
-  numberOfEasyChallengesSolved: (user) => user.numberOfEasyChallengesSolved,
-  numberOfMediumChallengesSolved: (user) => user.numberOfMediumChallengesSolved,
-  numberOfHardChallengesSolved: (user) => user.numberOfHardChallengesSolved,
-}
-
-const sortedUsers = computed(() => {
-  const getValue = sortGetters[sortBy.value] ?? ((user: UserStats) => user.score)
-
-  return [...users.value].sort((a, b) => getValue(b) - getValue(a))
-})
-
-async function loadUserStats(): Promise<UserStats[]> {
-  const response = await fetch(`${baseUrl}/api/scoreboard/user-stats`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  })
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-
-  return response.json()
-}
+const sortedUsers = computed(() => sortUsers(users.value, sortBy.value))
 
 onMounted(async () => {
   try {

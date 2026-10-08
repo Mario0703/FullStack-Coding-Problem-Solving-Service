@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { currentUser } from '@/authenticator/auth'
+import { currentUser } from '@/utils/Users/state'
 import CodeEditor from '@/components/code-execution/CodeEditor.vue'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'

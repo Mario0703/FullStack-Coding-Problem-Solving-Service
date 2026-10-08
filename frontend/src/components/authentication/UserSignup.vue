@@ -9,9 +9,9 @@ import {
   isValidEmail,
   isValidPassword,
 } from '@/utils/signupValidation'
-import { baseUrl } from '@/utils/api'
+import { signupUser } from '@/utils/Users/api'
 import { readErrorMessage } from '@/utils/apiError'
-import type { SignupData } from '@/utils/signupValidation'
+import type { SignupData } from '@/utils/Users/types'
 
 const userName = ref("");
 const email = ref("");
@@ -34,14 +34,7 @@ async function sendUserData() {
   }
 
   try {
-    const response = await fetch(`${baseUrl}/api/user/signup`, {
-
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    })
+    const response = await signupUser(userData)
 
     if (!response.ok) {
       signupError.value = await readErrorMessage(

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { isblank, isValidEmail } from "@/utils/Login/UserInputCheck.ts";
+import { validateForgotPassword } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 
@@ -14,13 +14,9 @@ function submitForgotPassword() {
   validationError.value = "";
   successMessage.value = "";
 
-  if (isblank(email.value)) {
-    validationError.value = "Email cannot be blank.";
-    return;
-  }
-
-  if (!isValidEmail(email.value)) {
-    validationError.value = "Enter a valid email address.";
+  const validation = validateForgotPassword(email.value);
+  if (!validation.isValid) {
+    validationError.value = validation.error;
     return;
   }
 

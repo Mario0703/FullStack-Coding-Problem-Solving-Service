@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { currentUser } from "@/authenticator/auth";
-import { inputsMatch, isblank, isValidEmail } from "@/utils/Login/UserInputCheck.ts";
+import { currentUser } from "@/utils/Users/state";
+import { changeEmail } from "@/utils/Users/api";
+import { validateEmailChange } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
-import { baseUrl } from '@/utils/api';
 import { readErrorMessage } from '@/utils/apiError';
 
 const emit = defineEmits<{ abort: [] }>();
@@ -13,34 +13,20 @@ const validationError = ref("");
 const saveError = ref("");
 const isSubmitting = ref(false);
 
-async function changeEmail() {
+async function handleChangeEmail() {
   validationError.value = "";
   saveError.value = "";
 
-  if (isblank(newEmail.value)) {
-    validationError.value = "New email cannot be blank.";
-    return;
-  }
-
-  if (!isValidEmail(newEmail.value)) {
-    validationError.value = "Enter a valid email address.";
-    return;
-  }
-
-  if (!inputsMatch(newEmail.value, confirmNewEmail.value)) {
-    validationError.value = "New email and confirmation do not match.";
+  const validation = validateEmailChange(newEmail.value, confirmNewEmail.value);
+  if (!validation.isValid) {
+    validationError.value = validation.error;
     return;
   }
 
   isSubmitting.value = true;
 
   try {
-    const response = await fetch(`${baseUrl}/api/user/change-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ newEmail: newEmail.value.trim() }),
-    });
+    const response = await changeEmail(newEmail.value);
 
     if (!response.ok) {
       saveError.value = await readErrorMessage(response, "Unable to change email.");
@@ -65,7 +51,7 @@ function abortChange() {
   <ErrorFeedback v-if="validationError" :message="validationError" />
   <ErrorFeedback v-if="saveError" :message="saveError" />
 
-  <v-form @submit.prevent="changeEmail">
+  <v-form @submit.prevent="handleChangeEmail">
     <v-text-field
       :model-value="currentUser?.email ?? ''"
       label="Current email"

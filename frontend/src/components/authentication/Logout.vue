@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { clearCurrentUser } from '@/authenticator/auth'
+import { clearCurrentUser } from '@/utils/Users/state'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import { baseUrl } from '@/utils/api'
 import { readErrorMessage } from '@/utils/apiError'

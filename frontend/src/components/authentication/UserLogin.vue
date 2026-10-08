@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loadCurrentUser } from '@/authenticator/auth'
+import { loadCurrentUser } from '@/utils/Users/state'
 import { getLoginValidationErrors } from '@/utils/Login/UserInputCheck.ts'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { loginFactory } from '@/utils/Login/LoginFactory.ts'
