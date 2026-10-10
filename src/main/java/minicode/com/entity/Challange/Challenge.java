@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "challenges", schema = "public") // provides the name of the table
 
 public class Challenge {
-    protected Challenge() {
+    public Challenge() {
     }
 
     @Column(nullable = false, unique = true)
