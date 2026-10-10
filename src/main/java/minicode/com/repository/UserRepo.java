@@ -18,7 +18,7 @@ public interface UserRepo extends JpaRepository<User, UUID> {
     Optional<User> findFirstByEmail(String email);
 
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("update User u set u.tokenUsage = u.tokenUsage + :tokens where u.userId = :userId")
     void addTokenUsage(@Param("userId") UUID userId, @Param("tokens") long tokens);

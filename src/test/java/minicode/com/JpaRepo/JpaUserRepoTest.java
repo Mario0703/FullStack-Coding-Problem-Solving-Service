@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -42,6 +43,27 @@ public class JpaUserRepoTest {
     }
 
     @Test
+    public void findFirstByUserNameTest() {
+        Optional<User> foundUser = userRepo.findFirstByUserName("testUser");
+        assertThat(foundUser.isPresent()).isTrue();
+        assertThat(foundUser.get().getEmail().equals("testuser@example.com"));
+    }
 
+    @Test
+    public void findFirstByEmailTest() {
+        Optional<User> foundUser = userRepo.findFirstByEmail("testuser@example.com");
+        assertThat(foundUser.isPresent()).isTrue();
+        assertThat(foundUser.get().getUserName().equals("testUser"));
+    }
+
+    @Test
+    public void addTokenUsageTest() {
+        Optional<User> foundUser = userRepo.findFirstByEmail("testuser@example.com");
+        UUID userId = foundUser.get().getUserId();
+        long tokens = 1;
+        userRepo.addTokenUsage(userId, tokens);
+        User updatedUser = userRepo.findById(userId).orElse(null);
+        assertThat(updatedUser.getTokenUsage()).isEqualTo(1);
+    }
 
 }
