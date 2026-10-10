@@ -11,6 +11,7 @@ import minicode.com.dto.User.SignupRequest;
 import minicode.com.dto.User.SolverResponse;
 import minicode.com.dto.User.UserSummary;
 import minicode.com.entity.Challange.SolvedChallenges;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.exception.LoginErrorException;
 import minicode.com.exception.SignupException;
@@ -66,11 +67,11 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = new User(
-                request.getUserName(),
-                request.getEmail(),
-                encodedPassword
-        );
+        User user = new User();
+        user.setUserName(request.getUserName());
+        user.setEmail(request.getEmail());
+        user.setPassword(encodedPassword);
+        user.setRole(UserRole.USER);
 
         if (roleRepo != null) {
             roleRepo.findByName("ROLE_USER").ifPresent(role ->

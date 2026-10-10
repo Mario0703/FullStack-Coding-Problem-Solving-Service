@@ -31,19 +31,18 @@ public class SubmissionEntityTest {
         User persistedUser = entityManager.persistAndFlush(user);
 
         // And a persisted challenge
-        Challenge challenge = new Challenge(
-                "Add Two Numbers",
-                "Given two numbers, return their sum.",
-                Difficulty.EASY,
-                Category.GENERAL,
-                2,
-                "solution",
-                "runner",
-                "runnerExplanation",
-                "template",
-                "templateExplanation",
-                "python"
-        );
+        Challenge challenge = new Challenge();
+        challenge.setName("Add Two Numbers");
+        challenge.setDescription("Given two numbers, return their sum.");
+        challenge.setDifficulty(Difficulty.EASY);
+        challenge.setCategory(Category.GENERAL);
+        challenge.setNumberOfTestCases(2);
+        challenge.setSolution("solution");
+        challenge.setRunner("runner");
+        challenge.setRunnerExplanation("runnerExplanation");
+        challenge.setTemplete("template");
+        challenge.setTempleteExplanation("templateExplanation");
+        challenge.setLanguage("python");
         Challenge persistedChallenge = entityManager.persistAndFlush(challenge);
 
         // And a valid submission
@@ -52,16 +51,15 @@ public class SubmissionEntityTest {
         int exitCode = 0;
         int testCasesPassed = 2;
         int testCasesFailed = 0;
-        Submission submission = new Submission(
-                persistedUser,
-                persistedChallenge,
-                code,
-                language,
-                exitCode,
-                SubmissionStatus.ACCEPTED,
-                testCasesPassed,
-                testCasesFailed
-        );
+        Submission submission = new Submission();
+        submission.setUser(persistedUser);
+        submission.setChallenge(persistedChallenge);
+        submission.setCode(code);
+        submission.setLanguage(language);
+        submission.setExitCode(exitCode);
+        submission.setStatus(SubmissionStatus.ACCEPTED);
+        submission.setTestCasesPassed(testCasesPassed);
+        submission.setTestCasesFailed(testCasesFailed);
 
         // When it is saved
         Submission saved = entityManager.persistAndFlush(submission);

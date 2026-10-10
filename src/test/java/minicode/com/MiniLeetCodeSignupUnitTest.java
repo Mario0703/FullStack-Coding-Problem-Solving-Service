@@ -1,6 +1,7 @@
 package minicode.com;
 
 import minicode.com.dto.User.SignupRequest;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.exception.SignupException;
 import minicode.com.repository.UserRepo;
@@ -87,11 +88,11 @@ public class MiniLeetCodeSignupUnitTest {
         signupRequest.setEmail(email);
         signupRequest.setPassword(password);
 
-        User existingUser = new User(
-                userName,
-                "existing@example.com",
-                "encoded-password"
-        );
+        User existingUser = new User();
+        existingUser.setUserName(userName);
+        existingUser.setEmail("existing@example.com");
+        existingUser.setPassword("encoded-password");
+        existingUser.setRole(UserRole.USER);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
 
@@ -120,11 +121,11 @@ public class MiniLeetCodeSignupUnitTest {
         request.setEmail(email);
         request.setPassword(password);
 
-        User existingUser = new User(
-                "AnotherUser",
-                email,
-                "encoded-password"
-        );
+        User existingUser = new User();
+        existingUser.setUserName("AnotherUser");
+        existingUser.setEmail(email);
+        existingUser.setPassword("encoded-password");
+        existingUser.setRole(UserRole.USER);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
 

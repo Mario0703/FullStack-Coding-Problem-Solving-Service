@@ -7,6 +7,7 @@ import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.Difficulty;
 import minicode.com.entity.Challange.SolvedChallenges;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
@@ -50,7 +51,11 @@ public class SubmissionControllerUnitTest {
         Challenge addChallenge = challenge(addChallengeId, "Add Two Numbers", Difficulty.EASY);
         Challenge reverseChallenge = challenge(reverseChallengeId, "Reverse String", Difficulty.MEDIUM);
 
-        User user = new User("TestUser", "test@example.com", "password");
+        User user = new User();
+        user.setUserName("TestUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
 
         solvedChallengesRepo mockSolvedRepo = mock(solvedChallengesRepo.class);
@@ -111,7 +116,11 @@ public class SubmissionControllerUnitTest {
         ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
         when(mockChallengeRepo.findAllById(any())).thenReturn(List.of());
 
-        User user = new User("TestUser", "test@example.com", "password");
+        User user = new User();
+        user.setUserName("TestUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
@@ -144,19 +153,18 @@ public class SubmissionControllerUnitTest {
     }
 
     private Challenge challenge(UUID challengeId, String name, Difficulty difficulty) {
-        Challenge challenge = new Challenge(
-                name,
-                "description",
-                difficulty,
-                Category.GENERAL,
-                2,
-                "solution",
-                "runner",
-                "runnerExplanation",
-                "template",
-                "templateExplanation",
-                "python"
-        );
+        Challenge challenge = new Challenge();
+        challenge.setName(name);
+        challenge.setDescription("description");
+        challenge.setDifficulty(difficulty);
+        challenge.setCategory(Category.GENERAL);
+        challenge.setNumberOfTestCases(2);
+        challenge.setSolution("solution");
+        challenge.setRunner("runner");
+        challenge.setRunnerExplanation("runnerExplanation");
+        challenge.setTemplete("template");
+        challenge.setTempleteExplanation("templateExplanation");
+        challenge.setLanguage("python");
         challenge.setId(challengeId);
         return challenge;
     }

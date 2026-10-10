@@ -16,19 +16,11 @@ public class UserEntityTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private User user;
-
-
-    @BeforeEach
-    private void setUp() {
-        user = new User();
-    }
-
-
 
     @Test
     public void testUserCreationForAValidUser(){
         // Given a user with valid properties
+        User user = new User();
         String username = "testUser";
         String email = "mail@mail.com";
         String password = "password";

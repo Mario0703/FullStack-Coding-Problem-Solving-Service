@@ -1,13 +1,17 @@
 package minicode.com.entity.Container;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "containers", schema = "public")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Container {
 
     @Id
@@ -19,13 +23,4 @@ public class Container {
 
     @Column(columnDefinition = "TEXT")
     private String containerMetadata;
-
-    protected Container() {
-    }
-
-    public Container(String language, String imageName, String containerMetadata) {
-        this.language = language;
-        this.imageName = imageName;
-        this.containerMetadata = containerMetadata;
-    }
 }

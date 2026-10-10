@@ -18,7 +18,8 @@ public class RoleEntityTest {
     @Test
     public void testRoleEntity() {
         String roleName = "ADMIN";
-        Role role = new Role(roleName);
+        Role role = new Role();
+        role.setName(roleName);
         Role savedRole = entityManager.persistAndFlush(role);
         entityManager.clear();
         assertThat(savedRole.getName()).isEqualTo(roleName);

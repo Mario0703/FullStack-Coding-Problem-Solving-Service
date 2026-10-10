@@ -4,6 +4,7 @@ import minicode.com.controller.Score.Diffculty.DiffcultyFacttory;
 import minicode.com.controller.Score.MiniCodeScore;
 import minicode.com.controller.Score.ScoreStrat;
 import minicode.com.entity.Challange.Difficulty;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.UserRepo;
@@ -25,7 +26,11 @@ public class ScoreServiceUnitTest {
     }
 
     private User createUser() {
-        User user = new User("TestUser", "test@example.com", "password");
+        User user = new User();
+        user.setUserName("TestUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setScore(0);
         user.setNumberOfEasyChallengesSolved(0);
         user.setNumberOfMediumChallengesSolved(0);

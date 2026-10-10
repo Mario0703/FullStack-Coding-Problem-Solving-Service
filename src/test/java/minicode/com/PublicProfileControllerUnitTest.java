@@ -2,6 +2,7 @@ package minicode.com;
 
 import minicode.com.controller.User.PublicProfileController;
 import minicode.com.dto.User.UserSummary;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
 import minicode.com.service.User.UserService;
@@ -23,7 +24,11 @@ public class PublicProfileControllerUnitTest {
     public void testGetPublicProfileReturnsUserSummaryWithStats() {
         UUID userId = UUID.randomUUID();
 
-        User user = new User("PublicUser", "public@example.com", "password");
+        User user = new User();
+        user.setUserName("PublicUser");
+        user.setEmail("public@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
         user.setScore(42);
         user.setNumberOfEasyChallengesSolved(5);

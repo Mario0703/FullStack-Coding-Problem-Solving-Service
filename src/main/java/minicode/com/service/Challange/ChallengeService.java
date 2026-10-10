@@ -117,19 +117,18 @@ public class ChallengeService {
         String runner = request.getRunner();
         String runnerExplanation = request.getRunnerExplanation();
 
-        Challenge challenge = new Challenge(
-                name,
-                description,
-                difficulty,
-                category,
-                numberOfTestCases,
-                solution,
-                runner,
-                runnerExplanation,
-                template,
-                templateExplanation,
-                request.getLanguage()
-        );
+        Challenge challenge = new Challenge();
+        challenge.setName(name);
+        challenge.setDescription(description);
+        challenge.setDifficulty(difficulty);
+        challenge.setCategory(category);
+        challenge.setNumberOfTestCases(numberOfTestCases);
+        challenge.setSolution(solution);
+        challenge.setRunner(runner);
+        challenge.setRunnerExplanation(runnerExplanation);
+        challenge.setTemplete(template);
+        challenge.setTempleteExplanation(templateExplanation);
+        challenge.setLanguage(request.getLanguage());
 
         challenge.setHints(request.getHints());
 
@@ -166,26 +165,26 @@ public class ChallengeService {
         boolean hasRequestedSetups = requestedSetups != null && !requestedSetups.isEmpty();
         if (hasRequestedSetups) {
             for (CreateLanguageSetupRequest setup : requestedSetups) {
-                challenge.getLanguageSetups().add(new ChallengeLanguageSetup(
-                        challenge,
-                        normalizeLanguage(setup.getLanguage()),
-                        setup.getTemplate(),
-                        setup.getTemplateExplanation(),
-                        setup.getRunner(),
-                        setup.getRunnerExplanation()
-                ));
+                ChallengeLanguageSetup languageSetup = new ChallengeLanguageSetup();
+                languageSetup.setChallenge(challenge);
+                languageSetup.setLanguage(normalizeLanguage(setup.getLanguage()));
+                languageSetup.setTemplate(setup.getTemplate());
+                languageSetup.setTemplateExplanation(setup.getTemplateExplanation());
+                languageSetup.setRunner(setup.getRunner());
+                languageSetup.setRunnerExplanation(setup.getRunnerExplanation());
+                challenge.getLanguageSetups().add(languageSetup);
             }
             return;
         }
 
-        challenge.getLanguageSetups().add(new ChallengeLanguageSetup(
-                challenge,
-                normalizeLanguage(request.getLanguage()),
-                request.getTemplate(),
-                request.getTemplateExplanation(),
-                request.getRunner(),
-                request.getRunnerExplanation()
-        ));
+        ChallengeLanguageSetup languageSetup = new ChallengeLanguageSetup();
+        languageSetup.setChallenge(challenge);
+        languageSetup.setLanguage(normalizeLanguage(request.getLanguage()));
+        languageSetup.setTemplate(request.getTemplate());
+        languageSetup.setTemplateExplanation(request.getTemplateExplanation());
+        languageSetup.setRunner(request.getRunner());
+        languageSetup.setRunnerExplanation(request.getRunnerExplanation());
+        challenge.getLanguageSetups().add(languageSetup);
     }
 
     public void deleteChallenge(UUID challengeid) {

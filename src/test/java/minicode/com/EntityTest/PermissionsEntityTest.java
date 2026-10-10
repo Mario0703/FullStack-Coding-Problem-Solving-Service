@@ -19,7 +19,8 @@ public class PermissionsEntityTest {
     public void testPermissionCreationForAValidPermission() {
         // Given a permission with a valid name
         String name = UserPermissions.VIEW_STATISTICS.name();
-        Permissions permission = new Permissions(name);
+        Permissions permission = new Permissions();
+        permission.setName(name);
 
         // And it is saved and flushed to the database
         Permissions saved = entityManager.persistAndFlush(permission);

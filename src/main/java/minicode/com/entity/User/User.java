@@ -2,7 +2,9 @@ package minicode.com.entity.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import minicode.com.entity.Roles.Role;
 import minicode.com.entity.Roles.UserRole;
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Table(name = "users", schema = "public") // provides the name of the table
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Column(nullable = false, unique = true)
@@ -59,20 +63,6 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-
-    public User() {
-    }
-
-    public User(String userName, String email, String password) {
-        this(userName, email, password, UserRole.USER);
-    }
-
-    public User(String userName, String email, String password, UserRole role) {
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 
     public UUID getId() {
         return userId;

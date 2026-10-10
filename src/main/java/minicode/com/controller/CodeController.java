@@ -95,16 +95,16 @@ public class CodeController {
             ExecutionResult result = containerStrat.execute(language, tempEnvPath);
             SubmissionStatus status = result.status();
 
-            submissionRepo.save(new Submission(
-                    user,
-                    challenge,
-                    codeSubmission.getCode(),
-                    language,
-                    result.exitCode(),
-                    status,
-                    result.passingTestCases(),
-                    result.failingTestCases()
-            ));
+            Submission submission = new Submission();
+            submission.setUser(user);
+            submission.setChallenge(challenge);
+            submission.setCode(codeSubmission.getCode());
+            submission.setLanguage(language);
+            submission.setExitCode(result.exitCode());
+            submission.setStatus(status);
+            submission.setTestCasesPassed(result.passingTestCases());
+            submission.setTestCasesFailed(result.failingTestCases());
+            submissionRepo.save(submission);
 
             if (status == SubmissionStatus.ACCEPTED) {
                 SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode(), language);
@@ -135,7 +135,12 @@ public class CodeController {
         boolean alreadySolvedInLanguage = solvedChallengesRepository.existsByUserIdAndChallengeIdAndLanguage(userId, challengeId, language);
 
         if (!alreadySolvedInLanguage) {
-            solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code, language));
+            SolvedChallenges solved = new SolvedChallenges();
+            solved.setUserId(userId);
+            solved.setChallengeId(challengeId);
+            solved.setCode(code);
+            solved.setLanguage(language);
+            solvedChallengesRepository.save(solved);
         }
 
         if (alreadySolvedChallenge) {

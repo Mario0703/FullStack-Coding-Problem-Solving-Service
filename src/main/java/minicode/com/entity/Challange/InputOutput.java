@@ -2,7 +2,9 @@ package minicode.com.entity.Challange;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -11,6 +13,8 @@ import java.util.UUID;
 @Table(name = "input_output", schema = "public") // provides the name of the table
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InputOutput {
     @Column
     private String inputExample;
