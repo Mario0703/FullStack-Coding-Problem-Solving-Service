@@ -20,7 +20,7 @@ public class TestRunner {
     @Column(columnDefinition = "TEXT")
     private String testRunnerMetaData;
 
-    protected TestRunner() {
+    public TestRunner() {
     }
 
     public TestRunner(String language, String testRunnerMetaData) {
