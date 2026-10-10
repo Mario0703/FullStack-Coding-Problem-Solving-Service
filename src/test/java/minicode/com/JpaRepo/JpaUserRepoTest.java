@@ -3,6 +3,7 @@ package minicode.com.JpaRepo;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,13 @@ public class JpaUserRepoTest {
         userRepo.addTokenUsage(userId, tokens);
         User updatedUser = userRepo.findById(userId).orElse(null);
         assertThat(updatedUser.getTokenUsage()).isEqualTo(1);
+    }
+
+
+
+    @AfterEach // release data after each test to avoid interference between tests
+    public void tearDown() {
+        userRepo.deleteAll();
     }
 
 }
