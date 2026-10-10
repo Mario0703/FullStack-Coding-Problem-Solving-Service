@@ -149,6 +149,12 @@ public class JpaTestSubmissionRepo {
         assertThat(submissionRepo.findAllByUser_UserId(secondUserId).size()).isEqualTo(1);
     }
 
+    @Test
+    public void whenUserHasSubmissionsThenCountIsCorrect() {
+        long submissionCount = submissionRepo.countByUser_UserId(user.getUserId());
+        assertThat(submissionCount).isEqualTo(1);
+    }
+
     @AfterEach
     public void tearDown() {
         userRepo.deleteAll();
