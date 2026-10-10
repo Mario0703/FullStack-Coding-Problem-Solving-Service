@@ -17,12 +17,7 @@ public interface UserRepo extends JpaRepository<User, UUID> {
 
     Optional<User> findFirstByEmail(String email);
 
-    Optional<User> findFirstByUserNameAndRole(String userName, UserRole role);
 
-    /**
-     * Adds tokens to a user's running total. Done as a single atomic UPDATE so
-     * concurrent hints cannot lose an increment to a read-modify-write race.
-     */
     @Modifying
     @Transactional
     @Query("update User u set u.tokenUsage = u.tokenUsage + :tokens where u.userId = :userId")
