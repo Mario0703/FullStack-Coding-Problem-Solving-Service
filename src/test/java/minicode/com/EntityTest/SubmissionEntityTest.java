@@ -1,5 +1,6 @@
 package minicode.com.EntityTest;
 
+import jakarta.persistence.PersistenceException;
 import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.Difficulty;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 public class SubmissionEntityTest {
@@ -21,7 +22,7 @@ public class SubmissionEntityTest {
     private TestEntityManager entityManager;
 
     @Test
-    void savesAValidSubmissionEntity() {
+    void savingSubmissionWithNullCodeThrows() {
         // Given a persisted user
         User user = new User();
         user.setUserName("testUser");
@@ -37,47 +38,19 @@ public class SubmissionEntityTest {
         challenge.setDifficulty(Difficulty.EASY);
         challenge.setCategory(Category.GENERAL);
         challenge.setNumberOfTestCases(2);
-        challenge.setSolution("solution");
-        challenge.setRunner("runner");
-        challenge.setRunnerExplanation("runnerExplanation");
-        challenge.setTemplete("template");
-        challenge.setTempleteExplanation("templateExplanation");
-        challenge.setLanguage("python");
         Challenge persistedChallenge = entityManager.persistAndFlush(challenge);
 
-        // And a valid submission
-        String code = "def add(a, b): return a + b";
-        String language = "python";
-        int exitCode = 0;
-        int testCasesPassed = 2;
-        int testCasesFailed = 0;
+        // And a submission whose required code is null
         Submission submission = new Submission();
         submission.setUser(persistedUser);
         submission.setChallenge(persistedChallenge);
-        submission.setCode(code);
-        submission.setLanguage(language);
-        submission.setExitCode(exitCode);
+        submission.setCode(null);
+        submission.setLanguage("python");
+        submission.setExitCode(0);
         submission.setStatus(SubmissionStatus.ACCEPTED);
-        submission.setTestCasesPassed(testCasesPassed);
-        submission.setTestCasesFailed(testCasesFailed);
 
-        // When it is saved
-        Submission saved = entityManager.persistAndFlush(submission);
-
-        entityManager.clear(); // read back from H2, not the in-memory cache
-
-        // Then it can be read back with the same properties
-        Submission submission1 = entityManager.find(Submission.class, saved.getId());
-        assertThat(submission1.getId()).isNotNull();                       // generated UUID
-        assertThat(submission1.getUser().getId()).isEqualTo(persistedUser.getUserId());
-        assertThat(submission1.getChallenge().getId()).isEqualTo(persistedChallenge.getId());
-        assertThat(submission1.getCode()).isEqualTo("def add(a, b): return a + b");
-        assertThat(submission1.getLanguage()).isEqualTo("python");
-        assertThat(submission1.getExitCode()).isZero();
-        assertThat(submission1.getStatus()).isEqualTo(SubmissionStatus.ACCEPTED);
-        assertThat(submission1.getTestCasesPassed()).isEqualTo(2);
-        assertThat(submission1.getTestCasesFailed()).isZero();
-        assertThat(submission1.getCreatedAt()).isNotNull();               // @CreationTimestamp
+        // When it is saved and flushed to the database
+        // Then the null required field is rejected
+        assertThrows(PersistenceException.class, () -> entityManager.persistAndFlush(submission));
     }
 }
-

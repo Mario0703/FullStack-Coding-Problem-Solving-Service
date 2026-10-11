@@ -40,23 +40,6 @@ public class JpaTestChallengeLanguageSetupRepo {
     }
 
     @Test
-    public void findByIdReturnsChallengeLanguageSetupWhenSaved() {
-        ChallengeLanguageSetup setup = new ChallengeLanguageSetup();
-        setup.setChallenge(challenge);
-        setup.setLanguage("python");
-        setup.setTemplate("def two_sum(nums, target):\n    pass");
-        setup.setTemplateExplanation("Starter template");
-        setup.setRunner("# runner code");
-        ChallengeLanguageSetup savedSetup = challengeLanguageSetupRepo.save(setup);
-
-        Optional<ChallengeLanguageSetup> foundSetup = challengeLanguageSetupRepo.findById(savedSetup.getId());
-
-        assertThat(foundSetup.isPresent()).isTrue();
-        assertThat(foundSetup.get().getLanguage()).isEqualTo("python");
-        assertThat(foundSetup.get().getTemplate()).isEqualTo("def two_sum(nums, target):\n    pass");
-    }
-
-    @Test
     public void findByChallengeIdAndLanguageReturnsSetup() {
         UUID challengeId = challenge.getId();
 

@@ -31,6 +31,7 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -140,6 +141,7 @@ public class CodeController {
             solved.setChallengeId(challengeId);
             solved.setCode(code);
             solved.setLanguage(language);
+            solved.setSolvedAt(Instant.now());
             solvedChallengesRepository.save(solved);
         }
 

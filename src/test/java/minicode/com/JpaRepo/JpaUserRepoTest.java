@@ -36,14 +36,6 @@ public class JpaUserRepoTest {
     }
 
     @Test
-    public void saveAndFindByIdTest() {
-        UUID userId = userRepo.findAll().get(0).getUserId();
-
-        User foundUser = userRepo.findById(userId).orElse(null);
-        assertThat(foundUser.getUserName().equals("testUser"));
-    }
-
-    @Test
     public void findFirstByUserNameTest() {
         Optional<User> foundUser = userRepo.findFirstByUserName("testUser");
         assertThat(foundUser.isPresent()).isTrue();

@@ -10,6 +10,7 @@ import minicode.com.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +28,9 @@ public class JpaTestPermissionsRepo {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Test
     public void findByNameReturnsPermissionWhenRoleHasPermission() {
@@ -50,7 +54,11 @@ public class JpaTestPermissionsRepo {
         user.setNumberOfHardChallengesSolved(0);
         user.setTokenUsage(0);
         user.setRoles(Set.of(savedRole));
-        userRepo.save(user);
+        userRepo.saveAndFlush(user);
+
+        // Reload from the database so the inverse (mappedBy) collection reflects
+        // the join table instead of the still-empty in-memory collection.
+        entityManager.clear();
 
         Optional<Permissions> foundPermission = permissionsRepo.findByName("VIEW_CHALLENGES");
 

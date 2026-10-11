@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +53,7 @@ public class JpaTestSolvedChallengesRepoo {
         solvedChallenge1.setChallengeId(UUID.randomUUID());
         solvedChallenge1.setCode("def add(a, b): return a + b");
         solvedChallenge1.setLanguage("python");
+        solvedChallenge1.setSolvedAt(Instant.now());
         solvedChallengesRepo.save(solvedChallenge1);
 
         this.solvedChallenge2 = new SolvedChallenges();
@@ -59,6 +61,7 @@ public class JpaTestSolvedChallengesRepoo {
         solvedChallenge2.setChallengeId(UUID.randomUUID());
         solvedChallenge2.setCode("public int add(int a, int b) { return a + b; }");
         solvedChallenge2.setLanguage("java");
+        solvedChallenge2.setSolvedAt(Instant.now());
         solvedChallengesRepo.save(solvedChallenge2);
     }
 

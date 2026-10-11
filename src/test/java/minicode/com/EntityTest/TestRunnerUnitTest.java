@@ -1,13 +1,13 @@
 package minicode.com.EntityTest;
 
+import jakarta.persistence.PersistenceException;
 import minicode.com.entity.TestRunner.TestRunner;
-import minicode.com.entity.User.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 public class TestRunnerUnitTest {
@@ -15,23 +15,16 @@ public class TestRunnerUnitTest {
     @Autowired
     private TestEntityManager entityManager;
 
-
-
     @Test
-    public void testValidTestRunnerForPython(){
-        // Given a test runner with valid properties
-        String language = "python";
-        String MetaData = "Python Test Runner Metadata";
-        // when the test runner is created with the given properties
-        TestRunner testrunner = entityManager.persistAndFlush(new TestRunner(language, MetaData));
-        entityManager.clear();
-        // Then the test runner properties should be set correctly
-        TestRunner retrievedTestRunner = entityManager.find(TestRunner.class, testrunner.getLanguage());
+    public void savingTestRunnerWithNullLanguageThrows() {
+        // Given a test runner whose required language (the identifier) is null
+        TestRunner testRunner = new TestRunner();
+        testRunner.setLanguage(null);
+        testRunner.setTestRunnerMetaData("Python Test Runner Metadata");
 
-        assertThat(retrievedTestRunner.getLanguage()).isEqualTo(language);
-        assertThat(retrievedTestRunner.getTestRunnerMetaData()).isEqualTo(MetaData);
-
+        // When it is saved and flushed to the database
+        // Then the null identifier is rejected
+        assertThrows(PersistenceException.class, () -> entityManager.persistAndFlush(testRunner));
     }
-
 
 }

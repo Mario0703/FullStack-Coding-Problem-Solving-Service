@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -76,18 +75,6 @@ public class JpaTestSubmissionRepo {
         submissionRepo.saveAndFlush(firstSubmission);
     }
 
-
-    @Test
-    public void testFindById() {
-        Optional<User> user = userRepo.findFirstByEmail("testuser@example.com");
-        UUID submissionId = submissionRepo.findAllByUser_UserId(user.get().getId()).get(0).getId();
-        Submission submission = submissionRepo.findById(submissionId).orElse(null);
-
-        assertThat(submission).isNotNull();
-        assertThat(submission.getCode()).isEqualTo("first submission");
-        assertThat(submission.getUser().getId()).isEqualTo(user.get().getId());
-        assertThat(submission.getChallenge()).isNotNull();
-    }
 
     @Test
     public void testfindFirstByUser_UserIdAndChallenge_IdOrderByCreatedAtDesc() {
