@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -80,6 +81,24 @@ public class JpaSolvedChallengesRepo {
         long numberOfSolvedChallenges = solvedChallengesRepo.count();
         assertThat(numberOfSolvedChallenges).isEqualTo(0);
     }
+
+    @Test
+    public void findAllByUserIdTest() {
+        List<SolvedChallenges> solvedChallenges = solvedChallengesRepo.findAllByUserId(userId);
+        assertThat(solvedChallenges.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void findChallengeIdsByUserIdTest() {
+        List<UUID> challengeIds = solvedChallengesRepo.findChallengeIdsByUserId(userId);
+        assertThat(challengeIds.size()).isEqualTo(2);
+    }
+    @Test
+    public void countDistinctChallengesTest() {
+        long count = solvedChallengesRepo.countDistinctChallenges();
+        assertThat(count).isEqualTo(2);
+    }
+
 
     @AfterEach
     public void tearDown() {
