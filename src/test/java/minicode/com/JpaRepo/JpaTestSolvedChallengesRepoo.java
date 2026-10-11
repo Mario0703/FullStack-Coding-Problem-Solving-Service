@@ -17,7 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-public class JpaSolvedChallengesRepo {
+public class JpaTestSolvedChallengesRepoo {
 
     private SolvedChallenges solvedChallenge1;
     private SolvedChallenges solvedChallenge2;
