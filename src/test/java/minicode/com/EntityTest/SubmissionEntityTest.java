@@ -25,7 +25,7 @@ public class SubmissionEntityTest {
 
     private User persistedUser;
     private Challenge persistedChallenge;
-    private Submission persistedSubmission;
+    private Submission submission;
 
     @BeforeEach
     public void setup(){
@@ -46,27 +46,21 @@ public class SubmissionEntityTest {
         challenge.setNumberOfTestCases(2);
         this.persistedChallenge = entityManager.persistAndFlush(challenge);
 
-        // And a persisted submission for that user and challenge
-        Submission submission = new Submission();
+        // And a submission that maps to that user and challenge
+        this.submission = new Submission();
         submission.setUser(persistedUser);
         submission.setChallenge(persistedChallenge);
         submission.setCode("print('Hello, World!')");
         submission.setLanguage("python");
         submission.setExitCode(0);
         submission.setStatus(SubmissionStatus.ACCEPTED);
-        this.persistedSubmission = entityManager.persistAndFlush(submission);
     }
 
     @Test
     public void savingSubmissionWithNullCodeThrows() {
-        // And a submission whose required code is null
-        Submission submission = new Submission();
-        submission.setUser(persistedUser);
-        submission.setChallenge(persistedChallenge);
+        // Given the submission has no code
         submission.setCode(null);
-        submission.setLanguage("python");
-        submission.setExitCode(0);
-        submission.setStatus(SubmissionStatus.ACCEPTED);
+
         // When it is saved and flushed to the database
         // Then the null required field is rejected
         assertThrows(PersistenceException.class, () -> entityManager.persistAndFlush(submission));
@@ -74,14 +68,9 @@ public class SubmissionEntityTest {
 
     @Test
     public void SavingWithNullLanguageThrows() {
-        // And a submission whose required language is null
-        Submission submission = new Submission();
-        submission.setUser(persistedUser);
-        submission.setChallenge(persistedChallenge);
-        submission.setCode("print('Hello, World!')");
+        // Given the submission has no language
         submission.setLanguage(null);
-        submission.setExitCode(0);
-        submission.setStatus(SubmissionStatus.ACCEPTED);
+
         // When it is saved and flushed to the database
         // Then the null required field is rejected
         assertThrows(PersistenceException.class, () -> entityManager.persistAndFlush(submission));
@@ -89,14 +78,9 @@ public class SubmissionEntityTest {
 
     @Test
     public void SavingWithNullSetStatusThrows() {
-        // And a submission whose required status is null
-        Submission submission = new Submission();
-        submission.setUser(persistedUser);
-        submission.setChallenge(persistedChallenge);
-        submission.setCode("print('Hello, World!')");
-        submission.setLanguage("python");
-        submission.setExitCode(0);
+        // Given the submission has no status
         submission.setStatus(null);
+
         // When it is saved and flushed to the database
         // Then the null required field is rejected
         assertThrows(PersistenceException.class, () -> entityManager.persistAndFlush(submission));
@@ -104,18 +88,24 @@ public class SubmissionEntityTest {
 
     @Test
     public void submissionMapsToTheSameChallengeWhenSubmitted() {
-        // Reload from the database so the challenge relation comes from the foreign key
+        // When it is saved and flushed to the database
+        entityManager.persistAndFlush(submission);
+
+        // Then the reloaded submission points at the same challenge (from the foreign key)
         entityManager.clear();
-        Submission reloaded = entityManager.find(Submission.class, persistedSubmission.getId());
+        Submission reloaded = entityManager.find(Submission.class, submission.getId());
 
         assertThat(reloaded.getChallenge().getId()).isEqualTo(persistedChallenge.getId());
     }
 
     @Test
     public void submissionMapsToTheSameUserWhenSubmitted() {
-        // Reload from the database so the user relation comes from the foreign key
+        // When it is saved and flushed to the database
+        entityManager.persistAndFlush(submission);
+
+        // Then the reloaded submission points at the same user (from the foreign key)
         entityManager.clear();
-        Submission reloaded = entityManager.find(Submission.class, persistedSubmission.getId());
+        Submission reloaded = entityManager.find(Submission.class, submission.getId());
 
         assertThat(reloaded.getUser().getUserId()).isEqualTo(persistedUser.getUserId());
     }

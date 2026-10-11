@@ -2,6 +2,7 @@ package minicode.com.EntityTest;
 
 import jakarta.persistence.PersistenceException;
 import minicode.com.entity.Challange.SolvedChallenges;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -19,10 +20,22 @@ public class SolvedChallengeEntityTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    private SolvedChallenges solvedChallenge;
+
+    @BeforeEach
+    public void setup() {
+        // Given a solved challenge with a user, challenge, code, language and timestamp
+        this.solvedChallenge = new SolvedChallenges();
+        solvedChallenge.setUserId(UUID.randomUUID());
+        solvedChallenge.setChallengeId(UUID.randomUUID());
+        solvedChallenge.setCode("def add(a, b): return a + b");
+        solvedChallenge.setLanguage("python");
+        solvedChallenge.setSolvedAt(Instant.now());
+    }
+
     @Test
     public void savingSolvedChallengeWithNullSolvedAtThrows() {
-        // Given a solved challenge whose required solved-at timestamp is null
-        SolvedChallenges solvedChallenge = newValidSolvedChallenge();
+        // Given the required solved-at timestamp is null
         solvedChallenge.setSolvedAt(null);
 
         // When it is saved and flushed to the database
@@ -32,8 +45,7 @@ public class SolvedChallengeEntityTest {
 
     @Test
     public void savingSolvedChallengeWithNullUserIdSucceeds() {
-        // Given a valid solved challenge whose nullable user id is null
-        SolvedChallenges solvedChallenge = newValidSolvedChallenge();
+        // Given the nullable user id is null
         solvedChallenge.setUserId(null);
 
         // When it is saved and flushed to the database
@@ -45,8 +57,7 @@ public class SolvedChallengeEntityTest {
 
     @Test
     public void savingSolvedChallengeWithNullChallengeIdSucceeds() {
-        // Given a valid solved challenge whose nullable challenge id is null
-        SolvedChallenges solvedChallenge = newValidSolvedChallenge();
+        // Given the nullable challenge id is null
         solvedChallenge.setChallengeId(null);
 
         // When it is saved and flushed to the database
@@ -58,8 +69,7 @@ public class SolvedChallengeEntityTest {
 
     @Test
     public void savingSolvedChallengeWithNullCodeSucceeds() {
-        // Given a valid solved challenge whose nullable code is null
-        SolvedChallenges solvedChallenge = newValidSolvedChallenge();
+        // Given the nullable code is null
         solvedChallenge.setCode(null);
 
         // When it is saved and flushed to the database
@@ -71,8 +81,7 @@ public class SolvedChallengeEntityTest {
 
     @Test
     public void savingSolvedChallengeWithNullLanguageSucceeds() {
-        // Given a valid solved challenge whose nullable language is null
-        SolvedChallenges solvedChallenge = newValidSolvedChallenge();
+        // Given the nullable language is null
         solvedChallenge.setLanguage(null);
 
         // When it is saved and flushed to the database
@@ -80,16 +89,6 @@ public class SolvedChallengeEntityTest {
         assertDoesNotThrow(() -> {
             entityManager.persistAndFlush(solvedChallenge);
         });
-    }
-
-    private SolvedChallenges newValidSolvedChallenge() {
-        SolvedChallenges solvedChallenge = new SolvedChallenges();
-        solvedChallenge.setUserId(UUID.randomUUID());
-        solvedChallenge.setChallengeId(UUID.randomUUID());
-        solvedChallenge.setCode("def add(a, b): return a + b");
-        solvedChallenge.setLanguage("python");
-        solvedChallenge.setSolvedAt(Instant.now());
-        return solvedChallenge;
     }
 
 }
