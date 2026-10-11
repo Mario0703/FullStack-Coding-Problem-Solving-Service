@@ -202,6 +202,40 @@ public class JpaTestSubmissionRepo {
         assertThat(sizeOfList).isEqualTo(2);
     }
 
+    @Test
+    public void totalNumberOfPublicSubmissionsForChallengeIsOne(){
+        List<Submission> testCases = submissionRepo.findAcceptedByChallengeId(challenge.getId());
+        int sizeOfList = testCases.size();
+        assertThat(sizeOfList).isEqualTo(0);
+    }
+
+    @Test
+    public void totalNumberOfPublicSubmissionsForChallengeIsTwo(){
+        Submission secondSubmission = new Submission();
+        secondSubmission.setUser(user);
+        secondSubmission.setChallenge(challenge);
+        secondSubmission.setCode("first submission");
+        secondSubmission.setLanguage("python");
+        secondSubmission.setExitCode(0);
+        secondSubmission.setStatus(SubmissionStatus.ACCEPTED);
+        submissionRepo.saveAndFlush(secondSubmission);
+
+        Submission secondSubmissionTwo = new Submission();
+        secondSubmissionTwo.setUser(user);
+        secondSubmissionTwo.setChallenge(challenge);
+        secondSubmissionTwo.setCode("second submission");
+        secondSubmissionTwo.setLanguage("python");
+        secondSubmissionTwo.setExitCode(0);
+        secondSubmissionTwo.setStatus(SubmissionStatus.ACCEPTED);
+        submissionRepo.saveAndFlush(secondSubmissionTwo);
+
+        List<Submission> testCases = submissionRepo.findAcceptedByChallengeId(challenge.getId());
+        int sizeOfList = testCases.size();
+        assertThat(sizeOfList).isEqualTo(2);
+    }
+
+
+
 
 
     @AfterEach
