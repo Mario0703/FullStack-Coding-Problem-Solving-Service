@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class JpaTestSubmissionRepo {
         this.challenge.setDescription("Print Hello, World!");
         this.challenge.setDifficulty(Difficulty.EASY);
         this.challenge.setCategory(Category.GENERAL);
-        this.challenge.setNumberOfTestCases(1);
+        this.challenge.setNumberOfTestCases(2);
         this.challenge.setLanguage("python");
         challengeRepo.saveAndFlush(challenge);
 
@@ -69,8 +70,9 @@ public class JpaTestSubmissionRepo {
         this.firstSubmission.setCode("first submission");
         this.firstSubmission.setLanguage("python");
         this.firstSubmission.setExitCode(0);
-        this.firstSubmission.setStatus(SubmissionStatus.ACCEPTED);
-        // @CreationTimestamp fills createdAt here; do NOT set it yourself (it would be overwritten).
+        this.firstSubmission.setStatus(SubmissionStatus.COMPILE_ERROR);
+        this.firstSubmission.setTestCasesPassed(1);
+        this.firstSubmission.setTestCasesFailed(1);
         submissionRepo.saveAndFlush(firstSubmission);
     }
 
@@ -128,10 +130,13 @@ public class JpaTestSubmissionRepo {
         secondUserSubmission.setChallenge(challenge);
         secondUserSubmission.setCode("second user's submission");
         secondUserSubmission.setLanguage("python");
+        secondUserSubmission.setTestCasesPassed(1);
+        secondUserSubmission.setTestCasesFailed(0);
         secondUserSubmission.setExitCode(0);
         secondUserSubmission.setStatus(SubmissionStatus.ACCEPTED);
         submissionRepo.saveAndFlush(secondUserSubmission);
 
+        // Given the first user and the second user
         UUID firstUserId = user.getUserId();
         UUID secondUserId = secondUser.getUserId();
 
@@ -154,6 +159,50 @@ public class JpaTestSubmissionRepo {
         long submissionCount = submissionRepo.countByUser_UserId(user.getUserId());
         assertThat(submissionCount).isEqualTo(1);
     }
+
+    @Test
+    public void whenUserHasSendOneSubmissionThenTheNumberOfReceiptInDataBaseIsOne(){
+        List<Submission> submissions = submissionRepo.findReceiptByUserId(user.getUserId());
+        int sizeOfList = submissions.size();
+        assertThat(sizeOfList).isEqualTo(1);
+    }
+    @Test
+    public void whenUserHasSendOneSubmissionThenTheNumberOfReceiptInDataBaseIsTwo(){
+        Submission secondSubmission = new Submission();
+        secondSubmission.setUser(user);
+        secondSubmission.setChallenge(challenge);
+        secondSubmission.setCode("second submission");
+        secondSubmission.setLanguage("python");
+        secondSubmission.setExitCode(0);
+        secondSubmission.setStatus(SubmissionStatus.COMPILE_ERROR);
+        submissionRepo.saveAndFlush(secondSubmission);
+
+        List<Submission> testCases = submissionRepo.findReceiptByUserId(user.getUserId());
+        int sizeOfList = testCases.size();
+        assertThat(sizeOfList).isEqualTo(2);
+    }
+
+    @Test
+    public void theNumberOfTestCasesIsOne(){
+        List<Submission> testCases = submissionRepo.findReceiptByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getTestCasesPassed();
+        assertThat(sizeOfList).isEqualTo(1);
+    }
+
+    @Test
+    public void theNumberOfFailingTestCasesIsZero(){
+        List<Submission> testCases = submissionRepo.findReceiptByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getTestCasesFailed();
+        assertThat(sizeOfList).isEqualTo(1);
+    }
+    @Test
+    public void totalNumberOfTestCasesIsTwo(){
+        List<Submission> testCases = submissionRepo.findReceiptByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getChallenge().getNumberOfTestCases();
+        assertThat(sizeOfList).isEqualTo(2);
+    }
+
+
 
     @AfterEach
     public void tearDown() {
