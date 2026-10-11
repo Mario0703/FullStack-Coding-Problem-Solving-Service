@@ -204,9 +204,17 @@ public class JpaTestSubmissionRepo {
 
     @Test
     public void totalNumberOfPublicSubmissionsForChallengeIsOne(){
+        Submission secondSubmission = new Submission();
+        secondSubmission.setUser(user);
+        secondSubmission.setChallenge(challenge);
+        secondSubmission.setCode("first submission");
+        secondSubmission.setLanguage("python");
+        secondSubmission.setExitCode(0);
+        secondSubmission.setStatus(SubmissionStatus.ACCEPTED);
+        submissionRepo.saveAndFlush(secondSubmission);
         List<Submission> testCases = submissionRepo.findAcceptedByChallengeId(challenge.getId());
         int sizeOfList = testCases.size();
-        assertThat(sizeOfList).isEqualTo(0);
+        assertThat(sizeOfList).isEqualTo(1);
     }
 
     @Test
@@ -231,6 +239,26 @@ public class JpaTestSubmissionRepo {
 
         List<Submission> testCases = submissionRepo.findAcceptedByChallengeId(challenge.getId());
         int sizeOfList = testCases.size();
+        assertThat(sizeOfList).isEqualTo(2);
+    }
+    @Test
+    public void totalNumberOfPassingTestCasesForPublicViewIsOne(){
+        List<Submission> testCases = submissionRepo.findPublicSubmissionsByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getTestCasesPassed();
+        assertThat(sizeOfList).isEqualTo(1);
+    }
+
+    @Test
+    public void totalNumberOfFailingTestCasesForPublicViewIsOne(){
+        List<Submission> testCases = submissionRepo.findPublicSubmissionsByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getTestCasesFailed();
+        assertThat(sizeOfList).isEqualTo(1);
+    }
+
+    @Test
+    public void totalNumberOfTestCasesForPublicViewIsTwo(){
+        List<Submission> testCases = submissionRepo.findPublicSubmissionsByUserId(user.getUserId());
+        int sizeOfList = testCases.get(0).getChallenge().getNumberOfTestCases();
         assertThat(sizeOfList).isEqualTo(2);
     }
 

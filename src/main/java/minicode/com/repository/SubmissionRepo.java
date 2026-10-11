@@ -36,36 +36,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     List<Submission> findReceiptByUserId(@Param("userId") UUID userId);
 
     @Query("""
-    SELECT s.testCasesPassed
-    FROM Submission s
-    WHERE s.user.userId = :userId
-      AND s.status IN ('WRONG_ANSWER', 'COMPILE_ERROR', 'RUNTIME_ERROR')
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findReceiptPassedTestCasesByUserId(@Param("userId") UUID userId);
-
-    @Query("""
-    SELECT s.testCasesFailed
-    FROM Submission s
-    WHERE s.user.userId = :userId
-      AND s.status IN ('WRONG_ANSWER', 'COMPILE_ERROR', 'RUNTIME_ERROR')
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findReceiptFailedTestCasesByUserId(@Param("userId") UUID userId);
-
-    @Query("""
-    SELECT c.numberOfTestCases
-    FROM Submission s
-    INNER JOIN s.challenge c
-    WHERE s.user.userId = :userId
-      AND s.status IN ('WRONG_ANSWER', 'COMPILE_ERROR', 'RUNTIME_ERROR')
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findReceiptTotalTestCasesByUserId(
-            @Param("userId") UUID userId
-    );
-
-    @Query("""
     SELECT s
     FROM Submission s
     WHERE s.challenge.id = :challengeId
@@ -88,31 +58,4 @@ public interface SubmissionRepo extends JpaRepository<Submission, UUID> {
     ORDER BY s.createdAt DESC
     """)
     List<Submission> findPublicSubmissionsByUserId(@Param("userId") UUID userId);
-
-    @Query("""
-    SELECT s.testCasesPassed
-    FROM Submission s
-    WHERE s.user.userId = :userId
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findPassedTestCasesByUserIdPublic(@Param("userId") UUID userId);
-
-    @Query("""
-    SELECT s.testCasesFailed
-    FROM Submission s
-    WHERE s.user.userId = :userId
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findFailedTestCasesByUserIdPublic(@Param("userId") UUID userId);
-
-    @Query("""
-    SELECT c.numberOfTestCases
-    FROM Submission s
-    INNER JOIN s.challenge c
-    WHERE s.user.userId = :userId
-    ORDER BY s.createdAt DESC
-    """)
-    List<Integer> findTotalTestCasesByUserIdPublic(
-            @Param("userId") UUID userId
-    );
 }

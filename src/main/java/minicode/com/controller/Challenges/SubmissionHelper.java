@@ -4,6 +4,7 @@ import minicode.com.auth.Access;
 import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.SolvedChallenges;
+import minicode.com.entity.Submissions.Submission;
 import minicode.com.exception.UnauthenticatedException;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
@@ -11,12 +12,9 @@ import minicode.com.repository.UserRepo;
 import org.springframework.security.core.Authentication;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 
@@ -32,18 +30,58 @@ public final class SubmissionHelper {
                 .getUserId();
     }
 
-    public static List<Integer> testCaseValuesForUser(
+    public static List<Integer> passedTestCasesForUser(
             UserRepo userRepo,
             SubmissionRepo submissionRepo,
-            Authentication authentication,
-            boolean passed
+            Authentication authentication
     ) {
-        UUID userId = authenticatedUserId(userRepo, authentication);
-        if (passed) {
-            return submissionRepo.findReceiptPassedTestCasesByUserId(userId);
-        }
-        return submissionRepo.findReceiptFailedTestCasesByUserId(userId);
+        return testCaseValues(
+                submissionRepo.findReceiptByUserId(authenticatedUserId(userRepo, authentication)),
+                Submission::getTestCasesPassed
+        );
     }
+
+    public static List<Integer> failedTestCasesForUser(
+            UserRepo userRepo,
+            SubmissionRepo submissionRepo,
+            Authentication authentication
+    ) {
+        return testCaseValues(
+                submissionRepo.findReceiptByUserId(authenticatedUserId(userRepo, authentication)),
+                Submission::getTestCasesFailed
+        );
+    }
+
+    public static List<Integer> totalTestCasesForUser(
+            UserRepo userRepo,
+            SubmissionRepo submissionRepo,
+            Authentication authentication
+    ) {
+        return testCaseValues(
+                submissionRepo.findReceiptByUserId(authenticatedUserId(userRepo, authentication)),
+                submission -> submission.getChallenge().getNumberOfTestCases()
+        );
+    }
+
+    public static List<List<Integer>> submissionStats(SubmissionRepo submissionRepo, UUID userId) {
+        List<Submission> submissions = submissionRepo.findPublicSubmissionsByUserId(userId);
+        return List.of(
+                testCaseValues(submissions, Submission::getTestCasesPassed),
+                testCaseValues(submissions, Submission::getTestCasesFailed),
+                testCaseValues(submissions, submission -> submission.getChallenge().getNumberOfTestCases())
+        );
+    }
+
+    private static List<Integer> testCaseValues(
+            List<Submission> submissions,
+            ToIntFunction<Submission> extractor
+    ) {
+        return submissions.stream()
+                .mapToInt(extractor)
+                .boxed()
+                .toList();
+    }
+
 
     public static List<SolvedChallengeResponse> buildSolvedChallengeResponses(
             ChallengeRepo challengeRepo,

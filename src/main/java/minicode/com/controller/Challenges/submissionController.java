@@ -74,19 +74,18 @@ public class submissionController {
     @GetMapping("/passed")
     @Transactional(readOnly = true)
     public List<Integer> listNumberOfPassedTestCases(Authentication authentication) {
-        return SubmissionHelper.testCaseValuesForUser(userRepo, SubmissionRepo, authentication, true);
+        return SubmissionHelper.passedTestCasesForUser(userRepo, SubmissionRepo, authentication);
     }
 
     @GetMapping("/failed")
     @Transactional(readOnly = true)
     public List<Integer> listNumberOfFailedTestCases(Authentication authentication) {
-        return SubmissionHelper.testCaseValuesForUser(userRepo, SubmissionRepo, authentication, false);
+        return SubmissionHelper.failedTestCasesForUser(userRepo, SubmissionRepo, authentication);
     }
 
     @GetMapping("/total")
     @Transactional(readOnly = true)
     public List<Integer> listNumberOfTotalTestCases(Authentication authentication) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
-        return SubmissionRepo.findReceiptTotalTestCasesByUserId(userId);
+        return SubmissionHelper.totalTestCasesForUser(userRepo, SubmissionRepo, authentication);
     }
 }

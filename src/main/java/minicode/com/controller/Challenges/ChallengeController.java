@@ -114,11 +114,7 @@ public class ChallengeController {
 
     @GetMapping("/users/{userId}/submission-stats")
     public List<List<Integer>> getUserSubmissionStats(@PathVariable UUID userId) {
-        return List.of(
-                submissionRepo.findPassedTestCasesByUserIdPublic(userId),
-                submissionRepo.findFailedTestCasesByUserIdPublic(userId),
-                submissionRepo.findTotalTestCasesByUserIdPublic(userId)
-        );
+        return SubmissionHelper.submissionStats(submissionRepo, userId);
     }
 
     @GetMapping("Solution/{challengeId}")
