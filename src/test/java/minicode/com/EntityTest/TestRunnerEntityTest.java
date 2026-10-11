@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
-public class TestRunnerUnitTest {
+public class TestRunnerEntityTest {
 
     @Autowired
     private TestEntityManager entityManager;

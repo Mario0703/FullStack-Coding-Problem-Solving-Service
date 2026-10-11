@@ -36,3 +36,7 @@ This ensures that the code meets the requirements and behaves as expected.
 Adding a negative test means to expect failure or an error condition. 
 This helps to ensure that the feature behaves correctly in all scenarios, including edge cases and unexpected inputs
 . It also helps to identify potential bugs and improve the overall quality of the code.
+
+**DO NOT ADD HELPER METHODS OR CLASSES INSIDE THE TEST FOLDER**
+Use the before each fiscture to define common objects that may be needed during testing
+This helps keep the test structure consistent and maintainable, and ensures that the tests are focused on the behavior of the feature being implemented.

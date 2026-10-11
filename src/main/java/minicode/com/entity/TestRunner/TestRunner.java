@@ -21,6 +21,6 @@ public class TestRunner {
     @Column(nullable = false, length = 20)
     private String language;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String testRunnerMetaData;
 }
