@@ -18,6 +18,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
 public class JpaSolvedChallengesRepo {
 
+    private SolvedChallenges solvedChallenge1;
+    private SolvedChallenges solvedChallenge2;
+    private User user;
+
     @Autowired
     private solvedChallengesRepo solvedChallengesRepo;
 
@@ -26,9 +30,10 @@ public class JpaSolvedChallengesRepo {
 
     private UUID userId;
 
+
     @BeforeEach
     public void setUp() {
-        User user = new User();
+        this.user = new User();
         user.setUserName("testUser");
         user.setEmail("testuser@example.com");
         user.setPassword("testpassword");
@@ -41,14 +46,14 @@ public class JpaSolvedChallengesRepo {
         User savedUser = userRepo.save(user);
         userId = savedUser.getUserId();
 
-        SolvedChallenges solvedChallenge1 = new SolvedChallenges();
+        this.solvedChallenge1 = new SolvedChallenges();
         solvedChallenge1.setUserId(userId);
         solvedChallenge1.setChallengeId(UUID.randomUUID());
         solvedChallenge1.setCode("def add(a, b): return a + b");
         solvedChallenge1.setLanguage("python");
         solvedChallengesRepo.save(solvedChallenge1);
 
-        SolvedChallenges solvedChallenge2 = new SolvedChallenges();
+        this.solvedChallenge2 = new SolvedChallenges();
         solvedChallenge2.setUserId(userId);
         solvedChallenge2.setChallengeId(UUID.randomUUID());
         solvedChallenge2.setCode("public int add(int a, int b) { return a + b; }");
@@ -60,6 +65,20 @@ public class JpaSolvedChallengesRepo {
     public void numberOfSolvedChallengesByUserIdTest() {
         long count = solvedChallengesRepo.countDistinctChallengesByUserId(userId);
         assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    public void userHasSolvedTwoChallengesTest(){
+        boolean hasSolvedChallengeOne = solvedChallengesRepo.existsByUserIdAndChallengeId(user.getUserId(), solvedChallenge1.getChallengeId());
+        boolean hasSolvedChallengeTwo = solvedChallengesRepo.existsByUserIdAndChallengeId(user.getUserId(), solvedChallenge2.getChallengeId());
+        assertThat(hasSolvedChallengeOne).isTrue();
+        assertThat(hasSolvedChallengeTwo).isTrue();
+    }
+    @Test
+    public void deletingOneSolvedChallengeObjectMakesNoneLeft(){
+        solvedChallengesRepo.deleteAllByUserId(userId);
+        long numberOfSolvedChallenges = solvedChallengesRepo.count();
+        assertThat(numberOfSolvedChallenges).isEqualTo(0);
     }
 
     @AfterEach
