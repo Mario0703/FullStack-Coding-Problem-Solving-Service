@@ -6,7 +6,7 @@ public class TimeLimitError implements CodeError {
 
     // Exit code returned by BuildCommands when the container exceeds its
     // time budget, together with the output it reports in that case.
-    static final int TIMEOUT_EXIT_CODE = 124;
+    public static final int TIMEOUT_EXIT_CODE = 124;
     static final String TIMEOUT_OUTPUT = "Execution timed out";
 
     @Override
