@@ -1,5 +1,6 @@
 package minicode.com.controller.Challenges;
 
+import minicode.com.auth.CurrentUser;
 import minicode.com.dto.User.SolvedChallengeResponse;
 import minicode.com.dto.User.SubmissionResponse;
 import minicode.com.entity.Submissions.Submission;
@@ -38,7 +39,7 @@ public class submissionController {
     @GetMapping
     @Transactional(readOnly = true)
     public List<SubmissionResponse> listUserSubmissions(Authentication authentication) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
         return SubmissionRepo.findReceiptByUserId(userId).stream()
                 .map(SubmissionResponse::from)
                 .toList();
@@ -47,8 +48,8 @@ public class submissionController {
     @GetMapping("/solved")
     @Transactional(readOnly = true)
     public List<SolvedChallengeResponse> listSolvedChallenges(Authentication authentication) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
-        return SubmissionHelper.buildSolvedChallengeResponses(
+        UUID userId = CurrentUser.id(userRepo, authentication);
+        return SolvedChallengeHelper.buildSolvedChallengeResponses(
                 challengeRepo,
                 solvedChallengesRepo.findAllByUserId(userId)
         );
@@ -60,7 +61,7 @@ public class submissionController {
             Authentication authentication,
             @RequestParam UUID submissionId
     ) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
 
         Submission submission = SubmissionRepo.findByIdAndUser_UserId(submissionId, userId)
                 .orElseThrow(() -> new ResponseStatusException(

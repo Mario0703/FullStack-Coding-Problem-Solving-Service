@@ -3,7 +3,7 @@ package minicode.com.controller;
 import minicode.com.controller.CodeEnv.EnvStrat;
 import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
-import minicode.com.auth.Access;
+import minicode.com.auth.CurrentUser;
 import minicode.com.controller.SupportedLanguages;
 import minicode.com.dto.Challenge.ExecutionResult;
 import minicode.com.dto.User.SubmissionRequest;
@@ -71,7 +71,7 @@ public class CodeController {
             @Valid @RequestBody SubmissionRequest codeSubmission,
             Authentication authentication
     ) throws IOException {
-        UUID authenticatedUserId = getAuthenticatedUserId(authentication);
+        UUID authenticatedUserId = CurrentUser.id(userRepo, authentication);
         validateSubmissionUser(codeSubmission, authenticatedUserId);
 
         User user = findUserOrThrow(authenticatedUserId);
@@ -195,15 +195,7 @@ public class CodeController {
 
     @GetMapping("/SolvedChallenges")
     public List<UUID> getSolvedChallenges(Authentication authentication) {
-        UUID userId = getAuthenticatedUserId(authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
         return solvedChallengesRepository.findChallengeIdsByUserId(userId);
-    }
-
-    private UUID getAuthenticatedUserId(Authentication authentication) {
-        // The playground is a user feature; admin sessions are not allowed.
-        Access.requireUser(authentication);
-        return userRepo.findFirstByUserName(authentication.getName())
-                .orElseThrow(UnauthenticatedException::authenticationRequired)
-                .getUserId();
     }
 }

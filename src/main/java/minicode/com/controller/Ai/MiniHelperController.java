@@ -1,7 +1,7 @@
 package minicode.com.controller.Ai;
 
 import jakarta.validation.Valid;
-import minicode.com.controller.Challenges.SubmissionHelper;
+import minicode.com.auth.CurrentUser;
 import minicode.com.dto.Ai.MiniHelperRequest;
 import minicode.com.dto.Ai.MiniHelperResponse;
 import minicode.com.repository.UserRepo;
@@ -40,7 +40,7 @@ public class MiniHelperController {
             @Valid @RequestBody MiniHelperRequest request,
             Authentication authentication
     ) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
         return new MiniHelperResponse(miniHelperService.ask(request, userId));
     }
 
@@ -51,7 +51,7 @@ public class MiniHelperController {
             @PathVariable String conversationId,
             Authentication authentication
     ) {
-        UUID userId = SubmissionHelper.authenticatedUserId(userRepo, authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
         miniHelperService.clearConversation(userId, conversationId);
     }
 }
