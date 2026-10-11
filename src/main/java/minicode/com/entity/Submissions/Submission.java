@@ -46,7 +46,7 @@ public class Submission {
     @Column(nullable = false)
     private String language;
 
-    @Column(nullable = false)
+    @Column
     private int exitCode;
 
     @Enumerated(EnumType.STRING)

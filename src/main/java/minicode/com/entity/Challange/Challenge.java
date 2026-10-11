@@ -38,7 +38,7 @@ public class Challenge {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Column(name = "number_of_test_cases", nullable = false, columnDefinition = "integer default 0")
+    @Column(name = "number_of_test_cases", columnDefinition = "integer default 0")
     private int numberOfTestCases;
 
     // Never serialized: submission history would leak other users' code and
