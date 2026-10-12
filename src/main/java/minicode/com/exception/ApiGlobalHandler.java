@@ -3,6 +3,7 @@ package minicode.com.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,6 +66,11 @@ public class ApiGlobalHandler {
                 .collect(Collectors.joining("; "));
         logger.warning("Invalid input: " + message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleUnreadableBody(HttpMessageNotReadableException error) {
+        return respond(HttpStatus.BAD_REQUEST, "The request body is not valid", error, "Unreadable request body");
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

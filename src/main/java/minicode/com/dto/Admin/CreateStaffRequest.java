@@ -1,0 +1,39 @@
+package minicode.com.dto.Admin;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import minicode.com.entity.Roles.UserRole;
+import minicode.com.validation.ValidStaffRole;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class CreateStaffRequest {
+
+    @NotBlank(message = "All users must have a username")
+    @Size(min = 5, max = 100, message = "UserName must be between 5 and 100 charaters")
+    private String userName;
+
+    @NotBlank(message = "All users must have an email")
+    @Email(message = "Email should be valid")
+    @Size(max = 100, message = "Email cannot exceed 100 characters")
+    private String email;
+
+    @NotBlank(message = "All users must have a password")
+    @Size(min = 8, max = 72, message = "Password must be 8 to 72 characters")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$",
+            message = "Password must contain an uppercase letter, lowercase letter, and digit"
+    )
+    private String password;
+
+    @NotNull(message = "Staff role is required")
+    @ValidStaffRole
+    private UserRole staffRole;
+}

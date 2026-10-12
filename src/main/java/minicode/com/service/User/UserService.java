@@ -2,6 +2,7 @@ package minicode.com.service.User;
 
 import jakarta.transaction.Transactional;
 import minicode.com.auth.Access;
+import minicode.com.dto.Admin.CreateStaffRequest;
 import minicode.com.dto.User.Request.ChangeEmailRequest;
 import minicode.com.dto.User.Request.ChangePasswordRequest;
 import minicode.com.dto.User.Request.ChangeUserNameRequest;
@@ -29,6 +30,8 @@ import java.util.*;
 @Service
 public class UserService {
 
+    private static final String ROLE_NAME_PREFIX = "ROLE_";
+
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
@@ -46,22 +49,51 @@ public class UserService {
 
     @Transactional
     public User signup(SignupRequest request) {
-        if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
-            throw SignupException.usernameTaken(request.getUserName());
-        }
+        rejectTakenUserName(request.getUserName());
+        rejectTakenEmail(request.getEmail());
 
-        if (userRepo.findFirstByEmail(request.getEmail()).isPresent()) {
-            throw SignupException.emailTaken(request.getEmail());
-        }
+        return saveNewUser(
+                request.getUserName(),
+                request.getEmail(),
+                request.getPassword(),
+                UserRole.USER
+        );
+    }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+    @Transactional
+    public User createStaff(CreateStaffRequest request) {
+        rejectTakenUserName(request.getUserName());
+        rejectTakenEmail(request.getEmail());
+
+        return saveNewUser(
+                request.getUserName(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getStaffRole()
+        );
+    }
+
+    private void rejectTakenUserName(String userName) {
+        if (userRepo.findFirstByUserName(userName).isPresent()) {
+            throw SignupException.usernameTaken(userName);
+        }
+    }
+
+    private void rejectTakenEmail(String email) {
+        if (userRepo.findFirstByEmail(email).isPresent()) {
+            throw SignupException.emailTaken(email);
+        }
+    }
+
+    private User saveNewUser(String userName, String email, String password, UserRole role) {
         User user = new User();
-        user.setUserName(request.getUserName());
-        user.setEmail(request.getEmail());
-        user.setPassword(encodedPassword);
-        user.setRole(UserRole.USER);
+        user.setUserName(userName);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
 
-        roleRepo.findByName("ROLE_USER").ifPresent(role -> user.setRoles(new HashSet<>(Set.of(role))));
+        roleRepo.findByName(ROLE_NAME_PREFIX + role.name())
+                .ifPresent(foundRole -> user.setRoles(new HashSet<>(Set.of(foundRole))));
 
         return userRepo.save(user);
     }

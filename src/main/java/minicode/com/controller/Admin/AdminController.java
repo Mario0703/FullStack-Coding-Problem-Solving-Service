@@ -3,10 +3,14 @@ package minicode.com.controller.Admin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import minicode.com.auth.Access;
 import minicode.com.dto.Admin.AdminLoginRequest;
+import minicode.com.dto.Admin.CreateStaffRequest;
 import minicode.com.auth.AuthenticateLogin;
 import minicode.com.entity.User.User;
 import minicode.com.service.Admin.AdminService;
+import minicode.com.service.User.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,15 +22,18 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @RequestMapping("/api/admin")
 public class AdminController {
     private final AdminService adminService;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
 
     public AdminController(
             AdminService adminService,
+            UserService userService,
             AuthenticationManager authenticationManager,
             SecurityContextRepository securityContextRepository
     ) {
         this.adminService = adminService;
+        this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.securityContextRepository = securityContextRepository;
     }
@@ -46,6 +53,15 @@ public class AdminController {
                 httpResponse
         );
         return admin;
+    }
+
+    @PostMapping("/staff")
+    public User createStaff(
+            @Valid @RequestBody CreateStaffRequest request,
+            Authentication authentication
+    ) {
+        Access.requireAdmin(authentication);
+        return userService.createStaff(request);
     }
 }
 
