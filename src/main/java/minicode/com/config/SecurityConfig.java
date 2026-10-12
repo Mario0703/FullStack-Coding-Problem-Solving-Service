@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/user/signup",
                                 "/api/user/login",
+                                "/api/user/forgot-password",
+                                "/api/user/reset-password",
                                 "/api/admin/login"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

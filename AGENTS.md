@@ -22,6 +22,7 @@ Compact repo guide for OpenCode sessions. If a fact is obvious from filenames, i
 
 - Copy `.env.example` to `.env` in the repo root. `.env` is gitignored.
 - Required variables: `POSTGRES_URL`, `POSTGRES_USERNAME`, `POSTGRES_PASSWORD`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`.
+- Optional: `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `FRONTEND_URL` enable the forgot-password mail flow. Without `MAIL_HOST` the app still boots; the reset endpoints answer 503 "not configured".
 - `application.properties` imports `.env` via `spring.config.import=optional:file:.env[.properties]`.
 - Backend port is `8082`; frontend dev server is `5173`; CORS is already wired to `http://localhost:5173`.
 - The default admin account is created automatically at startup with username/password from `ADMIN_USERNAME`/`ADMIN_PASSWORD` (fallback hardcoded `admin`/`admin` in `SetupDataLoader`).

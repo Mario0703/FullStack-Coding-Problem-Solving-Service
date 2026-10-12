@@ -6,6 +6,7 @@ import UserLogin from '@/components/authentication/UserLogin.vue'
 import UserLoginConfirmed from '@/components/authentication/UserLoginConfirmed.vue'
 import UserPage from '@/components/user/UserPage.vue'
 import ForgotPassword from '@/components/user/ForgotPassword.vue'
+import ResetPassword from '@/components/user/ResetPassword.vue'
 import AdminDashBoard from '@/components/AdminPages/DashBoard/AdminDashBoard.vue'
 import AdminDashBoardStats from '@/components/AdminPages/DashBoard/AdminDashBoardStats.vue'
 import SolveChallange from '@/components/code-execution/SolveChallange.vue'
@@ -46,6 +47,11 @@ export const routes = [
     path: '/forgot-password',
     name: 'forgotPassword',
     component: ForgotPassword,
+  },
+  {
+    path: '/reset-password',
+    name: 'resetPassword',
+    component: ResetPassword,
   },
   {
     path: '/login-confirmed',

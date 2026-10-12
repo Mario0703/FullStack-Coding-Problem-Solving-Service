@@ -76,6 +76,29 @@ export function validateForgotPassword(email: string): ValidationResult {
   return { isValid: true, error: '' }
 }
 
+export function validateResetPassword(
+  newPassword: string,
+  confirmNewPassword: string,
+): ValidationResult {
+  if (isblank(newPassword)) {
+    return { isValid: false, error: 'New password cannot be blank.' }
+  }
+
+  if (!isValidPassword(newPassword)) {
+    return {
+      isValid: false,
+      error:
+        'Password must be at least 8 characters and contain an uppercase letter, lowercase letter, and number.',
+    }
+  }
+
+  if (!inputsMatch(newPassword, confirmNewPassword)) {
+    return { isValid: false, error: 'Password and confirmation do not match.' }
+  }
+
+  return { isValid: true, error: '' }
+}
+
 export function validateSignup(data: {
   userName: string
   email: string

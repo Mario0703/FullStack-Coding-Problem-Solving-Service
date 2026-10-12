@@ -63,3 +63,12 @@ export type ChangePasswordRequest = {
 export type ChangeUserNameRequest = {
   newUserName: string
 }
+
+export type ForgotPasswordRequest = {
+  email: string
+}
+
+export type ResetPasswordRequest = {
+  token: string
+  newPassword: string
+}

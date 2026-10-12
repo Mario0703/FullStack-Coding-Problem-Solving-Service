@@ -1,12 +1,16 @@
 package minicode.com.controller.User;
 
+import minicode.com.dto.User.Request.ForgotPasswordRequest;
 import minicode.com.dto.User.Request.LoginRequest;
+import minicode.com.dto.User.Request.ResetPasswordRequest;
 import minicode.com.dto.User.Request.SignupRequest;
 import minicode.com.dto.User.Request.ChangeEmailRequest;
 import minicode.com.dto.User.Request.ChangePasswordRequest;
 import minicode.com.dto.User.Request.ChangeUserNameRequest;
+import minicode.com.dto.User.Response.PasswordResetResponse;
 import minicode.com.entity.User.User;
 import minicode.com.auth.AuthenticateLogin;
+import minicode.com.service.User.PasswordResetService;
 import minicode.com.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,15 +26,18 @@ import org.springframework.util.StringUtils;
 public class UserController {
 
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
 
     public UserController(
             UserService userService,
+            PasswordResetService passwordResetService,
             AuthenticationManager authenticationManager,
             SecurityContextRepository securityContextRepository
     ) {
         this.userService = userService;
+        this.passwordResetService = passwordResetService;
         this.authenticationManager = authenticationManager;
         this.securityContextRepository = securityContextRepository;
     }
@@ -86,6 +93,22 @@ public class UserController {
             Authentication authentication
     ) {
         return userService.changePassword(userService.getAuthenticatedUserId(authentication), request);
+    }
+
+    @PostMapping("/forgot-password")
+    public PasswordResetResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.requestPasswordReset(request.getEmail());
+        return new PasswordResetResponse(
+                "If the email is registered, a password reset link has been sent to it."
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public PasswordResetResponse resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request);
+        return new PasswordResetResponse(
+                "Your password has been reset. You can now log in with your new password."
+        );
     }
 
 

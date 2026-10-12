@@ -3,7 +3,9 @@ import type {
   ChangeEmailRequest,
   ChangePasswordRequest,
   ChangeUserNameRequest,
+  ForgotPasswordRequest,
   PublicUser,
+  ResetPasswordRequest,
   SignupData,
   SubmissionDetails,
   UserData,
@@ -84,6 +86,26 @@ export async function changeUserName(newUserName: string): Promise<Response> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
+    body: JSON.stringify(body),
+  })
+}
+
+export async function requestPasswordReset(email: string): Promise<Response> {
+  const body: ForgotPasswordRequest = { email: email.trim() }
+
+  return fetch(`${baseUrl}/api/user/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<Response> {
+  const body: ResetPasswordRequest = { token, newPassword }
+
+  return fetch(`${baseUrl}/api/user/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
 }

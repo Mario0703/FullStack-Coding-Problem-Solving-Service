@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { requestPasswordReset } from "@/utils/Users/api";
 import { validateForgotPassword } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
+import { readErrorMessage } from "@/utils/apiError";
 
 const router = useRouter();
 const email = ref("");
 const validationError = ref("");
+const requestError = ref("");
 const successMessage = ref("");
+const isSubmitting = ref(false);
 
-function submitForgotPassword() {
+async function submitForgotPassword() {
   validationError.value = "";
+  requestError.value = "";
   successMessage.value = "";
 
   const validation = validateForgotPassword(email.value);
@@ -20,8 +25,23 @@ function submitForgotPassword() {
     return;
   }
 
-  successMessage.value =
-    "Your request is ready. Password reset delivery will be connected to the backend later.";
+  isSubmitting.value = true;
+
+  try {
+    const response = await requestPasswordReset(email.value);
+
+    if (!response.ok) {
+      requestError.value = await readErrorMessage(response, "Unable to request the password reset.");
+      return;
+    }
+
+    successMessage.value =
+      "If the email is registered, a password reset link has been sent to it. The link expires in 5 minutes.";
+  } catch {
+    requestError.value = "Unable to reach the server. Please try again later.";
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function returnToLogin() {
@@ -43,6 +63,7 @@ function returnToLogin() {
       <v-card-text class="pa-6 pt-0">
 
         <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
+        <ErrorFeedback v-if="requestError" :message="requestError" class="mb-4" />
         <SuccessFeedback v-if="successMessage" :message="successMessage" class="mb-4" />
 
         <v-form @submit.prevent="submitForgotPassword">
@@ -55,8 +76,12 @@ function returnToLogin() {
           />
 
           <v-card-actions class="justify-center ga-2 px-0 pt-4">
-            <v-btn type="submit" color="primary">Request reset</v-btn>
-            <v-btn type="button" variant="text" @click="returnToLogin">Back to login</v-btn>
+            <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+              Request reset
+            </v-btn>
+            <v-btn type="button" variant="text" :disabled="isSubmitting" @click="returnToLogin">
+              Back to login
+            </v-btn>
           </v-card-actions>
         </v-form>
       </v-card-text>

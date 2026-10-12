@@ -32,6 +32,13 @@ public class RateLimitingConfig {
     }
 
     @Bean
+    public FilterRegistrationBean<RateLimitingFilter> rateLimiterFilterForForgottenPassword(
+            StringRedisTemplate redisTemplate
+    ) {
+        return rateLimitingFilter(redisTemplate, "/api/user/forgot-password");
+    }
+
+    @Bean
     public FilterRegistrationBean<RateLimitingFilter> rateLimiterFilterForAi(
             StringRedisTemplate redisTemplate
     ) {
