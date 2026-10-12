@@ -1,10 +1,10 @@
 package minicode.com.service.Challange;
 
-import minicode.com.dto.Challenge.CreateChallangeRequest;
-import minicode.com.dto.Challenge.CreateExamplesRequest;
-import minicode.com.dto.Challenge.CreateLanguageSetupRequest;
-import minicode.com.dto.Challenge.CreateTestCaseRequest;
-import minicode.com.dto.Challenge.ChallengeTemplateResponse;
+import minicode.com.dto.Challenge.Request.CreateChallangeRequest;
+import minicode.com.dto.Challenge.Request.CreateExamplesRequest;
+import minicode.com.dto.Challenge.Request.CreateLanguageSetupRequest;
+import minicode.com.dto.Challenge.Request.CreateTestCaseRequest;
+import minicode.com.dto.Challenge.Response.ChallengeTemplateResponse;
 import minicode.com.entity.Challange.*;
 import minicode.com.repository.ChallengeLanguageSetupRepo;
 import minicode.com.repository.ChallengeRepo;

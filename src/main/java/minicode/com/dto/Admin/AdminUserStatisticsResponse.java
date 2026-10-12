@@ -2,7 +2,7 @@ package minicode.com.dto.Admin;
 
 import java.util.UUID;
 
-public record AdminUserStatistics(
+public record AdminUserStatisticsResponse(
         UUID id,
         String name,
         String email,

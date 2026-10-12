@@ -1,4 +1,4 @@
-package minicode.com.dto.Challenge;
+package minicode.com.dto.Challenge.Request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

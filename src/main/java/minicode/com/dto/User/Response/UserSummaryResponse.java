@@ -1,8 +1,8 @@
-package minicode.com.dto.User;
+package minicode.com.dto.User.Response;
 
 import java.util.UUID;
 
-public record UserSummary(
+public record UserSummaryResponse(
         UUID userId,
         String userName,
         String email,

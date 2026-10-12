@@ -20,8 +20,8 @@ public class OutputFeedbackFactoryTest {
 
     @Test
     public void testFactoryRejectsUnknownLanguage() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        UnsupportedLanguageException exception = assertThrows(
+                UnsupportedLanguageException.class,
                 () -> OutputFeedbackFactory.forLanguage("cobol")
         );
 

@@ -7,9 +7,8 @@ import minicode.com.controller.CoderExercutes.Responses.CodeError;
 import minicode.com.controller.CoderExercutes.Responses.CodeErrorCodesFactory;
 import minicode.com.controller.CoderExercutes.OutputFeedback.OutputFeedbackFactory;
 import minicode.com.controller.CoderExercutes.OutputFeedback.OutputFeedbackStrat;
-import minicode.com.dto.Challenge.ExecutionResult;
+import minicode.com.dto.Challenge.Response.ExecutionResultResponse;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -23,7 +22,7 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
     private static final int timeoutSeconds = 30;
 
     @Override
-    public ExecutionResult execute(String language, Path path) throws InterruptedException {
+    public ExecutionResultResponse execute(String language, Path path) throws InterruptedException {
         String imageName = "minileetcode-execution-" + UUID.randomUUID();
 
         OutputFeedbackStrat feedback = OutputFeedbackFactory.forLanguage(language);
@@ -38,7 +37,7 @@ public class DockerCodeStrategy implements CodeExecuteStrat {
             int[] testResults = findTestResults(output);
 
             CodeError error = CodeErrorCodesFactory.resolve(runResult.exitCode(), output);
-            return new ExecutionResult(
+            return new ExecutionResultResponse(
                     runResult.exitCode(),
                     feedback.extractFeedback(output),
                     testResults[0],

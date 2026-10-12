@@ -1,6 +1,6 @@
 package minicode.com;
 
-import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.Request.SignupRequest;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.exception.SignupException;

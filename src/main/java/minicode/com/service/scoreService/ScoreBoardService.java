@@ -1,6 +1,6 @@
 package minicode.com.service.scoreService;
 
-import minicode.com.dto.User.UserStats;
+import minicode.com.dto.User.Response.UserStatsResponse;
 import minicode.com.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +14,9 @@ public class ScoreBoardService {
         this.userRepo = userRepo;
     }
 
-    public List<UserStats> getUserStats() {
+    public List<UserStatsResponse> getUserStats() {
         return userRepo.findAll().stream()
-                .map(user -> new UserStats(
+                .map(user -> new UserStatsResponse(
                         user.getUserName(),
                         user.getScore(),
                         user.getNumberOfEasyChallengesSolved(),

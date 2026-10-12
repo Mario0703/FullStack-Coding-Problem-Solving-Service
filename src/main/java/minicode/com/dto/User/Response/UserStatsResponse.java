@@ -1,6 +1,6 @@
-package minicode.com.dto.User;
+package minicode.com.dto.User.Response;
 
-public record UserStats(
+public record UserStatsResponse(
         String userName,
         int score,
         int numberOfEasyChallengesSolved,

@@ -1,4 +1,4 @@
-package minicode.com.dto.Challenge;
+package minicode.com.dto.Challenge.Response;
 
 import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;

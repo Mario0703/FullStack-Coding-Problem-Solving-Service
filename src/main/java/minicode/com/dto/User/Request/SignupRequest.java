@@ -1,4 +1,4 @@
-package minicode.com.dto.User;
+package minicode.com.dto.User.Request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

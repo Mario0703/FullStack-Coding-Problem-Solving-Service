@@ -1,7 +1,7 @@
 package minicode.com;
 
 import minicode.com.controller.User.PublicProfileController;
-import minicode.com.dto.User.UserSummary;
+import minicode.com.dto.User.Response.UserSummaryResponse;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
@@ -43,7 +43,7 @@ public class PublicProfileControllerUnitTest {
         UserService userService = new UserService(mockUserRepo, validator, passwordEncoder);
 
         PublicProfileController controller = new PublicProfileController(userService);
-        UserSummary summary = controller.getPublicProfile(userId);
+        UserSummaryResponse summary = controller.getPublicProfile(userId);
 
         assertEquals(userId, summary.userId());
         assertEquals("PublicUser", summary.userName());

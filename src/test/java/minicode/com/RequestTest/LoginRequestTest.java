@@ -3,7 +3,7 @@ package minicode.com.RequestTest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import minicode.com.dto.User.LoginRequest;
+import minicode.com.dto.User.Request.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

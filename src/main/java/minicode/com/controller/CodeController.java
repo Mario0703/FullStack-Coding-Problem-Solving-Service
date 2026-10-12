@@ -4,9 +4,8 @@ import minicode.com.controller.CodeEnv.EnvStrat;
 import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
 import minicode.com.auth.CurrentUser;
-import minicode.com.controller.SupportedLanguages;
-import minicode.com.dto.Challenge.ExecutionResult;
-import minicode.com.dto.User.SubmissionRequest;
+import minicode.com.dto.Challenge.Response.ExecutionResultResponse;
+import minicode.com.dto.User.Request.SubmissionRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
@@ -68,7 +67,7 @@ public class CodeController {
     }
 
     @PostMapping("/submit")
-    public ExecutionResult submitCode(
+    public ExecutionResultResponse submitCode(
             @Valid @RequestBody SubmissionRequest codeSubmission,
             Authentication authentication
     ) throws IOException {
@@ -93,7 +92,7 @@ public class CodeController {
         Path tempEnvPath = null;
         try {
             tempEnvPath = envStrategy.createEnv();
-            ExecutionResult result = containerStrat.execute(language, tempEnvPath);
+            ExecutionResultResponse result = containerStrat.execute(language, tempEnvPath);
             SubmissionStatus status = result.status();
 
             Submission submission = new Submission();
@@ -128,7 +127,7 @@ public class CodeController {
         }
     }
 
-    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code, String language) {
+    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResultResponse result, String code, String language) {
         UUID userId = user.getUserId();
         UUID challengeId = challenge.getId();
 

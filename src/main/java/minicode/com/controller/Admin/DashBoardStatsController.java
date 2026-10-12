@@ -1,6 +1,6 @@
 package minicode.com.controller.Admin;
 
-import minicode.com.dto.Admin.AdminUserStatistics;
+import minicode.com.dto.Admin.AdminUserStatisticsResponse;
 import minicode.com.auth.Access;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.User.User;
@@ -88,7 +88,7 @@ public class DashBoardStatsController {
 
     @GetMapping("/users/list")
     @PreAuthorize("hasAuthority('VIEW_USERS')")
-    public List<AdminUserStatistics> getUserStatistics(Authentication authentication) {
+    public List<AdminUserStatisticsResponse> getUserStatistics(Authentication authentication) {
         Access.requireAdmin(authentication);
         return statsService.getUserStatistics();
     }

@@ -1,4 +1,4 @@
-package minicode.com.dto.User;
+package minicode.com.dto.User.Response;
 
 import java.time.Instant;
 import java.util.UUID;

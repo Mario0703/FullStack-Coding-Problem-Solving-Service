@@ -1,4 +1,4 @@
-package minicode.com.dto.Challenge;
+package minicode.com.dto.Challenge.Response;
 
 public record ChallengeTemplateResponse(
         String language,

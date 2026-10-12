@@ -1,8 +1,8 @@
 package minicode.com.controller.Challenges;
 
 import minicode.com.auth.CurrentUser;
-import minicode.com.dto.User.SolvedChallengeResponse;
-import minicode.com.dto.User.SubmissionResponse;
+import minicode.com.dto.User.Response.SolvedChallengeResponse;
+import minicode.com.dto.User.Response.SubmissionResponse;
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;

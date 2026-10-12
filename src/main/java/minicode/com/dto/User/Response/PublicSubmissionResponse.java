@@ -1,4 +1,4 @@
-package minicode.com.dto.User;
+package minicode.com.dto.User.Response;
 
 import minicode.com.entity.Submissions.Submission;
 

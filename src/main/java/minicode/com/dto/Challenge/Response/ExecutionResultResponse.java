@@ -1,8 +1,8 @@
-package minicode.com.dto.Challenge;
+package minicode.com.dto.Challenge.Response;
 
 import minicode.com.entity.Submissions.SubmissionStatus;
 
-public record ExecutionResult(
+public record ExecutionResultResponse(
         int exitCode,
         String output,
         int passingTestCases,

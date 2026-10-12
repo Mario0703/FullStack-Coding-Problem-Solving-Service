@@ -1,10 +1,10 @@
 package minicode.com.controller.User;
 
-import minicode.com.dto.User.LoginRequest;
-import minicode.com.dto.User.SignupRequest;
-import minicode.com.dto.User.ChangeEmailRequest;
-import minicode.com.dto.User.ChangePasswordRequest;
-import minicode.com.dto.User.ChangeUserNameRequest;
+import minicode.com.dto.User.Request.LoginRequest;
+import minicode.com.dto.User.Request.SignupRequest;
+import minicode.com.dto.User.Request.ChangeEmailRequest;
+import minicode.com.dto.User.Request.ChangePasswordRequest;
+import minicode.com.dto.User.Request.ChangeUserNameRequest;
 import minicode.com.entity.User.User;
 import minicode.com.auth.AuthenticateLogin;
 import minicode.com.service.User.UserService;

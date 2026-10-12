@@ -1,8 +1,5 @@
 package minicode.com.ControllerTest.User;
 import minicode.com.controller.User.UserController;
-import minicode.com.dto.User.SignupRequest;
-import minicode.com.entity.User.User;
-import minicode.com.exception.SignupException;
 import minicode.com.service.User.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 
 @AutoConfigureRestTestClient
 @WebMvcTest(UserController.class)
