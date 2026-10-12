@@ -10,8 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LoginRequest {
 
+    @NotBlank(message = "All users must have a username")
     private String userName;
 
+    @NotBlank(message = "All users must have an email")
     private String email;
 
     @NotBlank(message = "All users must have a password")

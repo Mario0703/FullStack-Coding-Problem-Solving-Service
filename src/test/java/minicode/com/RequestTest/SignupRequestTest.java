@@ -35,40 +35,38 @@ public class SignupRequestTest {
 
     @Test
     public void insecurePasswordIsRejected() {
-        request.setUserName("tester");
-        request.setEmail("tester@example.com");
         request.setPassword("short");
-
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
-
         assertFalse(violations.isEmpty());
         assertTrue(hasViolationOn(violations, "password"));
     }
 
     @Test
     public void invalidEmailIsRejected(){
-        request.setUserName("tester");
-        request.setEmail("invalidmail");
-        request.setPassword("thisIsAValidPassword123!");
+        request.setEmail("invalid");
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertTrue(hasViolationOn(violations, "email"));
     }
     @Test
     public void invalidUserNameOfMinimalLengthIsRejected(){
         request.setUserName("t");
-        request.setEmail("invalidmail");
-        request.setPassword("thisIsAValidPassword123!");
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertTrue(hasViolationOn(violations, "userName"));
     }
     @Test
-    public void userNameCannotExceedMaxLenght(){
+    public void userNameCannotExceedMaxLength(){
         String userName = "a".repeat(101);
         request.setUserName(userName);
-        request.setEmail("exampleMail");
-        request.setPassword("thisIsAValidPassword123!");
         assertTrue(hasViolationOn(validator.validate(request), "userName"));
     }
+
+    @Test
+    public void emailCannotExceedMaxLength(){
+        String email = "a".repeat(101) + "@example.com";
+        request.setEmail(email);
+        assertTrue(hasViolationOn(validator.validate(request), "email"));
+    }
+
 
     private static boolean hasViolationOn(
             Set<ConstraintViolation<SignupRequest>> violations, String field) {
