@@ -5,6 +5,7 @@ import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.exception.SignupException;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.RoleRepo;
 import minicode.com.security.BcryptPasswordEncoder;
 import minicode.com.service.User.UserService;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,8 @@ public class MiniLeetCodeSignupUnitTest {
 
     private UserService createUserService(UserRepo userRepo) {
         PasswordEncoder passwordEncoder = new BcryptPasswordEncoder();
-        return new UserService(userRepo, passwordEncoder);
+        RoleRepo roleRepo = mock(RoleRepo.class);
+        return new UserService(userRepo, passwordEncoder, roleRepo);
     }
 
     @Test

@@ -5,6 +5,7 @@ import minicode.com.dto.User.Response.UserSummaryResponse;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.RoleRepo;
 import minicode.com.service.User.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,8 @@ public class PublicProfileControllerUnitTest {
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
         PasswordEncoder passwordEncoder = new minicode.com.security.BcryptPasswordEncoder();
-        UserService userService = new UserService(mockUserRepo, passwordEncoder);
+        RoleRepo roleRepo = mock(RoleRepo.class);
+        UserService userService = new UserService(mockUserRepo, passwordEncoder, roleRepo);
 
         PublicProfileController controller = new PublicProfileController(userService);
         UserSummaryResponse summary = controller.getPublicProfile(userId);

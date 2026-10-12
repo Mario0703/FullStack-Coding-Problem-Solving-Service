@@ -33,10 +33,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
 
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
-        this(userRepo, passwordEncoder, null);
-    }
-
     @Autowired
     public UserService(
             UserRepo userRepo,
@@ -130,7 +126,7 @@ public class UserService {
         String password = request.getPassword();
         User user;
 
-        if (!email.isEmpty()) {
+        if (email != null && !email.isBlank()) {
             user = findUserByEmail(email);
         } else {
             user = findUserByUserName(userName);
