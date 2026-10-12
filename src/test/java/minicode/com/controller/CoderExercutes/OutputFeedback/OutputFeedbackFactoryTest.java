@@ -1,8 +1,9 @@
 package minicode.com.controller.CoderExercutes.OutputFeedback;
 
+import minicode.com.exception.UnSupportedLanguage;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,12 +21,15 @@ public class OutputFeedbackFactoryTest {
 
     @Test
     public void testFactoryRejectsUnknownLanguage() {
-        UnsupportedLanguageException exception = assertThrows(
-                UnsupportedLanguageException.class,
+        UnSupportedLanguage exception = assertThrows(
+                UnSupportedLanguage.class,
                 () -> OutputFeedbackFactory.forLanguage("cobol")
         );
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Unsupported language: cobol", exception.getMessage());
+
+        ResponseStatus responseStatus = UnSupportedLanguage.class.getAnnotation(ResponseStatus.class);
+        assertEquals(HttpStatus.BAD_REQUEST, responseStatus.value());
     }
 
     @Test

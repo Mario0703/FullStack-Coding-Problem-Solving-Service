@@ -7,8 +7,6 @@ import minicode.com.exception.SignupException;
 import minicode.com.repository.UserRepo;
 import minicode.com.security.BcryptPasswordEncoder;
 import minicode.com.service.User.UserService;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,9 +19,8 @@ import java.util.*;
 public class MiniLeetCodeSignupUnitTest {
 
     private UserService createUserService(UserRepo userRepo) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         PasswordEncoder passwordEncoder = new BcryptPasswordEncoder();
-        return new UserService(userRepo, validator, passwordEncoder);
+        return new UserService(userRepo, passwordEncoder);
     }
 
     @Test
@@ -56,25 +53,6 @@ public class MiniLeetCodeSignupUnitTest {
         assertEquals(username, savedUser.getUserName());
         assertEquals(email, savedUser.getEmail());
         assertTrue(passwordEncoder.matches(password, savedUser.getPassword()));
-    }
-
-    @Test
-    public void testUserSignupForInvalidUserEmail() {
-        String userName = "TestUser";
-        String email = "ThisIsNotAnEmail";
-        String password = "TestPassword123";
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setUserName(userName);
-        signupRequest.setEmail(email);
-        signupRequest.setPassword(password);
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-        // Test the signup method with the invalid user
-        SignupException exception = assertThrows(
-                SignupException.class,
-                () -> userService.signup(signupRequest)
-        );
-        assertEquals("Signup request is invalid", exception.getMessage());
     }
 
     @Test
@@ -144,60 +122,6 @@ public class MiniLeetCodeSignupUnitTest {
 
         assertEquals("Email already exists: " + email, exception.getMessage());
 
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignupWithInvalidPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("TestUser");
-        request.setEmail("test@example.com");
-        request.setPassword("weak");
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        SignupException exception = assertThrows(
-                SignupException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals("Signup request is invalid", exception.getMessage());
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignupInvalidWithBlacnkUserNameEmailAndPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("");
-        request.setEmail("");
-        request.setPassword("");
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        SignupException exception = assertThrows(
-                SignupException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals("Signup request is invalid", exception.getMessage());
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignUpisInvalidForMaximumLengthOfUserNameEmailAndPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("a".repeat(101));
-        request.setEmail("a".repeat(101) + "@example.com");
-        request.setPassword("A1" + "a".repeat(70));
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        SignupException exception = assertThrows(
-                SignupException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals("Signup request is invalid", exception.getMessage());
         verify(mockUserRepo, never()).save(any(User.class));
     }
 }

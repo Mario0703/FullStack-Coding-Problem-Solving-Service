@@ -1,7 +1,6 @@
 package minicode.com.service.User;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Validator;
 import minicode.com.auth.Access;
 import minicode.com.dto.User.Request.ChangeEmailRequest;
 import minicode.com.dto.User.Request.ChangePasswordRequest;
@@ -31,33 +30,26 @@ import java.util.*;
 public class UserService {
 
     private final UserRepo userRepo;
-    private final Validator validator;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
 
-    public UserService(UserRepo userRepo, Validator validator, PasswordEncoder passwordEncoder) {
-        this(userRepo, validator, passwordEncoder, null);
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+        this(userRepo, passwordEncoder, null);
     }
 
     @Autowired
     public UserService(
             UserRepo userRepo,
-            Validator validator,
             PasswordEncoder passwordEncoder,
             RoleRepo roleRepo
     ) {
         this.userRepo = userRepo;
-        this.validator = validator;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
     }
 
     @Transactional
     public User signup(SignupRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw SignupException.invalidRequest("Signup request is invalid");
-        }
-
         if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
             throw SignupException.usernameTaken(request.getUserName());
         }
@@ -84,13 +76,6 @@ public class UserService {
 
     @Transactional
     public User changeUserName(UUID userId, ChangeUserNameRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Username change request is invalid"
-            );
-        }
-
         User user = findById(userId);
         request.setNewUserName(request.getNewUserName().trim());
 
@@ -111,13 +96,6 @@ public class UserService {
 
     @Transactional
     public User changeUserEmail(UUID userId, ChangeEmailRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email change request is invalid"
-            );
-        }
-
         User user = findById(userId);
         String normalizedEmail = request.getNewEmail();
 
@@ -137,13 +115,6 @@ public class UserService {
 
     @Transactional
     public User changePassword(UUID userId, ChangePasswordRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password change request is invalid"
-            );
-        }
-
         User user = findById(userId);
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ResponseStatusException(

@@ -21,10 +21,12 @@ public class CreateLanguageSetupRequest {
     @NotBlank(message = "Template is required")
     private String template;
 
+    @NotBlank(message = "Template explanation is required")
     private String templateExplanation;
 
     @NotBlank(message = "Runner is required")
     private String runner;
 
+    @NotBlank(message = "Runner explanation is required")
     private String runnerExplanation;
 }

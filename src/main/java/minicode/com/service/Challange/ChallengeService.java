@@ -1,6 +1,6 @@
 package minicode.com.service.Challange;
 
-import minicode.com.dto.Challenge.Request.CreateChallangeRequest;
+import minicode.com.dto.Challenge.Request.CreateChallengeRequest;
 import minicode.com.dto.Challenge.Request.CreateExamplesRequest;
 import minicode.com.dto.Challenge.Request.CreateLanguageSetupRequest;
 import minicode.com.dto.Challenge.Request.CreateTestCaseRequest;
@@ -47,9 +47,6 @@ public class ChallengeService {
         return challenge.getTestCases();
     }
 
-    public ChallengeTemplateResponse getChallengeTemplate(UUID challengeId) {
-        return getChallengeTemplate(challengeId, null);
-    }
 
     /**
      * Returns the starter template for the requested language. Falls back to
@@ -103,7 +100,7 @@ public class ChallengeService {
         return language.toLowerCase(Locale.ROOT);
     }
 
-    public Challenge createChallenge(CreateChallangeRequest request) {
+    public Challenge createChallenge(CreateChallengeRequest request) {
 
         String name = request.getName();
 
@@ -159,7 +156,7 @@ public class ChallengeService {
      * several languages). Otherwise the legacy single-language fields become
      * the one setup, so existing callers keep working unchanged.
      */
-    private void addLanguageSetups(CreateChallangeRequest request, Challenge challenge) {
+    private void addLanguageSetups(CreateChallengeRequest request, Challenge challenge) {
         List<CreateLanguageSetupRequest> requestedSetups = request.getLanguageSetups();
 
         boolean hasRequestedSetups = requestedSetups != null && !requestedSetups.isEmpty();

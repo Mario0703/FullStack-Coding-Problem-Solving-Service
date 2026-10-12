@@ -3,7 +3,7 @@ package minicode.com.controller.Challenges;
 
 import jakarta.validation.Valid;
 import minicode.com.auth.Access;
-import minicode.com.dto.Challenge.Request.CreateChallangeRequest;
+import minicode.com.dto.Challenge.Request.CreateChallengeRequest;
 import minicode.com.dto.Challenge.Response.ChallengeAiContextResponse;
 import minicode.com.dto.Challenge.Response.ChallengeTemplateResponse;
 import minicode.com.dto.Challenge.Response.ChallengeSummaryResponse;
@@ -195,7 +195,7 @@ public class ChallengeController {
 
 
     @PostMapping("/create")
-    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, Authentication authentication) {
+    public Challenge createChallenge(@Valid @RequestBody CreateChallengeRequest request, Authentication authentication) {
         Access.requireAdmin(authentication);
         Challenge challenge = challangeService.createChallenge(request);
         return challenge;
