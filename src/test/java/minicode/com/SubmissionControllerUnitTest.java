@@ -1,18 +1,21 @@
 package minicode.com;
 
 import minicode.com.controller.Challenges.submissionController;
-import minicode.com.dto.User.SolvedChallengeResponse;
+import minicode.com.dto.User.Response.SolvedChallengeResponse;
 import minicode.com.entity.Challange.Category;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.Difficulty;
 import minicode.com.entity.Challange.SolvedChallenges;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.repository.solvedChallengesRepo;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.Instant;
 import java.util.List;
@@ -47,7 +50,11 @@ public class SubmissionControllerUnitTest {
         Challenge addChallenge = challenge(addChallengeId, "Add Two Numbers", Difficulty.EASY);
         Challenge reverseChallenge = challenge(reverseChallengeId, "Reverse String", Difficulty.MEDIUM);
 
-        User user = new User("TestUser", "test@example.com", "password");
+        User user = new User();
+        user.setUserName("TestUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
 
         solvedChallengesRepo mockSolvedRepo = mock(solvedChallengesRepo.class);
@@ -60,9 +67,11 @@ public class SubmissionControllerUnitTest {
         when(mockUserRepo.findFirstByUserName("TestUser")).thenReturn(Optional.of(user));
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("TestUser");
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "TestUser",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
 
         submissionController controller = new submissionController(
                 mock(SubmissionRepo.class),
@@ -106,16 +115,22 @@ public class SubmissionControllerUnitTest {
         ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
         when(mockChallengeRepo.findAllById(any())).thenReturn(List.of());
 
-        User user = new User("TestUser", "test@example.com", "password");
+        User user = new User();
+        user.setUserName("TestUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
         when(mockUserRepo.findFirstByUserName("TestUser")).thenReturn(Optional.of(user));
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("TestUser");
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "TestUser",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
 
         submissionController controller = new submissionController(
                 mock(SubmissionRepo.class),
@@ -137,19 +152,18 @@ public class SubmissionControllerUnitTest {
     }
 
     private Challenge challenge(UUID challengeId, String name, Difficulty difficulty) {
-        Challenge challenge = new Challenge(
-                name,
-                "description",
-                difficulty,
-                Category.GENERAL,
-                2,
-                "solution",
-                "runner",
-                "runnerExplanation",
-                "template",
-                "templateExplanation",
-                "python"
-        );
+        Challenge challenge = new Challenge();
+        challenge.setName(name);
+        challenge.setDescription("description");
+        challenge.setDifficulty(difficulty);
+        challenge.setCategory(Category.GENERAL);
+        challenge.setNumberOfTestCases(2);
+        challenge.setSolution("solution");
+        challenge.setRunner("runner");
+        challenge.setRunnerExplanation("runnerExplanation");
+        challenge.setTemplete("template");
+        challenge.setTempleteExplanation("templateExplanation");
+        challenge.setLanguage("python");
         challenge.setId(challengeId);
         return challenge;
     }

@@ -3,10 +3,10 @@ package minicode.com.controller.Challenges;
 
 import jakarta.validation.Valid;
 import minicode.com.auth.Access;
-import minicode.com.dto.Challenge.CreateChallangeRequest;
-import minicode.com.dto.Challenge.ChallengeAiContextResponse;
-import minicode.com.dto.Challenge.ChallengeTemplateResponse;
-import minicode.com.dto.Challenge.ChallengeSummaryResponse;
+import minicode.com.dto.Challenge.Request.CreateChallengeRequest;
+import minicode.com.dto.Challenge.Response.ChallengeAiContextResponse;
+import minicode.com.dto.Challenge.Response.ChallengeTemplateResponse;
+import minicode.com.dto.Challenge.Response.ChallengeSummaryResponse;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.InputOutput;
 import minicode.com.entity.Challange.SolvedChallenges;
@@ -19,8 +19,8 @@ import minicode.com.repository.SubmissionRepo;
 import minicode.com.service.Challange.ChallengeService;
 import minicode.com.service.User.UserService;
 import org.springframework.http.HttpStatus;
-import minicode.com.dto.User.PublicSubmissionResponse;
-import minicode.com.dto.User.SolverResponse;
+import minicode.com.dto.User.Response.PublicSubmissionResponse;
+import minicode.com.dto.User.Response.SolverResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
@@ -114,11 +114,7 @@ public class ChallengeController {
 
     @GetMapping("/users/{userId}/submission-stats")
     public List<List<Integer>> getUserSubmissionStats(@PathVariable UUID userId) {
-        return List.of(
-                submissionRepo.findPassedTestCasesByUserIdPublic(userId),
-                submissionRepo.findFailedTestCasesByUserIdPublic(userId),
-                submissionRepo.findTotalTestCasesByUserIdPublic(userId)
-        );
+        return SubmissionHelper.submissionStats(submissionRepo, userId);
     }
 
     @GetMapping("Solution/{challengeId}")
@@ -199,7 +195,7 @@ public class ChallengeController {
 
 
     @PostMapping("/create")
-    public Challenge createChallenge(@Valid @RequestBody CreateChallangeRequest request, Authentication authentication) {
+    public Challenge createChallenge(@Valid @RequestBody CreateChallengeRequest request, Authentication authentication) {
         Access.requireAdmin(authentication);
         Challenge challenge = challangeService.createChallenge(request);
         return challenge;

@@ -54,7 +54,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <v-container class="d-flex align-center justify-center">
+  <v-container>
     <ErrorFeedback
       v-if="props.loginError"
       title="Login failed"
@@ -62,6 +62,8 @@ const emit = defineEmits<{
       variant="tonal"
       class="mb-4"
     />
+  </v-container>
+  <v-container class="d-flex align-center justify-center">
 
     <v-form :style="{ width: `${props.width}px`, maxWidth: '100%' }" class="signup-form" @submit.prevent="props.login">
       <v-card-title class="text-h5 font-weight-bold px-0">{{ props.loginTitle }}</v-card-title>

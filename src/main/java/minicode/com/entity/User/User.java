@@ -2,7 +2,9 @@ package minicode.com.entity.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import minicode.com.entity.Roles.Role;
 import minicode.com.entity.Roles.UserRole;
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Table(name = "users", schema = "public") // provides the name of the table
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Column(nullable = false, unique = true)
@@ -27,20 +31,20 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 0")
     private int score = 0;
 
-    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 0")
     private int numberOfEasyChallengesSolved = 0;
 
-    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 0")
     private int numberOfMediumChallengesSolved = 0;
 
-    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 0")
     private int numberOfHardChallengesSolved = 0;
 
     /** Total OpenAI tokens the user has spent through miniHelper. */
-    @Column(nullable = false, columnDefinition = "bigint default 0")
+    @Column(columnDefinition = "bigint default 0")
     private long tokenUsage = 0;
 
     @Enumerated(EnumType.STRING)
@@ -59,20 +63,6 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-
-    protected User() {
-    }
-
-    public User(String userName, String email, String password) {
-        this(userName, email, password, UserRole.USER);
-    }
-
-    public User(String userName, String email, String password, UserRole role) {
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 
     public UUID getId() {
         return userId;

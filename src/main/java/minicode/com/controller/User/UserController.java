@@ -1,10 +1,10 @@
 package minicode.com.controller.User;
 
-import minicode.com.dto.User.LoginRequest;
-import minicode.com.dto.User.SignupRequest;
-import minicode.com.dto.User.ChangeEmailRequest;
-import minicode.com.dto.User.ChangePasswordRequest;
-import minicode.com.dto.User.ChangeUserNameRequest;
+import minicode.com.dto.User.Request.LoginRequest;
+import minicode.com.dto.User.Request.SignupRequest;
+import minicode.com.dto.User.Request.ChangeEmailRequest;
+import minicode.com.dto.User.Request.ChangePasswordRequest;
+import minicode.com.dto.User.Request.ChangeUserNameRequest;
 import minicode.com.entity.User.User;
 import minicode.com.auth.AuthenticateLogin;
 import minicode.com.service.User.UserService;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.util.StringUtils;
 
 @RestController
 @RequestMapping("/api/user")
@@ -47,15 +48,14 @@ public class UserController {
             HttpServletResponse httpResponse
     ) {
         User user = userService.login(request);
-        boolean isEmailInputValid = request.getEmail() != null && !request.getEmail().isBlank();
+        String loginIdentifier = StringUtils.hasText(request.getEmail())
+                ? request.getEmail()
+                : request.getUserName();
 
-        if (isEmailInputValid) {
-
-        }
         AuthenticateLogin.login(
                 authenticationManager,
                 securityContextRepository,
-                request.getUserName(),
+                loginIdentifier,
                 request.getPassword(),
                 httpRequest,
                 httpResponse

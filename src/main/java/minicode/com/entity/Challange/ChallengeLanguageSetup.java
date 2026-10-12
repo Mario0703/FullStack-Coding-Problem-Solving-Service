@@ -2,6 +2,7 @@ package minicode.com.entity.Challange;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChallengeLanguageSetup {
 
     @Id
@@ -55,20 +57,4 @@ public class ChallengeLanguageSetup {
 
     @Column(columnDefinition = "TEXT")
     private String runnerExplanation;
-
-    public ChallengeLanguageSetup(
-            Challenge challenge,
-            String language,
-            String template,
-            String templateExplanation,
-            String runner,
-            String runnerExplanation
-    ) {
-        this.challenge = challenge;
-        this.language = language;
-        this.template = template;
-        this.templateExplanation = templateExplanation;
-        this.runner = runner;
-        this.runnerExplanation = runnerExplanation;
-    }
 }

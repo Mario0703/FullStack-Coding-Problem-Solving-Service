@@ -1,12 +1,12 @@
 package minicode.com;
 
 import minicode.com.controller.User.PublicProfileController;
-import minicode.com.dto.User.UserSummary;
+import minicode.com.dto.User.Response.UserSummaryResponse;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.RoleRepo;
 import minicode.com.service.User.UserService;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,7 +23,11 @@ public class PublicProfileControllerUnitTest {
     public void testGetPublicProfileReturnsUserSummaryWithStats() {
         UUID userId = UUID.randomUUID();
 
-        User user = new User("PublicUser", "public@example.com", "password");
+        User user = new User();
+        user.setUserName("PublicUser");
+        user.setEmail("public@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
         user.setUserId(userId);
         user.setScore(42);
         user.setNumberOfEasyChallengesSolved(5);
@@ -33,12 +37,12 @@ public class PublicProfileControllerUnitTest {
         UserRepo mockUserRepo = mock(UserRepo.class);
         when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         PasswordEncoder passwordEncoder = new minicode.com.security.BcryptPasswordEncoder();
-        UserService userService = new UserService(mockUserRepo, validator, passwordEncoder);
+        RoleRepo roleRepo = mock(RoleRepo.class);
+        UserService userService = new UserService(mockUserRepo, passwordEncoder, roleRepo);
 
         PublicProfileController controller = new PublicProfileController(userService);
-        UserSummary summary = controller.getPublicProfile(userId);
+        UserSummaryResponse summary = controller.getPublicProfile(userId);
 
         assertEquals(userId, summary.userId());
         assertEquals("PublicUser", summary.userName());

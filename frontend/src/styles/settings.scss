@@ -1,0 +1,16 @@
+// Global Vuetify theme typography.
+//
+// Font assignments (see index.html where the webfonts are loaded):
+//   - Headings  -> Space Grotesk, a geometric sans that gives titles a
+//                  distinctive, modern character.
+//   - Body text -> Inter, a highly legible UI sans used by Vuetify for most
+//                  components (buttons, labels, inputs, paragraphs).
+//   - Code      -> JetBrains Mono, applied in src/styles/main.scss to the
+//                  editor and other code-related sections.
+//
+// These variables are declared with `!default` inside Vuetify, so overriding
+// them here (before Vuetify's styles are compiled) replaces the defaults.
+@use 'vuetify/settings' with (
+  $body-font-family: ('Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif),
+  $heading-font-family: ('Space Grotesk', 'Inter', 'Roboto', sans-serif)
+);

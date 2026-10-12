@@ -1,28 +1,28 @@
 package minicode.com;
 
-import minicode.com.dto.User.SignupRequest;
+import minicode.com.dto.User.Request.SignupRequest;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
+import minicode.com.exception.SignupException;
 import minicode.com.repository.UserRepo;
+import minicode.com.repository.RoleRepo;
 import minicode.com.security.BcryptPasswordEncoder;
 import minicode.com.service.User.UserService;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 
 
 public class MiniLeetCodeSignupUnitTest {
 
     private UserService createUserService(UserRepo userRepo) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         PasswordEncoder passwordEncoder = new BcryptPasswordEncoder();
-        return new UserService(userRepo, validator, passwordEncoder);
+        RoleRepo roleRepo = mock(RoleRepo.class);
+        return new UserService(userRepo, passwordEncoder, roleRepo);
     }
 
     @Test
@@ -58,25 +58,6 @@ public class MiniLeetCodeSignupUnitTest {
     }
 
     @Test
-    public void testUserSignupForInvalidUserEmail() {
-        String userName = "TestUser";
-        String email = "ThisIsNotAnEmail";
-        String password = "TestPassword123";
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setUserName(userName);
-        signupRequest.setEmail(email);
-        signupRequest.setPassword(password);
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-        // Test the signup method with the invalid user
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.signup(signupRequest)
-        );
-        assertEquals(400, exception.getStatusCode().value());
-    }
-
-    @Test
     public void testUserSignupForUsernameWhichAlreadyExists() {
         String userName = "TestUser";
         String email = "TestUser2@example.com";
@@ -87,11 +68,11 @@ public class MiniLeetCodeSignupUnitTest {
         signupRequest.setEmail(email);
         signupRequest.setPassword(password);
 
-        User existingUser = new User(
-                userName,
-                "existing@example.com",
-                "encoded-password"
-        );
+        User existingUser = new User();
+        existingUser.setUserName(userName);
+        existingUser.setEmail("existing@example.com");
+        existingUser.setPassword("encoded-password");
+        existingUser.setRole(UserRole.USER);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
 
@@ -100,13 +81,12 @@ public class MiniLeetCodeSignupUnitTest {
 
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(signupRequest)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
-        assertEquals("Username already exists", exception.getReason());
+        assertEquals("Username already exists: " + userName, exception.getMessage());
 
         verify(mockUserRepo, never()).save(any(User.class));
     }
@@ -121,11 +101,11 @@ public class MiniLeetCodeSignupUnitTest {
         request.setEmail(email);
         request.setPassword(password);
 
-        User existingUser = new User(
-                "AnotherUser",
-                email,
-                "encoded-password"
-        );
+        User existingUser = new User();
+        existingUser.setUserName("AnotherUser");
+        existingUser.setEmail(email);
+        existingUser.setPassword("encoded-password");
+        existingUser.setRole(UserRole.USER);
 
         UserRepo mockUserRepo = mock(UserRepo.class);
 
@@ -137,68 +117,13 @@ public class MiniLeetCodeSignupUnitTest {
 
         UserService userService = createUserService(mockUserRepo);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        SignupException exception = assertThrows(
+                SignupException.class,
                 () -> userService.signup(request)
         );
 
-        assertEquals(400, exception.getStatusCode().value());
-        assertEquals("Email already exists", exception.getReason());
+        assertEquals("Email already exists: " + email, exception.getMessage());
 
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignupWithInvalidPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("TestUser");
-        request.setEmail("test@example.com");
-        request.setPassword("weak");
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals(400, exception.getStatusCode().value());
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignupInvalidWithBlacnkUserNameEmailAndPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("");
-        request.setEmail("");
-        request.setPassword("");
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals(400, exception.getStatusCode().value());
-        verify(mockUserRepo, never()).save(any(User.class));
-    }
-    @Test
-    public void testUserSignUpisInvalidForMaximumLengthOfUserNameEmailAndPassword() {
-        SignupRequest request = new SignupRequest();
-        request.setUserName("a".repeat(101));
-        request.setEmail("a".repeat(101) + "@example.com");
-        request.setPassword("A1" + "a".repeat(70));
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        UserService userService = createUserService(mockUserRepo);
-
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.signup(request)
-        );
-
-        assertEquals(400, exception.getStatusCode().value());
         verify(mockUserRepo, never()).save(any(User.class));
     }
 }

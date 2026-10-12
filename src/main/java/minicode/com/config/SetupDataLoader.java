@@ -80,7 +80,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
 
     private Permissions createPermissionOnStartUp(String name) {
-        return permissionsRepo.findByName(name).orElseGet(() -> permissionsRepo.save(new Permissions(name)));
+        return permissionsRepo.findByName(name).orElseGet(() -> {
+            Permissions permission = new Permissions();
+            permission.setName(name);
+            return permissionsRepo.save(permission);
+        });
     }
 
     private void seedExecutionMetadata() {
@@ -117,21 +121,25 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
 
     private Role createRolesOnStartUp(String name, Set<Permissions> permissions) {
-        Role role = roleRepo.findByName(name).orElseGet(() -> new Role(name));
+        Role role = roleRepo.findByName(name).orElseGet(() -> {
+            Role newRole = new Role();
+            newRole.setName(name);
+            return newRole;
+        });
         role.getPermissions().addAll(permissions);
         return roleRepo.save(role);
     }
 
 
     private void createStartupAdmin(Role adminRole) {
-        User admin = userRepo.findFirstByUserName("admin").orElseGet(() ->
-                new User(
-                        "admin",
-                        "admin@admin.local",
-                        passwordEncoder.encode("admin"),
-                        UserRole.ADMIN
-                )
-        );
+        User admin = userRepo.findFirstByUserName("admin").orElseGet(() -> {
+            User newAdmin = new User();
+            newAdmin.setUserName("admin");
+            newAdmin.setEmail("admin@admin.local");
+            newAdmin.setPassword(passwordEncoder.encode("admin"));
+            newAdmin.setRole(UserRole.ADMIN);
+            return newAdmin;
+        });
         admin.setRole(UserRole.ADMIN);
         admin.getRoles().add(adminRole);
         userRepo.save(admin);

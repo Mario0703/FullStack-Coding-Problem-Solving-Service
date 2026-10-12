@@ -14,10 +14,6 @@ public class SignupException extends RuntimeException {
         super(message);
     }
 
-    public static SignupException invalidRequest(String message) {
-        return new SignupException(message);
-    }
-
     public static SignupException usernameTaken(String userName) {
         return new SignupException("Username already exists: " + userName);
     }

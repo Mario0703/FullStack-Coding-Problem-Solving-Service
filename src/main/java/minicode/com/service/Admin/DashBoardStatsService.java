@@ -2,7 +2,7 @@ package minicode.com.service.Admin;
 
 import minicode.com.entity.Submissions.Submission;
 import minicode.com.entity.User.User;
-import minicode.com.dto.Admin.AdminUserStatistics;
+import minicode.com.dto.Admin.AdminUserStatisticsResponse;
 import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.repository.UserRepo;
@@ -42,11 +42,6 @@ public class DashBoardStatsService {
     @PreAuthorize("hasAuthority('VIEW_SUBMISSIONS')")
     public List<Submission> getAllSubmissions() {
         return submissionRepository.findAll();
-    }
-
-    @PreAuthorize("hasAuthority('DISABLE_USER')")
-    public void DisableUser(UUID userId){
-        // disable the user by restring their acces to pages and challenges
     }
 
     @PreAuthorize("hasAuthority('VIEW_USERS')")
@@ -103,9 +98,9 @@ public class DashBoardStatsService {
         return statistics;
     }
 
-    public List<AdminUserStatistics> getUserStatistics() {
+    public List<AdminUserStatisticsResponse> getUserStatistics() {
         return userRepository.findAll().stream()
-                .map(user -> new AdminUserStatistics(
+                .map(user -> new AdminUserStatisticsResponse(
                         user.getUserId(),
                         user.getUserName(),
                         user.getEmail(),

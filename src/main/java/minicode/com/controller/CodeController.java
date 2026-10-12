@@ -3,10 +3,9 @@ package minicode.com.controller;
 import minicode.com.controller.CodeEnv.EnvStrat;
 import minicode.com.controller.CodeEnv.TempEnvDestroyAfter;
 import minicode.com.controller.CoderExercutes.DockerCodeStrategy;
-import minicode.com.auth.Access;
-import minicode.com.controller.SupportedLanguages;
-import minicode.com.dto.Challenge.ExecutionResult;
-import minicode.com.dto.User.SubmissionRequest;
+import minicode.com.auth.CurrentUser;
+import minicode.com.dto.Challenge.Response.ExecutionResultResponse;
+import minicode.com.dto.User.Request.SubmissionRequest;
 import minicode.com.entity.Challange.Challenge;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Submissions.Submission;
@@ -31,6 +30,7 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -67,11 +67,11 @@ public class CodeController {
     }
 
     @PostMapping("/submit")
-    public ExecutionResult submitCode(
+    public ExecutionResultResponse submitCode(
             @Valid @RequestBody SubmissionRequest codeSubmission,
             Authentication authentication
     ) throws IOException {
-        UUID authenticatedUserId = getAuthenticatedUserId(authentication);
+        UUID authenticatedUserId = CurrentUser.id(userRepo, authentication);
         validateSubmissionUser(codeSubmission, authenticatedUserId);
 
         User user = findUserOrThrow(authenticatedUserId);
@@ -92,19 +92,19 @@ public class CodeController {
         Path tempEnvPath = null;
         try {
             tempEnvPath = envStrategy.createEnv();
-            ExecutionResult result = containerStrat.execute(language, tempEnvPath);
+            ExecutionResultResponse result = containerStrat.execute(language, tempEnvPath);
             SubmissionStatus status = result.status();
 
-            submissionRepo.save(new Submission(
-                    user,
-                    challenge,
-                    codeSubmission.getCode(),
-                    language,
-                    result.exitCode(),
-                    status,
-                    result.passingTestCases(),
-                    result.failingTestCases()
-            ));
+            Submission submission = new Submission();
+            submission.setUser(user);
+            submission.setChallenge(challenge);
+            submission.setCode(codeSubmission.getCode());
+            submission.setLanguage(language);
+            submission.setExitCode(result.exitCode());
+            submission.setStatus(status);
+            submission.setTestCasesPassed(result.passingTestCases());
+            submission.setTestCasesFailed(result.failingTestCases());
+            submissionRepo.save(submission);
 
             if (status == SubmissionStatus.ACCEPTED) {
                 SaveSolvedChallengeIfAccepted(challenge, user, result, codeSubmission.getCode(), language);
@@ -127,7 +127,7 @@ public class CodeController {
         }
     }
 
-    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResult result, String code, String language) {
+    private void SaveSolvedChallengeIfAccepted(Challenge challenge, User user, ExecutionResultResponse result, String code, String language) {
         UUID userId = user.getUserId();
         UUID challengeId = challenge.getId();
 
@@ -135,7 +135,13 @@ public class CodeController {
         boolean alreadySolvedInLanguage = solvedChallengesRepository.existsByUserIdAndChallengeIdAndLanguage(userId, challengeId, language);
 
         if (!alreadySolvedInLanguage) {
-            solvedChallengesRepository.save(new SolvedChallenges(challenge, user, code, language));
+            SolvedChallenges solved = new SolvedChallenges();
+            solved.setUserId(userId);
+            solved.setChallengeId(challengeId);
+            solved.setCode(code);
+            solved.setLanguage(language);
+            solved.setSolvedAt(Instant.now());
+            solvedChallengesRepository.save(solved);
         }
 
         if (alreadySolvedChallenge) {
@@ -190,15 +196,7 @@ public class CodeController {
 
     @GetMapping("/SolvedChallenges")
     public List<UUID> getSolvedChallenges(Authentication authentication) {
-        UUID userId = getAuthenticatedUserId(authentication);
+        UUID userId = CurrentUser.id(userRepo, authentication);
         return solvedChallengesRepository.findChallengeIdsByUserId(userId);
-    }
-
-    private UUID getAuthenticatedUserId(Authentication authentication) {
-        // The playground is a user feature; admin sessions are not allowed.
-        Access.requireUser(authentication);
-        return userRepo.findFirstByUserName(authentication.getName())
-                .orElseThrow(UnauthenticatedException::authenticationRequired)
-                .getUserId();
     }
 }

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-
-import {ref} from "vue";
-import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import { ref } from "vue";
+import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import router from "@/router";
 import {
   getSignupValidationError,
   inputsMatch,
   isValidEmail,
   isValidPassword,
-} from '@/utils/signupValidation'
-import { signupUser } from '@/utils/Users/api'
-import { readErrorMessage } from '@/utils/apiError'
-import type { SignupData } from '@/utils/Users/types'
+} from "@/utils/signupValidation";
+import { signupUser } from "@/utils/Users/api";
+import { readErrorMessage } from "@/utils/apiError";
+import type { SignupData } from "@/utils/Users/types";
+import VPolicy from "@/components/authentication/V-Policy.vue";
 
 const userName = ref("");
 const email = ref("");
@@ -20,34 +20,43 @@ const password = ref("");
 const confirmPassword = ref("");
 const signupError = ref("");
 
+// The privacy policy must be accepted before an account can be created.
+const agreedToPolicy = ref(false);
+const showPolicy = ref(false);
 
 async function sendUserData() {
+  signupError.value = "";
 
-  signupError.value = ''
+  if (!agreedToPolicy.value) {
+    signupError.value =
+      "You must read and agree to the privacy policy before creating an account.";
+    showPolicy.value = true;
+    return;
+  }
 
-  if (!canSubmit()) return
+  if (!canSubmit()) return;
 
   const userData: SignupData = {
     userName: userName.value,
     email: email.value,
     password: password.value,
-  }
+  };
 
   try {
-    const response = await signupUser(userData)
+    const response = await signupUser(userData);
 
     if (!response.ok) {
       signupError.value = await readErrorMessage(
         response,
-        'We could not create your account. Please try again.',
-      )
-      return
+        "We could not create your account. Please try again.",
+      );
+      return;
     }
 
-    await response.json()
-    router.push({ name: 'confirmSignup' })
+    await response.json();
+    router.push({ name: "confirmSignup" });
   } catch {
-    signupError.value = 'Unable to reach the server. Please try again later.'
+    signupError.value = "Unable to reach the server. Please try again later.";
   }
 }
 
@@ -58,17 +67,15 @@ function canSubmit(): boolean {
     confirmEmail: confirmEmail.value,
     password: password.value,
     confirmPassword: confirmPassword.value,
-  })
+  });
 
   if (validationError) {
-    signupError.value = validationError
-    return false
+    signupError.value = validationError;
+    return false;
   }
 
-  return true
+  return true;
 }
-
-
 </script>
 
 <template>
@@ -149,7 +156,43 @@ function canSubmit(): boolean {
         required
       />
 
-      <v-btn type="submit" color="primary">Sign up</v-btn>
+      <!-- Agreement is required before the account can be created. -->
+      <v-checkbox
+        v-model="agreedToPolicy"
+        color="primary"
+        density="comfortable"
+        hide-details
+        class="mt-4"
+        :error="!agreedToPolicy && Boolean(signupError)"
+      >
+        <template #label>
+          I have read and agree to the
+          <a
+            href="#"
+            class="text-decoration-underline"
+            @click.prevent.stop="showPolicy = true"
+          >Privacy Policy</a>
+        </template>
+      </v-checkbox>
+      <div v-if="!agreedToPolicy" class="text-caption text-medium-emphasis mb-2">
+        You must agree to the privacy policy to create an account.
+      </div>
+
+      <v-btn type="submit" color="primary" :disabled="!agreedToPolicy">Sign up</v-btn>
     </v-form>
   </v-container>
+
+  <v-dialog v-model="showPolicy" max-width="640" scrollable>
+    <v-card class="pa-4">
+      <VPolicy
+        v-model:has-agreed="agreedToPolicy"
+        @accept="showPolicy = false"
+        @decline="showPolicy = false"
+      />
+      <v-card-actions>
+        <v-spacer />
+        <v-btn variant="text" @click="showPolicy = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>

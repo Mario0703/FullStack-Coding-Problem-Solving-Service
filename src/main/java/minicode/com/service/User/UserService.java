@@ -1,16 +1,16 @@
 package minicode.com.service.User;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Validator;
 import minicode.com.auth.Access;
-import minicode.com.dto.User.ChangeEmailRequest;
-import minicode.com.dto.User.ChangePasswordRequest;
-import minicode.com.dto.User.ChangeUserNameRequest;
-import minicode.com.dto.User.LoginRequest;
-import minicode.com.dto.User.SignupRequest;
-import minicode.com.dto.User.SolverResponse;
-import minicode.com.dto.User.UserSummary;
+import minicode.com.dto.User.Request.ChangeEmailRequest;
+import minicode.com.dto.User.Request.ChangePasswordRequest;
+import minicode.com.dto.User.Request.ChangeUserNameRequest;
+import minicode.com.dto.User.Request.LoginRequest;
+import minicode.com.dto.User.Request.SignupRequest;
+import minicode.com.dto.User.Response.SolverResponse;
+import minicode.com.dto.User.Response.UserSummaryResponse;
 import minicode.com.entity.Challange.SolvedChallenges;
+import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
 import minicode.com.exception.LoginErrorException;
 import minicode.com.exception.SignupException;
@@ -30,33 +30,22 @@ import java.util.*;
 public class UserService {
 
     private final UserRepo userRepo;
-    private final Validator validator;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
-
-    public UserService(UserRepo userRepo, Validator validator, PasswordEncoder passwordEncoder) {
-        this(userRepo, validator, passwordEncoder, null);
-    }
 
     @Autowired
     public UserService(
             UserRepo userRepo,
-            Validator validator,
             PasswordEncoder passwordEncoder,
             RoleRepo roleRepo
     ) {
         this.userRepo = userRepo;
-        this.validator = validator;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
     }
 
     @Transactional
     public User signup(SignupRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw SignupException.invalidRequest("Signup request is invalid");
-        }
-
         if (userRepo.findFirstByUserName(request.getUserName()).isPresent()) {
             throw SignupException.usernameTaken(request.getUserName());
         }
@@ -66,33 +55,23 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = new User(
-                request.getUserName(),
-                request.getEmail(),
-                encodedPassword
-        );
+        User user = new User();
+        user.setUserName(request.getUserName());
+        user.setEmail(request.getEmail());
+        user.setPassword(encodedPassword);
+        user.setRole(UserRole.USER);
 
-        if (roleRepo != null) {
-            roleRepo.findByName("ROLE_USER").ifPresent(role ->
-                    user.setRoles(new HashSet<>(Set.of(role)))
-            );
-        }
+        roleRepo.findByName("ROLE_USER").ifPresent(role -> user.setRoles(new HashSet<>(Set.of(role))));
 
         return userRepo.save(user);
     }
 
     @Transactional
     public User changeUserName(UUID userId, ChangeUserNameRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Username change request is invalid"
-            );
-        }
-
         User user = findById(userId);
-        String normalizedUserName = request.newUserName().trim();
+        request.setNewUserName(request.getNewUserName().trim());
 
+        String normalizedUserName = request.getNewUserName();
         Optional<User> existingUser = userRepo.findFirstByUserName(normalizedUserName);
         boolean IsUserConflicting = existingUser.isPresent()
                 && !existingUser.get().getUserId().equals(userId);
@@ -109,15 +88,8 @@ public class UserService {
 
     @Transactional
     public User changeUserEmail(UUID userId, ChangeEmailRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email change request is invalid"
-            );
-        }
-
         User user = findById(userId);
-        String normalizedEmail = request.newEmail().trim();
+        String normalizedEmail = request.getNewEmail();
 
         Optional<User> existingUser = userRepo.findFirstByEmail(normalizedEmail);
         boolean IsUserConflicting = existingUser.isPresent()
@@ -135,22 +107,15 @@ public class UserService {
 
     @Transactional
     public User changePassword(UUID userId, ChangePasswordRequest request) {
-        if (!validator.validate(request).isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password change request is invalid"
-            );
-        }
-
         User user = findById(userId);
-        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Current password is incorrect"
             );
         }
 
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         return userRepo.save(user);
     }
 
@@ -161,22 +126,9 @@ public class UserService {
         String password = request.getPassword();
         User user;
 
+        boolean isUserSigningInWithEmail = email != null && !email.isBlank();
 
-        boolean hasBlankEmailAndUserName = isBlank(email) && isBlank(userName);
-        if (hasBlankEmailAndUserName) {
-            throw LoginErrorException.invalidCredentials("Email or username is required");
-        }
-
-        boolean hasEmailAndUserName = !isBlank(email) && !isBlank(userName);
-        if (hasEmailAndUserName) {
-            throw LoginErrorException.invalidCredentials("Provide either an email or a username");
-        }
-
-        if (isBlank(password)) {
-            throw LoginErrorException.invalidCredentials("Password is required");
-        }
-
-        if (!isBlank(email)) {
+        if (isUserSigningInWithEmail) {
             user = findUserByEmail(email);
         } else {
             user = findUserByUserName(userName);
@@ -219,9 +171,9 @@ public class UserService {
         return user.get();
     }
 
-    public UserSummary getUserSummaryById(UUID userId) {
+    public UserSummaryResponse getUserSummaryById(UUID userId) {
         User user = findById(userId);
-        return new UserSummary(
+        return new UserSummaryResponse(
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),
@@ -247,10 +199,6 @@ public class UserService {
         return findByUserName(authentication.getName()).getUserId();
     }
 
-    private boolean isBlank(String value) {
-        boolean hasBlankValue = value == null || value.isBlank();
-        return hasBlankValue;
-    }
 
 
     public List<SolverResponse> getSolversBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {

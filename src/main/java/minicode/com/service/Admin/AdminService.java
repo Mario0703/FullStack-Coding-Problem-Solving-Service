@@ -25,11 +25,6 @@ public class AdminService {
         String adminUserName = adminSignUpRequest.getAdminUserName();
         String adminPassword = adminSignUpRequest.getAdminPassword();
 
-        boolean hasBlankCredentials = adminUserName.isBlank() || adminPassword.isBlank();
-        if (hasBlankCredentials) {
-            throw LoginErrorException.invalidCredentials("Admin username and password cannot be blank");
-        }
-
         User adminUser = userRepo.findFirstByUserName(adminUserName)
                 .orElseThrow(() -> LoginErrorException.invalidCredentials("Admin user not found"));
 

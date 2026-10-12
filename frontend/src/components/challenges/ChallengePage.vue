@@ -118,18 +118,18 @@ const filteredChallenges = computed(() =>
             <v-btn color="primary">Solve challenge</v-btn>
           </v-card-actions>
           <v-card-text>
-            <template v-if="isChallengeSolved(challenge.id)">
+            <v-card-item v-if="isChallengeSolved(challenge.id)">
               <v-icon icon="mdi-check-circle" color="success" />
               <span class="ml-2">Solved</span>
-            </template>
-            <template v-else-if="isChallengeAttempted(challenge.id)">
+            </v-card-item>
+            <v-card-item v-else-if="isChallengeAttempted(challenge.id)">
               <v-icon icon="mdi-alert-circle" color="warning" />
               <span class="ml-2">Attempted</span>
-            </template>
-            <template v-else>
+            </v-card-item>
+            <v-card-item v-else>
               <v-icon icon="mdi-close-circle" color="error" />
               <span class="ml-2">Not solved</span>
-            </template>
+            </v-card-item>
           </v-card-text>
         </v-card>
       </v-col>

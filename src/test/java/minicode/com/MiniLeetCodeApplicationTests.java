@@ -1,6 +1,7 @@
 package minicode.com;
 
 import minicode.com.security.RateLimitingFilter;
+import minicode.com.config.RateLimitingConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,7 +68,7 @@ class MiniLeetCodeApplicationTests {
         StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
 
         FilterRegistrationBean<RateLimitingFilter> registration =
-                new MiniLeetCodeApplication()
+                new RateLimitingConfig()
                         .rateLimiterFilterForUserSignup(redisTemplate);
 
         assertEquals(Set.of("/api/user/signup"), registration.getUrlPatterns());

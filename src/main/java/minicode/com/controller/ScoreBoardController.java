@@ -1,6 +1,6 @@
 package minicode.com.controller;
 
-import minicode.com.dto.User.UserStats;
+import minicode.com.dto.User.Response.UserStatsResponse;
 import minicode.com.service.scoreService.ScoreBoardService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class ScoreBoardController {
     }
 
     @GetMapping("/user-stats")
-    public List<UserStats> getUserStats() {
+    public List<UserStatsResponse> getUserStats() {
         return scoreBoardService.getUserStats();
     }
 

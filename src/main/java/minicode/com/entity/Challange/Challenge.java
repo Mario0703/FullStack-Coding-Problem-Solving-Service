@@ -3,7 +3,9 @@ package minicode.com.entity.Challange;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import minicode.com.entity.Submissions.Submission;
 
@@ -14,12 +16,11 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "challenges", schema = "public") // provides the name of the table
 
 public class Challenge {
-    protected Challenge() {
-    }
-
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -37,7 +38,7 @@ public class Challenge {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Column(name = "number_of_test_cases", nullable = false, columnDefinition = "integer default 0")
+    @Column(name = "number_of_test_cases", columnDefinition = "integer default 0")
     private int numberOfTestCases;
 
     // Never serialized: submission history would leak other users' code and
@@ -88,33 +89,6 @@ public class Challenge {
 
     @Column
     private String language;
-
-
-    public Challenge(
-            String name,
-            String description,
-            Difficulty difficulty,
-            Category category,
-            int numberOfTestCases,
-            String solution,
-            String runner,
-            String runnerExplanation,
-            String templete,
-            String templeteExplanation,
-            String language
-    ) {
-        this.name = name;
-        this.description = description;
-        this.difficulty = difficulty;
-        this.category = category;
-        this.numberOfTestCases = numberOfTestCases;
-        this.solution = solution;
-        this.runner = runner;
-        this.runnerExplanation = runnerExplanation;
-        this.templete = templete;
-        this.templeteExplanation = templeteExplanation;
-        this.language = language;
-    }
 }
 
 

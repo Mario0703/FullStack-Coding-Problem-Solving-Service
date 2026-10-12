@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/** Pure unit tests for miniHelper that need no database, Redis or OpenAI access. */
 class MiniHelperServiceUnitTest {
 
-    /** A service with no API key, so its OpenAI client is null. */
     private MiniHelperService unconfiguredService() {
+
+        
         return new MiniHelperService(null, null, null, "", "gpt-4o-mini");
     }
 
