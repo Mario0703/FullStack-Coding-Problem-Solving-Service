@@ -18,11 +18,9 @@ import minicode.com.repository.UserRepo;
 import minicode.com.repository.SubmissionRepo;
 import minicode.com.service.Challange.ChallengeService;
 import minicode.com.service.User.UserService;
-import org.springframework.http.HttpStatus;
 import minicode.com.dto.User.Response.PublicSubmissionResponse;
 import minicode.com.dto.User.Response.SolverResponse;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
@@ -117,27 +115,12 @@ public class ChallengeController {
         return SubmissionHelper.submissionStats(submissionRepo, userId);
     }
 
+    // Deliberately open: the solve page's "Show instructor solution" tick
+    // must work for any visitor, without authentication or an accepted
+    // submission.
     @GetMapping("Solution/{challengeId}")
-    public String getChallengeSolution(@PathVariable UUID challengeId, Authentication authentication) {
-        // The instructor solution is an answer, so it must not be readable
-        // before the user actually solves the challenge. Admins keep full
-        // access; solvers get it once they have an accepted submission.
-        if (!Access.isAdmin(authentication)) {
-            UUID userId = requireAuthenticatedUserId(authentication);
-            boolean solved = submissionRepo.existsByUser_UserIdAndChallenge_IdAndStatus(
-                    userId,
-                    challengeId,
-                    SubmissionStatus.ACCEPTED
-            );
-            if (!solved) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Solve the challenge before viewing the instructor solution"
-                );
-            }
-        }
-        Challenge challenge = challangeService.getChallenge(challengeId);
-        return challenge.getSolution();
+    public String getChallengeSolution(@PathVariable UUID challengeId) {
+        return challangeService.getChallenge(challengeId).getSolution();
     }
 
     /**
@@ -160,8 +143,10 @@ public class ChallengeController {
                 SubmissionStatus.ACCEPTED
         );
 
-        // Mirror /Solution/{id}: the instructor solution stays hidden until the
-        // user has solved the challenge (admins keep full access).
+        // The AI helper keeps its own stricter reveal policy (unlike
+        // /Solution/{id}, which is open): the instructor solution stays
+        // hidden until the user has solved the challenge (admins keep
+        // full access).
         boolean solutionAvailable = admin || solved;
         String solution = solutionAvailable ? challenge.getSolution() : null;
 

@@ -1,7 +1,7 @@
 package minicode.com.entity.Challange;
 
-import minicode.com.entity.User.User;
 import minicode.com.service.scoreService.strategy.DifficultyUpdateStrategy;
+import minicode.com.service.scoreService.strategy.SolvedCounters;
 import minicode.com.service.scoreService.strategy.impl.EasyDifficultyUpdateStrategy;
 import minicode.com.service.scoreService.strategy.impl.HardDifficultyUpdateStrategy;
 import minicode.com.service.scoreService.strategy.impl.MediumDifficultyUpdateStrategy;
@@ -17,7 +17,7 @@ public enum Difficulty {
         this.updateStrategy = updateStrategy;
     }
 
-    public void applyUpdate(User user) {
-        updateStrategy.update(user);
+    public SolvedCounters solvedCountersForOneSolve() {
+        return updateStrategy.solvedCountersForOneSolve();
     }
 }

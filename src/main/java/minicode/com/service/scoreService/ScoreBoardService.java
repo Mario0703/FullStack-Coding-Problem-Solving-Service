@@ -17,6 +17,7 @@ public class ScoreBoardService {
     public List<UserStatsResponse> getUserStats() {
         return userRepo.findAll().stream()
                 .map(user -> new UserStatsResponse(
+                        user.getUserId(),
                         user.getUserName(),
                         user.getScore(),
                         user.getNumberOfEasyChallengesSolved(),

@@ -61,7 +61,7 @@ public class Challenge {
     private List<ChallengeLanguageSetup> languageSetups = new ArrayList<>();
 
     // Instructor solution and server-side runner: never exposed through the
-    // API. The solution is served by its own guarded endpoint.
+    // API. The solution is served by its own endpoint.
     @JsonIgnore
     @Column( columnDefinition = "TEXT")
     private String solution;

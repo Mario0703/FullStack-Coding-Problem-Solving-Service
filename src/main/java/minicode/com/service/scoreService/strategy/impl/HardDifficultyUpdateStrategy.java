@@ -1,11 +1,11 @@
 package minicode.com.service.scoreService.strategy.impl;
 
-import minicode.com.entity.User.User;
 import minicode.com.service.scoreService.strategy.DifficultyUpdateStrategy;
+import minicode.com.service.scoreService.strategy.SolvedCounters;
 
 public class HardDifficultyUpdateStrategy implements DifficultyUpdateStrategy {
     @Override
-    public void update(User user) {
-        user.setNumberOfHardChallengesSolved(user.getNumberOfHardChallengesSolved() + 1);
+    public SolvedCounters solvedCountersForOneSolve() {
+        return SolvedCounters.forHardSolve();
     }
 }

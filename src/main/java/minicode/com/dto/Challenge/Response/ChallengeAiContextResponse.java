@@ -14,7 +14,8 @@ import java.util.UUID;
  * admin-guarded endpoints.
  *
  * <p>The instructor {@code solution} is only filled in once the caller has an
- * accepted submission (or is an admin), mirroring {@code /Solution/{id}}.
+ * accepted submission (or is an admin) — the AI helper's own reveal policy,
+ * stricter than the open {@code /Solution/{id}} endpoint.
  * {@code userCode} is the caller's own most recent submission for the
  * challenge, if any.
  */

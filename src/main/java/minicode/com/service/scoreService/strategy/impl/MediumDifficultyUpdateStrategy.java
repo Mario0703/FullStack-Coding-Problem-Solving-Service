@@ -1,11 +1,11 @@
 package minicode.com.service.scoreService.strategy.impl;
 
-import minicode.com.entity.User.User;
 import minicode.com.service.scoreService.strategy.DifficultyUpdateStrategy;
+import minicode.com.service.scoreService.strategy.SolvedCounters;
 
 public class MediumDifficultyUpdateStrategy implements DifficultyUpdateStrategy {
     @Override
-    public void update(User user) {
-        user.setNumberOfMediumChallengesSolved(user.getNumberOfMediumChallengesSolved() + 1);
+    public SolvedCounters solvedCountersForOneSolve() {
+        return SolvedCounters.forMediumSolve();
     }
 }

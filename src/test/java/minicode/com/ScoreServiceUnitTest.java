@@ -1,76 +1,71 @@
 package minicode.com;
 
 import minicode.com.entity.Challange.Difficulty;
-import minicode.com.entity.Roles.UserRole;
-import minicode.com.entity.User.User;
-import minicode.com.repository.ChallengeRepo;
 import minicode.com.repository.UserRepo;
 import minicode.com.service.scoreService.ScoreService;
 import minicode.com.service.scoreService.factory.DifficultyFactory;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ScoreServiceUnitTest {
 
-    private ScoreService createScoreService(UserRepo userRepo, ChallengeRepo challengeRepo) {
-        return new ScoreService(userRepo, challengeRepo);
-    }
-
-    private User createUser() {
-        User user = new User();
-        user.setUserName("TestUser");
-        user.setEmail("test@example.com");
-        user.setPassword("password");
-        user.setRole(UserRole.USER);
-        user.setScore(0);
-        user.setNumberOfEasyChallengesSolved(0);
-        user.setNumberOfMediumChallengesSolved(0);
-        user.setNumberOfHardChallengesSolved(0);
-        return user;
-    }
-
     @Test
-    public void testUpdateScoreAndSolvedCountersAddsScoreAndIncrementsCounter() {
+    public void givenAnAcceptedHardSolveWhenTheScoreIsAwardedThenScoreAndCountersGrowByOneAtomicUpdate() {
+        // given a user and their accepted hard solve
         UUID userId = UUID.randomUUID();
-        User user = createUser();
+        UserRepo userRepo = mock(UserRepo.class);
+        ScoreService scoreService = new ScoreService(userRepo);
 
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(mockUserRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
+        // when the score is awarded for it
         scoreService.updateScoreAndSolvedCounters(userId, 10, 10, "HARD");
 
-        assertEquals(300, user.getScore());
-        assertEquals(0, user.getNumberOfEasyChallengesSolved());
-        assertEquals(0, user.getNumberOfMediumChallengesSolved());
-        assertEquals(1, user.getNumberOfHardChallengesSolved());
-        verify(mockUserRepo).save(user);
+        // then the score and the hard counter grow by one atomic update statement,
+        // with no read-modify-write window another concurrent solve could slip into
+        verify(userRepo).addSolveAward(userId, 300, 0, 0, 1);
+        verify(userRepo, never()).findById(any(UUID.class));
+        verify(userRepo, never()).save(any());
     }
 
     @Test
-    public void testUpdateScoreAndSolvedCountersDoesNotGoNegative() {
+    public void givenAnAcceptedEasySolveWhenTheScoreIsAwardedThenScoreAndCountersGrowByOneAtomicUpdate() {
+        // given a user and their accepted easy solve
         UUID userId = UUID.randomUUID();
-        User user = createUser();
+        UserRepo userRepo = mock(UserRepo.class);
+        ScoreService scoreService = new ScoreService(userRepo);
 
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(mockUserRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
+        // when the score is awarded for it
         scoreService.updateScoreAndSolvedCounters(userId, 10, 2, "EASY");
 
-        assertEquals(20, user.getScore());
-        assertEquals(1, user.getNumberOfEasyChallengesSolved());
-        verify(mockUserRepo).save(user);
+        // then the score and the easy counter grow by one atomic update statement
+        verify(userRepo).addSolveAward(userId, 20, 1, 0, 0);
+        verify(userRepo, never()).findById(any(UUID.class));
+        verify(userRepo, never()).save(any());
+    }
+
+    @Test
+    public void givenADifficultSolveWhenTheScoreIsAwardedThenOnlyItsOwnCounterGrows() {
+        // given a medium solve
+        UUID userId = UUID.randomUUID();
+        UserRepo userRepo = mock(UserRepo.class);
+        ScoreService scoreService = new ScoreService(userRepo);
+
+        // when the score is awarded for it
+        scoreService.updateScoreAndSolvedCounters(userId, 10, 10, "MEDIUM");
+
+        // then only the medium counter grows
+        ArgumentCaptor<Integer> medium = ArgumentCaptor.forClass(Integer.class);
+        verify(userRepo).addSolveAward(any(UUID.class), anyInt(), anyInt(), medium.capture(), anyInt());
+        assertEquals(1, medium.getValue());
     }
 
     @Test
