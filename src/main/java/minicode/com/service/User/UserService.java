@@ -65,11 +65,7 @@ public class UserService {
         user.setPassword(encodedPassword);
         user.setRole(UserRole.USER);
 
-        if (roleRepo != null) {
-            roleRepo.findByName("ROLE_USER").ifPresent(role ->
-                    user.setRoles(new HashSet<>(Set.of(role)))
-            );
-        }
+        roleRepo.findByName("ROLE_USER").ifPresent(role -> user.setRoles(new HashSet<>(Set.of(role))));
 
         return userRepo.save(user);
     }
@@ -134,22 +130,7 @@ public class UserService {
         String password = request.getPassword();
         User user;
 
-
-        boolean hasBlankEmailAndUserName = isBlank(email) && isBlank(userName);
-        if (hasBlankEmailAndUserName) {
-            throw LoginErrorException.invalidCredentials("Email or username is required");
-        }
-
-        boolean hasEmailAndUserName = !isBlank(email) && !isBlank(userName);
-        if (hasEmailAndUserName) {
-            throw LoginErrorException.invalidCredentials("Provide either an email or a username");
-        }
-
-        if (isBlank(password)) {
-            throw LoginErrorException.invalidCredentials("Password is required");
-        }
-
-        if (!isBlank(email)) {
+        if (!email.isEmpty()) {
             user = findUserByEmail(email);
         } else {
             user = findUserByUserName(userName);
@@ -220,10 +201,6 @@ public class UserService {
         return findByUserName(authentication.getName()).getUserId();
     }
 
-    private boolean isBlank(String value) {
-        boolean hasBlankValue = value == null || value.isBlank();
-        return hasBlankValue;
-    }
 
 
     public List<SolverResponse> getSolversBySolvedChallenges(List<SolvedChallenges> solvedChallenges) {
