@@ -44,11 +44,6 @@ public class DashBoardStatsService {
         return submissionRepository.findAll();
     }
 
-    @PreAuthorize("hasAuthority('DISABLE_USER')")
-    public void DisableUser(UUID userId){
-        // disable the user by restring their acces to pages and challenges
-    }
-
     @PreAuthorize("hasAuthority('VIEW_USERS')")
     public User searchForUserByName(String userName){
         return userRepository.findFirstByUserName(userName)

@@ -43,11 +43,6 @@ public class UserChallengesIntergrationTest {
         user.setUserName("testuser");
         user.setEmail("email@email.com");
         user.setPassword("password");
-        user = userRepository.saveAndFlush(user);
-
-        mockMvc.perform(post("/api/user/challenges/" + challenge1.getId()).contentType("application/json")
-                .content("{\"userId\": \"" + user.getId() + "\"}")
-
 
     }
 }

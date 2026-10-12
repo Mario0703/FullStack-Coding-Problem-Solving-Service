@@ -53,19 +53,9 @@ public class ApiGlobalHandler {
         return respond(HttpStatus.BAD_REQUEST, error, "Unsupported language");
     }
 
-    @ExceptionHandler(LogoutException.class)
-    public ResponseEntity<String> handleLogout(LogoutException error) {
-        return respond(HttpStatus.INTERNAL_SERVER_ERROR, error, "Logout error");
-    }
-
     @ExceptionHandler(ContainerFailureException.class)
     public ResponseEntity<String> handleContainerFailure(ContainerFailureException error) {
         return respond(HttpStatus.INTERNAL_SERVER_ERROR, error, "Container failure");
-    }
-
-    @ExceptionHandler(CodeExercutorException.class)
-    public ResponseEntity<String> handleCodeExecutor(CodeExercutorException error) {
-        return respond(HttpStatus.INTERNAL_SERVER_ERROR, error, "Code executor failure");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

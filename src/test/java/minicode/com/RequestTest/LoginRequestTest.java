@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoginRequestTest {
@@ -23,24 +24,44 @@ public class LoginRequestTest {
     }
 
     @Test
-    public void allUsersMustHaveAUserName(){
-        loginRequest.setUserName(null);
-        Boolean hasViolation = hasViolationOn(validator.validate(loginRequest), "userName");
-        assertTrue(hasViolation, "Expected violation on userName when it is null");
+    public void loginWithUserNameAndPasswordIsValid(){
+        loginRequest.setUserName("tester");
+        loginRequest.setPassword("Password123");
+
+        assertTrue(validator.validate(loginRequest).isEmpty());
     }
 
     @Test
-    public void allUsersMustHaveAnEmail(){
-        loginRequest.setEmail(null);
-        Boolean hasViolation = hasViolationOn(validator.validate(loginRequest), "email");
-        assertTrue(hasViolation, "Expected violation on email when it is null");
+    public void loginWithEmailAndPasswordIsValid(){
+        loginRequest.setEmail("tester@example.com");
+        loginRequest.setPassword("Password123");
+
+        assertTrue(validator.validate(loginRequest).isEmpty());
     }
 
     @Test
-    public void allUsersMustHaveAPassword(){
-        loginRequest.setPassword(null);
-        Boolean hasViolation = hasViolationOn(validator.validate(loginRequest), "password");
-        assertTrue(hasViolation, "Expected violation on password when it is null");
+    public void loginWithoutAnIdentifierIsRejected(){
+        loginRequest.setPassword("Password123");
+
+        assertFalse(validator.validate(loginRequest).isEmpty());
+    }
+
+    @Test
+    public void loginWithBothUserNameAndEmailIsRejected(){
+        loginRequest.setUserName("tester");
+        loginRequest.setEmail("tester@example.com");
+        loginRequest.setPassword("Password123");
+
+        assertFalse(validator.validate(loginRequest).isEmpty());
+    }
+
+    @Test
+    public void loginWithoutPasswordIsRejected(){
+        loginRequest.setUserName("tester");
+
+        Set<ConstraintViolation<LoginRequest>> violations = validator.validate(loginRequest);
+
+        assertTrue(hasViolationOn(violations, "password"));
     }
 
     private static boolean hasViolationOn(

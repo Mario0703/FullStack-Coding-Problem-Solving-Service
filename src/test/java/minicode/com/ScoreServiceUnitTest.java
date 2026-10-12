@@ -1,8 +1,5 @@
 package minicode.com;
 
-import minicode.com.controller.Score.Diffculty.DiffcultyFacttory;
-import minicode.com.controller.Score.MiniCodeScore;
-import minicode.com.controller.Score.ScoreStrat;
 import minicode.com.entity.Challange.Difficulty;
 import minicode.com.entity.Roles.UserRole;
 import minicode.com.entity.User.User;
@@ -36,81 +33,6 @@ public class ScoreServiceUnitTest {
         user.setNumberOfMediumChallengesSolved(0);
         user.setNumberOfHardChallengesSolved(0);
         return user;
-    }
-
-    @Test
-    public void testUpdateNumberOfChallengesSolvedForEasyDifficulty() {
-        UUID userId = UUID.randomUUID();
-        User user = createUser();
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(mockUserRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
-        scoreService.updateNumberOfChallengesSolvedBasedOnDifficulty(userId, "EASY");
-
-        assertEquals(1, user.getNumberOfEasyChallengesSolved());
-        assertEquals(0, user.getNumberOfMediumChallengesSolved());
-        assertEquals(0, user.getNumberOfHardChallengesSolved());
-        verify(mockUserRepo).save(user);
-    }
-
-    @Test
-    public void testUpdateNumberOfChallengesSolvedForMediumDifficulty() {
-        UUID userId = UUID.randomUUID();
-        User user = createUser();
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(mockUserRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
-        scoreService.updateNumberOfChallengesSolvedBasedOnDifficulty(userId, "medium");
-
-        assertEquals(0, user.getNumberOfEasyChallengesSolved());
-        assertEquals(1, user.getNumberOfMediumChallengesSolved());
-        assertEquals(0, user.getNumberOfHardChallengesSolved());
-        verify(mockUserRepo).save(user);
-    }
-
-    @Test
-    public void testUpdateNumberOfChallengesSolvedForHardDifficulty() {
-        UUID userId = UUID.randomUUID();
-        User user = createUser();
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(mockUserRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
-        scoreService.updateNumberOfChallengesSolvedBasedOnDifficulty(userId, "Hard");
-
-        assertEquals(0, user.getNumberOfEasyChallengesSolved());
-        assertEquals(0, user.getNumberOfMediumChallengesSolved());
-        assertEquals(1, user.getNumberOfHardChallengesSolved());
-        verify(mockUserRepo).save(user);
-    }
-
-    @Test
-    public void testUpdateNumberOfChallengesSolvedForInvalidDifficultyThrows() {
-        UUID userId = UUID.randomUUID();
-
-        UserRepo mockUserRepo = mock(UserRepo.class);
-        ChallengeRepo mockChallengeRepo = mock(ChallengeRepo.class);
-
-        ScoreService scoreService = createScoreService(mockUserRepo, mockChallengeRepo);
-
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> scoreService.updateNumberOfChallengesSolvedBasedOnDifficulty(userId, "IMPOSSIBLE")
-        );
-
-        assertEquals("Invalid difficulty level: IMPOSSIBLE", exception.getMessage());
-        verify(mockUserRepo, never()).findById(any());
     }
 
     @Test

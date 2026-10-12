@@ -27,14 +27,6 @@ public class ScoreService {
     }
 
 
-    public void updateNumberOfChallengesSolvedBasedOnDifficulty(UUID userId, String difficultylevel) {
-        Difficulty difficulty = DifficultyFactory.createDifficulty(difficultylevel);
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
-        difficulty.applyUpdate(user);
-        userRepo.save(user);
-    }
-
     public void updateScoreAndSolvedCounters(UUID userId, int totalTestCases, int passedTestCases, String difficultyLevel) {
         Difficulty difficulty = DifficultyFactory.createDifficulty(difficultyLevel);
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
