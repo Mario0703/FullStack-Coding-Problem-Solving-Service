@@ -3,7 +3,7 @@ import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { computed, onMounted, ref } from 'vue'
 import type { ChallengeDifficulty, ChallengeSummary } from '@/utils/Challenges/Types/types'
-import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import { difficultyChip, formatChallengeValue } from '@/utils/Challenges/Types/options'
 import { listChallenges } from '@/utils/Challenges/API/api'
 import { loadAttemptedChallengeIds, loadSolvedChallengeIds } from '@/utils/Challenges/API/submissions'
 import SearchComponentChallange from './SearchComponentChallange.vue'
@@ -99,6 +99,7 @@ const filteredChallenges = computed(() =>
     <v-row v-else align="stretch">
       <v-col v-for="challenge in filteredChallenges" :key="challenge.id" cols="12" sm="6" lg="4">
         <v-card
+          color="light grey"
           class="h-100"
           variant="outlined"
           link
@@ -106,7 +107,7 @@ const filteredChallenges = computed(() =>
         >
           <v-card-title class="d-flex align-center justify-space-between">
             {{ challenge.name }}
-            <v-chip size="small" color="primary">
+            <v-chip v-bind="difficultyChip(challenge.difficulty)" size="small">
               {{ formatChallengeValue(challenge.difficulty) }}
             </v-chip>
           </v-card-title>
@@ -120,7 +121,7 @@ const filteredChallenges = computed(() =>
           <v-card-text>
             <v-card-item v-if="isChallengeSolved(challenge.id)">
               <v-icon icon="mdi-check-circle" color="success" />
-              <span class="ml-2">Solved</span>
+              <span sty class=" ml-2">Solved</span>
             </v-card-item>
             <v-card-item v-else-if="isChallengeAttempted(challenge.id)">
               <v-icon icon="mdi-alert-circle" color="warning" />

@@ -28,3 +28,20 @@ export const categoryOptions: ChallengeOption<ChallengeCategory>[] = [
 export function formatChallengeValue(value: string): string {
   return value.charAt(0) + value.slice(1).toLowerCase()
 }
+
+/**
+ * The difficulty chip shown on the challenge cards: each level uses the
+ * same icon and color language as the scoreboard and the user profile.
+ */
+export function difficultyChip(
+  difficulty: ChallengeDifficulty,
+): { color: string; prependIcon: string } {
+  switch (difficulty) {
+    case 'EASY':
+      return { color: 'success', prependIcon: 'mdi-leaf' }
+    case 'MEDIUM':
+      return { color: 'warning', prependIcon: 'mdi-fire' }
+    case 'HARD':
+      return { color: 'error', prependIcon: 'mdi-skull' }
+  }
+}
