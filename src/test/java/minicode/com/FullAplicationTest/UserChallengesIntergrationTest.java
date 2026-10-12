@@ -29,20 +29,4 @@ public class UserChallengesIntergrationTest {
     }
 
 
-
-    @Test
-    public void givenAUserWhenTheyGoToChallengesBoardAndOpenAchallangeTheyWilGetTheDetails() throws Exception {
-        Challenge challenge1 = new Challenge();
-        challenge1.setName("Challenge 1");
-        challenge1.setDescription("This is the first challenge.");
-        challenge1.setDifficulty(Difficulty.EASY);
-        challenge1.setNumberOfTestCases(3);
-        challengeRepo.saveAndFlush(challenge1);
-
-        User user = new User();
-        user.setUserName("testuser");
-        user.setEmail("email@email.com");
-        user.setPassword("password");
-
-    }
 }

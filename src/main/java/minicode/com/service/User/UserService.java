@@ -126,7 +126,9 @@ public class UserService {
         String password = request.getPassword();
         User user;
 
-        if (email != null && !email.isBlank()) {
+        boolean isUserSigningInWithEmail = email != null && !email.isBlank();
+
+        if (isUserSigningInWithEmail) {
             user = findUserByEmail(email);
         } else {
             user = findUserByUserName(userName);
