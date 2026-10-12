@@ -24,12 +24,13 @@ export const loadError = ref('')
 
 
 export async function loadStatistics() {
+  loadError.value = ''
+  isLoading.value = true
+
   try {
     const permissionResponse = await fetch(`${baseUrl}/api/admin/stats/permission`, {
       credentials: 'include',
     })
-    const loadError = ref('')
-    const isLoading = ref(true)
 
     if (permissionResponse.status === 403) {
       loadError.value = 'You do not have permission to view platform statistics.'
