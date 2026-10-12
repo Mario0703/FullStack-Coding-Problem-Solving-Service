@@ -37,7 +37,7 @@ public class TestRunnerEntityTest {
 
         // When it is saved and flushed to the database
         // Then the null nullable field is accepted
-        assertDoesNotThrow(() -> {
+        assertThrows(PersistenceException.class, () -> {
             entityManager.persistAndFlush(testRunner);
         });
     }

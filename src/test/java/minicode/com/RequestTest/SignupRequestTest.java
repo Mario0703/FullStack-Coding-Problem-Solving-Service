@@ -3,7 +3,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import minicode.com.dto.User.SignupRequest;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -13,16 +13,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SignupRequestTest {
 
-    private static Validator validator;
+    private Validator validator;
+    private SignupRequest request;
 
-    @BeforeAll
-    static void createValidator() {
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
+    @BeforeEach
+     void createValidator() {
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
+        this.request = new SignupRequest();
     }
 
     @Test
     public void validSignupRequestHasNoViolations() {
-        SignupRequest request = new SignupRequest();
         request.setUserName("tester");
         request.setEmail("tester@example.com");
         request.setPassword("ThisIsAValidPassword123!");
@@ -34,7 +35,6 @@ public class SignupRequestTest {
 
     @Test
     public void insecurePasswordIsRejected() {
-        SignupRequest request = new SignupRequest();
         request.setUserName("tester");
         request.setEmail("tester@example.com");
         request.setPassword("short");
@@ -43,6 +43,31 @@ public class SignupRequestTest {
 
         assertFalse(violations.isEmpty());
         assertTrue(hasViolationOn(violations, "password"));
+    }
+
+    @Test
+    public void invalidEmailIsRejected(){
+        request.setUserName("tester");
+        request.setEmail("invalidmail");
+        request.setPassword("thisIsAValidPassword123!");
+        Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
+        assertTrue(hasViolationOn(violations, "email"));
+    }
+    @Test
+    public void invalidUserNameOfMinimalLengthIsRejected(){
+        request.setUserName("t");
+        request.setEmail("invalidmail");
+        request.setPassword("thisIsAValidPassword123!");
+        Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
+        assertTrue(hasViolationOn(violations, "userName"));
+    }
+    @Test
+    public void userNameCannotExceedMaxLenght(){
+        String userName = "a".repeat(101);
+        request.setUserName(userName);
+        request.setEmail("exampleMail");
+        request.setPassword("thisIsAValidPassword123!");
+        assertTrue(hasViolationOn(validator.validate(request), "userName"));
     }
 
     private static boolean hasViolationOn(

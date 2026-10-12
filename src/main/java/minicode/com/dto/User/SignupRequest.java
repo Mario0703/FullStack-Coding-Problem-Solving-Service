@@ -16,7 +16,7 @@ public class SignupRequest {
 
 
     @NotBlank(message = "All users must have a username")
-    @Size(max = 100, message = "Username cannot exceed 100 characters")
+    @Size(min = 5, max = 100, message = "UserName must be between 5 and 100 charaters")
     private String userName;
 
     @NotBlank(message = "All users must have an email")

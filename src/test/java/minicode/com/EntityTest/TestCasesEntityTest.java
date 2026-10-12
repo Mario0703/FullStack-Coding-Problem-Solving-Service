@@ -40,7 +40,7 @@ public class TestCasesEntityTest {
 
         // When it is saved and flushed to the database
         // Then the null nullable field is accepted
-        assertDoesNotThrow(() -> {
+        assertThrows(PersistenceException.class, () -> {
             entityManager.persistAndFlush(testCases);
         });
     }
@@ -53,7 +53,7 @@ public class TestCasesEntityTest {
 
         // When it is saved and flushed to the database
         // Then the null nullable field is accepted
-        assertDoesNotThrow(() -> {
+        assertThrows(PersistenceException.class, () -> {
             entityManager.persistAndFlush(testCases);
         });
     }

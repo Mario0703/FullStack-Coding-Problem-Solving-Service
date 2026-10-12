@@ -16,9 +16,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestCases {
-    @Column
+    @Column(nullable = false)
     private String testInput;
-    @Column
+    @Column(nullable = false)
     private String testOutput;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
