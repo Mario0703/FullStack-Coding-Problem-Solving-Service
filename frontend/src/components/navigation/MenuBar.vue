@@ -3,7 +3,7 @@ import { currentRole, currentUser } from "@/utils/Users/state";
 </script>
 
 <template>
-  <v-app-bar color="primary">
+  <v-app-bar color="grey-darken-4">
     <v-app-bar-title>MiniLeetCode</v-app-bar-title>
     <v-spacer />
     <v-btn color="white" variant="text" :to="{ name: 'home' }">Home</v-btn>

@@ -99,9 +99,9 @@ const filteredChallenges = computed(() =>
     <v-row v-else align="stretch">
       <v-col v-for="challenge in filteredChallenges" :key="challenge.id" cols="12" sm="6" lg="4">
         <v-card
-          color="light grey"
+          color="grey-lighten-2"
           class="h-100"
-          variant="outlined"
+          variant="tonal"
           link
           :to="{ name: 'solveChallenge', params: { id: challenge.id } }"
         >
@@ -116,12 +116,12 @@ const filteredChallenges = computed(() =>
           </v-card-subtitle>
           <v-card-text>{{ challenge.description }}</v-card-text>
           <v-card-actions>
-            <v-btn color="primary">Solve challenge</v-btn>
+            <v-btn variant="elevated" color="grey-darken-4">Solve challenge</v-btn>
           </v-card-actions>
           <v-card-text>
             <v-card-item v-if="isChallengeSolved(challenge.id)">
               <v-icon icon="mdi-check-circle" color="success" />
-              <span sty class=" ml-2">Solved</span>
+              <span  class=" ml-2">Solved</span>
             </v-card-item>
             <v-card-item v-else-if="isChallengeAttempted(challenge.id)">
               <v-icon icon="mdi-alert-circle" color="warning" />

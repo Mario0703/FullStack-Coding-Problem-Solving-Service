@@ -25,14 +25,14 @@ function abortForm() {
 <template>
   <v-container class="d-flex flex-column align-center py-8 px-4">
     <v-sheet v-if="currentUser" class="w-100" color="transparent">
-      <v-card class="w-100 mx-auto bg-grey-lighten-4" border="primary" max-width="720" variant="outlined">
+      <v-card color="grey-lighten-2" class="w-100 mx-auto" max-width="720" variant="tonal">
         <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
           User Information
         </v-card-title>
         <v-card-text class="pa-6 pt-2">
           <v-row align="stretch" class="ma-n2">
             <v-col cols="12" sm="6" class="d-flex pa-2">
-              <v-card class="w-100 h-100 d-flex flex-column bg-white" border="primary" variant="outlined">
+              <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   User name
                 </v-card-title>
@@ -41,7 +41,7 @@ function abortForm() {
                     {{ currentUser.userName }}
                   </v-card-text>
                   <v-card-actions class="justify-center pb-4">
-                    <v-btn color="primary" @click="openForm('username')">
+                    <v-btn variant="elevated" color="grey-lighten-1" @click="openForm('username')">
                       Change username
                     </v-btn>
                   </v-card-actions>
@@ -53,7 +53,7 @@ function abortForm() {
             </v-col>
 
             <v-col cols="12" sm="6" class="d-flex pa-2">
-              <v-card class="w-100 h-100 d-flex flex-column bg-white" border="primary" variant="outlined">
+              <v-card color="grey-lighten-1"  class="w-100 h-100 d-flex flex-column" variant="outlined">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   Email
                 </v-card-title>
@@ -62,7 +62,7 @@ function abortForm() {
                     {{ currentUser.email }}
                   </v-card-text>
                   <v-card-actions class="justify-center pb-4">
-                    <v-btn color="primary" @click="openForm('email')">
+                    <v-btn variant="elevated" color="grey-darken-4" @click="openForm('email')">
                       Change email
                     </v-btn>
                   </v-card-actions>

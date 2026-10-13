@@ -161,7 +161,7 @@ const totalPoints = computed(() =>
     </v-card>
   </v-container>
   <v-container class="py-8">
-    <v-card class="border-lg bg-surface" border="primary" variant="outlined">
+    <v-card color="grey-lighten-2" class="border-lg bg-surface" border="primary" variant="elevated">
       <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Questions </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <SearchComponentChallange v-model="search" class="mb-4" />
@@ -182,7 +182,7 @@ const totalPoints = computed(() =>
             <v-card
               class="border-lg h-100 d-flex flex-column bg-black"
               border="primary"
-              variant="outlined"
+              variant="elevated"
             >
               <v-card-item>
                 <v-card-title class="text-h6 font-weight-bold px-0">
