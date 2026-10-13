@@ -29,6 +29,7 @@ public class PublicProfileControllerUnitTest {
         user.setPassword("password");
         user.setRole(UserRole.USER);
         user.setUserId(userId);
+        user.setBio("I solve bite-sized coding challenges.");
         user.setScore(42);
         user.setNumberOfEasyChallengesSolved(5);
         user.setNumberOfMediumChallengesSolved(3);
@@ -47,9 +48,34 @@ public class PublicProfileControllerUnitTest {
         assertEquals(userId, summary.userId());
         assertEquals("PublicUser", summary.userName());
         assertEquals("public@example.com", summary.email());
+        assertEquals("I solve bite-sized coding challenges.", summary.bio());
         assertEquals(42, summary.score());
         assertEquals(5, summary.numberOfEasyChallengesSolved());
         assertEquals(3, summary.numberOfMediumChallengesSolved());
         assertEquals(1, summary.numberOfHardChallengesSolved());
+    }
+
+    @Test
+    public void testGetUserBioReturnsBioByUserId() {
+        UUID userId = UUID.randomUUID();
+
+        User user = new User();
+        user.setUserName("PublicUser");
+        user.setEmail("public@example.com");
+        user.setPassword("password");
+        user.setRole(UserRole.USER);
+        user.setUserId(userId);
+
+        UserRepo mockUserRepo = mock(UserRepo.class);
+        when(mockUserRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(mockUserRepo.findBioById(userId)).thenReturn(Optional.of("Bio found by id"));
+
+        PasswordEncoder passwordEncoder = new minicode.com.security.BcryptPasswordEncoder();
+        RoleRepo roleRepo = mock(RoleRepo.class);
+        UserService userService = new UserService(mockUserRepo, passwordEncoder, roleRepo);
+
+        PublicProfileController controller = new PublicProfileController(userService);
+
+        assertEquals("Bio found by id", controller.getUserBio(userId).bio());
     }
 }

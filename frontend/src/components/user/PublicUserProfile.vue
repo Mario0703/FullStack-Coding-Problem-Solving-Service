@@ -51,10 +51,17 @@ onMounted(async () => {
               <v-icon icon="mdi-account-circle" size="80" />
             </v-avatar>
             <div class="text-h4 font-weight-bold">{{ publicUser.userName }}</div>
+            <p
+              v-if="publicUser.bio"
+              class="text-body-1 text-medium-emphasis mb-0 px-4"
+              style="white-space: pre-wrap"
+            >
+              {{ publicUser.bio }}
+            </p>
           </div>
 
           <v-row align="stretch" class="ma-n2">
-            <v-col cols="12" sm="6" class="d-flex pa-2">
+            <v-col cols="12" class="d-flex pa-2">
               <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   <v-icon icon="mdi-trophy" class="mr-2 text-amber-darken-2" />
@@ -66,7 +73,7 @@ onMounted(async () => {
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="6" class="d-flex pa-2">
+            <v-col cols="12" class="d-flex pa-2">
               <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   <v-icon icon="mdi-format-list-checks" class="mr-2" />
@@ -78,44 +85,45 @@ onMounted(async () => {
               </v-card>
             </v-col>
           </v-row>
+          <v-container>
+            <v-row align="stretch" class="ma-n2">
+              <v-col cols="12" class="d-flex pa-2">
+                <v-card color="success" class="w-100 h-100 d-flex flex-column" variant="tonal">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                    <v-icon icon="mdi-leaf" class="mr-2 text-success" />
+                    Easy challenges solved
+                  </v-card-title>
+                  <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-success">
+                    {{ publicUser.numberOfEasyChallengesSolved }}
+                  </v-card-text>
+                </v-card>
+              </v-col>
 
-          <v-row align="stretch" class="ma-n2">
-            <v-col cols="12" sm="4" class="d-flex pa-2">
-              <v-card color="success" class="w-200 h-100 d-flex flex-column" variant="tonal">
-                <v-card-title class="text-subtitle-1 font-weight-bold text-center">
-                  <v-icon icon="mdi-leaf" class="mr-2 text-success" />
-                  Easy challenges solved
-                </v-card-title>
-                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-success">
-                  {{ publicUser.numberOfEasyChallengesSolved }}
-                </v-card-text>
-              </v-card>
-            </v-col>
+              <v-col cols="12" class="d-flex pa-2">
+                <v-card color="warning" class="w-100 h-100 d-flex flex-column" variant="tonal">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                    <v-icon icon="mdi-fire" class="mr-2 text-warning" />
+                    Medium challenges solved
+                  </v-card-title>
+                  <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-warning">
+                    {{ publicUser.numberOfMediumChallengesSolved }}
+                  </v-card-text>
+                </v-card>
+              </v-col>
 
-            <v-col cols="12" sm="4" class="d-flex pa-2">
-              <v-card color="warning" class="w-100 h-100 d-flex flex-column" variant="tonal">
-                <v-card-title class="text-subtitle-1 font-weight-bold text-center">
-                  <v-icon icon="mdi-fire" class="mr-2 text-warning" />
-                  Medium challenges solved
-                </v-card-title>
-                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-warning">
-                  {{ publicUser.numberOfMediumChallengesSolved }}
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="13" sm="4" class="d-flex pa-2">
-              <v-card color="error" class="w-100 h-100 d-flex flex-column" variant="tonal">
-                <v-card-title class="text-subtitle-1 font-weight-bold text-center">
-                  <v-icon icon="mdi-skull" class="mr-2 text-error" />
-                  Hard challenges solved
-                </v-card-title>
-                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-error">
-                  {{ publicUser.numberOfHardChallengesSolved }}
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+              <v-col cols="12" class="d-flex pa-2">
+                <v-card color="error" class="w-100 h-100 d-flex flex-column" variant="tonal">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                    <v-icon icon="mdi-skull" class="mr-2 text-error" />
+                    Hard challenges solved
+                  </v-card-title>
+                  <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-error">
+                    {{ publicUser.numberOfHardChallengesSolved }}
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
       </v-card>
     </v-container>

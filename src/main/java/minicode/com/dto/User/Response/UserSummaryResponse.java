@@ -6,6 +6,7 @@ public record UserSummaryResponse(
         UUID userId,
         String userName,
         String email,
+        String bio,
         int score,
         int numberOfEasyChallengesSolved,
         int numberOfMediumChallengesSolved,

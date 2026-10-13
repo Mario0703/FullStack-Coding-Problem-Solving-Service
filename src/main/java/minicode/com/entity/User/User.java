@@ -31,6 +31,10 @@ public class User {
     @JsonIgnore
     private String password;
 
+    /** A short, public description the user can write about themselves. */
+    @Column(length = 500)
+    private String bio;
+
     @Column(columnDefinition = "integer default 0")
     private int score = 0;
 

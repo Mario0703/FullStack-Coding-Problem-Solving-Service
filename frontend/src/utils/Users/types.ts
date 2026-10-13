@@ -3,12 +3,14 @@ export type UserData = {
   userName: string
   email: string
   role: string
+  bio?: string | null
 }
 
 export type PublicUser = {
   userId: string
   userName: string
   email: string
+  bio?: string | null
   score: number
   numberOfEasyChallengesSolved: number
   numberOfMediumChallengesSolved: number
@@ -64,6 +66,10 @@ export type ChangePasswordRequest = {
 
 export type ChangeUserNameRequest = {
   newUserName: string
+}
+
+export type ChangeBioRequest = {
+  newBio: string
 }
 
 export type ForgotPasswordRequest = {

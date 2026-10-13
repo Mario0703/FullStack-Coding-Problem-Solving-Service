@@ -3,12 +3,14 @@ package minicode.com.service.User;
 import jakarta.transaction.Transactional;
 import minicode.com.auth.Access;
 import minicode.com.dto.Admin.CreateStaffRequest;
+import minicode.com.dto.User.Request.ChangeBioRequest;
 import minicode.com.dto.User.Request.ChangeEmailRequest;
 import minicode.com.dto.User.Request.ChangePasswordRequest;
 import minicode.com.dto.User.Request.ChangeUserNameRequest;
 import minicode.com.dto.User.Request.LoginRequest;
 import minicode.com.dto.User.Request.SignupRequest;
 import minicode.com.dto.User.Response.SolverResponse;
+import minicode.com.dto.User.Response.UserBioResponse;
 import minicode.com.dto.User.Response.UserSummaryResponse;
 import minicode.com.entity.Challange.SolvedChallenges;
 import minicode.com.entity.Roles.UserRole;
@@ -138,6 +140,16 @@ public class UserService {
     }
 
     @Transactional
+    public User changeBio(UUID userId, ChangeBioRequest request) {
+        User user = findById(userId);
+        String newBio = request.getNewBio() == null ? "" : request.getNewBio().trim();
+
+        // A blank bio clears the field, so profiles never show empty strings.
+        user.setBio(newBio.isBlank() ? null : newBio);
+        return userRepo.save(user);
+    }
+
+    @Transactional
     public User changePassword(UUID userId, ChangePasswordRequest request) {
         User user = findById(userId);
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -209,12 +221,18 @@ public class UserService {
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),
+                user.getBio(),
                 user.getScore(),
                 user.getNumberOfEasyChallengesSolved(),
                 user.getNumberOfMediumChallengesSolved(),
                 user.getNumberOfHardChallengesSolved(),
                 user.getTotalChallengesSolved()
         );
+    }
+
+    public UserBioResponse getUserBioById(UUID userId) {
+        findById(userId);
+        return new UserBioResponse(userRepo.findBioById(userId).orElse(null));
     }
 
     public User findByUserName(String userName) {

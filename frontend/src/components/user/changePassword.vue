@@ -85,7 +85,7 @@ function abortChange() {
       <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
         Save
       </v-btn>
-      <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="abortChange">
+      <v-btn type="button" variant="elevated" color="grey-darken-4" :disabled="isSubmitting" @click="abortChange">
         Abort
       </v-btn>
     </v-card-actions>

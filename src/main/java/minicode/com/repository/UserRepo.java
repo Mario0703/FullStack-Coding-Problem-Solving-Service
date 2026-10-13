@@ -18,6 +18,10 @@ public interface UserRepo extends JpaRepository<User, UUID> {
 
     Optional<User> findFirstByEmail(String email);
 
+    /** Fetches only the bio of one user by their id; empty when unset. */
+    @Query("select u.bio from User u where u.userId = :userId")
+    Optional<String> findBioById(@Param("userId") UUID userId);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("update User u set u.tokenUsage = u.tokenUsage + :tokens where u.userId = :userId")

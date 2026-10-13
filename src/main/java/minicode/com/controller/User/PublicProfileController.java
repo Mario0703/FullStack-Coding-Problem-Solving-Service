@@ -1,5 +1,6 @@
 package minicode.com.controller.User;
 
+import minicode.com.dto.User.Response.UserBioResponse;
 import minicode.com.dto.User.Response.UserSummaryResponse;
 import minicode.com.service.User.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,5 +23,10 @@ public class PublicProfileController {
     @GetMapping("/{userId}")
     public UserSummaryResponse getPublicProfile(@PathVariable UUID userId) {
         return userService.getUserSummaryById(userId);
+    }
+
+    @GetMapping("/{userId}/bio")
+    public UserBioResponse getUserBio(@PathVariable UUID userId) {
+        return userService.getUserBioById(userId);
     }
 }

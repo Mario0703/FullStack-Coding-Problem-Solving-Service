@@ -80,7 +80,7 @@ function clearForm() {
 </script>
 
 <template>
-  <v-card color="grey-lighten-1" variant="outlined">
+  <v-card>
     <v-card-title class="text-h6 font-weight-bold pa-4">{{ title }}</v-card-title>
 
     <v-card-text class="pa-4 pt-0">

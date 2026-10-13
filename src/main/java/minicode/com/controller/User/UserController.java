@@ -4,6 +4,7 @@ import minicode.com.dto.User.Request.ForgotPasswordRequest;
 import minicode.com.dto.User.Request.LoginRequest;
 import minicode.com.dto.User.Request.ResetPasswordRequest;
 import minicode.com.dto.User.Request.SignupRequest;
+import minicode.com.dto.User.Request.ChangeBioRequest;
 import minicode.com.dto.User.Request.ChangeEmailRequest;
 import minicode.com.dto.User.Request.ChangePasswordRequest;
 import minicode.com.dto.User.Request.ChangeUserNameRequest;
@@ -85,6 +86,14 @@ public class UserController {
             Authentication authentication
     ) {
         return userService.changeUserEmail(userService.getAuthenticatedUserId(authentication), request);
+    }
+
+    @PostMapping("/change-bio")
+    public User changeBio(
+            @Valid @RequestBody ChangeBioRequest request,
+            Authentication authentication
+    ) {
+        return userService.changeBio(userService.getAuthenticatedUserId(authentication), request);
     }
 
     @PostMapping("/change-password")

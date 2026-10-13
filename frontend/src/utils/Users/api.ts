@@ -1,5 +1,6 @@
 import { baseUrl } from '@/utils/api'
 import type {
+  ChangeBioRequest,
   ChangeEmailRequest,
   ChangePasswordRequest,
   ChangeUserNameRequest,
@@ -83,6 +84,17 @@ export async function changeUserName(newUserName: string): Promise<Response> {
   const body: ChangeUserNameRequest = { newUserName: newUserName.trim() }
 
   return fetch(`${baseUrl}/api/user/change-username`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+}
+
+export async function changeBio(newBio: string): Promise<Response> {
+  const body: ChangeBioRequest = { newBio }
+
+  return fetch(`${baseUrl}/api/user/change-bio`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

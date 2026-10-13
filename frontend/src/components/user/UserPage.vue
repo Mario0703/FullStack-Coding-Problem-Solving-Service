@@ -7,6 +7,7 @@ import UserDashBoard from "@/components/user/UserDashBoard.vue";
 import ChangeEmail from "@/components/user/ChangeEmail.vue";
 import ChangeUserName from "@/components/user/ChangeUserName.vue";
 import ChangePassword from "@/components/user/changePassword.vue";
+import UserBio from "@/components/user/UserBio.vue";
 import FadeContent from "@/components/ui/FadeContent.vue";
 
 const activeForm = ref<ActiveForm>(null);
@@ -81,6 +82,12 @@ function abortForm() {
                     <ChangeEmail @abort="abortForm" />
                   </v-card-text>
                 </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row class="ma-n2 mt-2">
+              <v-col cols="12" class="pa-2">
+                <UserBio />
               </v-col>
             </v-row>
           </v-card-text>

@@ -37,13 +37,15 @@ public class AuthenticatorUserAcrossTabs {
         UUID id = user.get().getId();
         String userName = user.get().getUserName();
         String email = user.get().getEmail();
+        String bio = user.get().getBio();
 
 
         userResponse UserResponse = new userResponse(
                 id,
                 userName,
                 email,
-                role
+                role,
+                bio
         );
         return UserResponse;
     }

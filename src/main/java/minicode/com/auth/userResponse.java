@@ -2,6 +2,6 @@ package minicode.com.auth;
 
 import java.util.UUID;
 
-public record userResponse(UUID userId, String userName, String email, String role) {
+public record userResponse(UUID userId, String userName, String email, String role, String bio) {
 
 }
