@@ -11,6 +11,10 @@ import {
 import SearchComponentChallange from '@/components/challenges/SearchComponentChallange.vue'
 import FilterComponentChallange from '@/components/challenges/FilterComponentChallange.vue'
 import {
+  difficultyChip,
+  formatChallengeValue,
+} from '@/utils/Challenges/Types/options'
+import {
   languageLabel,
   submissionStatusColor,
   submissionStatusLabel,
@@ -94,65 +98,85 @@ const totalPoints = computed(() =>
     hardQuestionsSolved.value,
   ),
 )
+
+interface StatCard {
+  title: string
+  icon: string
+  cardColor: string
+  avatarColor: string
+  sm: number
+  value: number
+}
+
+// One definition per stat so the template renders a single colored card,
+// with the same difficulty icons/colors used on the scoreboard and profile.
+const statCards = computed<StatCard[]>(() => [
+  {
+    title: 'Easy questions solved',
+    icon: 'mdi-leaf',
+    cardColor: 'green-lighten-4',
+    avatarColor: 'success',
+    sm: 4,
+    value: easyQuestionsSolved.value,
+  },
+  {
+    title: 'Medium questions solved',
+    icon: 'mdi-fire',
+    cardColor: 'yellow-lighten-4',
+    avatarColor: 'warning',
+    sm: 4,
+    value: mediumQuestionsSolved.value,
+  },
+  {
+    title: 'Hard questions solved',
+    icon: 'mdi-skull',
+    cardColor: 'red-lighten-4',
+    avatarColor: 'error',
+    sm: 4,
+    value: hardQuestionsSolved.value,
+  },
+  {
+    title: 'Total questions solved',
+    icon: 'mdi-playlist-check',
+    cardColor: 'blue-lighten-4',
+    avatarColor: 'blue',
+    sm: 6,
+    value: totalQuestionsSolved.value,
+  },
+  {
+    title: 'Total points earned',
+    icon: 'mdi-trophy',
+    cardColor: 'purple-lighten-4',
+    avatarColor: 'purple',
+    sm: 6,
+    value: totalPoints.value,
+  },
+])
 </script>
 
 <template>
   <v-container>
     <v-card color="grey-lighten-2" class="mb-8" variant="tonal">
-      <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Stats </v-card-title>
+      <v-card-title class="text-h4 font-weight-bold text-center pa-6 d-flex align-center justify-center">
+        <v-icon icon="mdi-chart-box-outline" color="indigo" class="mr-2" />
+        Stats
+      </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <v-row align="stretch">
-          <v-col cols="12" sm="4">
-            <v-card color="green-lighten-4" class="h-100" variant="tonal">
-              <v-card-title class="text-headline-medium font-weight-bold text-center">
-                Easy questions solved
-              </v-card-title>
+          <v-col v-for="card in statCards" :key="card.title" cols="12" :sm="card.sm">
+            <v-card :color="card.cardColor" class="h-100" variant="tonal">
+              <v-card-item>
+                <template #prepend>
+                  <v-avatar :color="card.avatarColor" size="44">
+                    <v-icon :icon="card.icon" size="26" />
+                  </v-avatar>
+                </template>
+                <v-card-title class="text-headline-medium font-weight-bold">
+                  {{ card.title }}
+                </v-card-title>
+              </v-card-item>
               <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ easyQuestionsSolved }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="4">
-            <v-card color="yellow-lighten-4" class="h-100" variant="tonal">
-              <v-card-title class="text-headline-medium font-weight-bold text-center">
-                Medium questions solved
-              </v-card-title>
-              <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ mediumQuestionsSolved }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="4">
-            <v-card color="red-lighten-4" class="h-100" variant="tonal">
-              <v-card-title class="text-headline-medium font-weight-bold text-center">
-                Hard questions solved
-              </v-card-title>
-              <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ hardQuestionsSolved }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="6">
-            <v-card color="blue-lighten-4" class="h-100" variant="tonal">
-              <v-card-title class="text-headline-medium font-weight-bold text-center">
-                Total questions solved
-              </v-card-title>
-              <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ totalQuestionsSolved }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="6">
-            <v-card color="purple-lighten-4" class="h-100" variant="tonal">
-              <v-card-title class="text-headline-medium font-weight-bold text-center">
-                Total points earned
-              </v-card-title>
-              <v-card-text class="text-display-medium font-weight-bold text-center">
-                {{ totalPoints }}
+                {{ card.value }}
               </v-card-text>
             </v-card>
           </v-col>
@@ -162,7 +186,10 @@ const totalPoints = computed(() =>
   </v-container>
   <v-container class="py-8">
     <v-card color="grey-lighten-2" variant="tonal">
-      <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Questions </v-card-title>
+      <v-card-title class="text-h4 font-weight-bold text-center pa-6 d-flex align-center justify-center">
+        <v-icon icon="mdi-file-question-outline" color="indigo" class="mr-2" />
+        Questions
+      </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <SearchComponentChallange v-model="search" class="mb-4" />
         <FilterComponentChallange v-model="selectedDifficulty" class="mb-6" />
@@ -184,22 +211,18 @@ const totalPoints = computed(() =>
               variant="tonal"
             >
               <v-card-item>
-                <v-card-title class="text-h6 font-weight-bold px-0">
+                <v-card-title class="text-h6 font-weight-bold px-0 d-flex align-center">
+                  <v-icon icon="mdi-code-braces" size="small" class="mr-2" />
                   {{ card.challengeName }}
                 </v-card-title>
                 <v-card-subtitle class="px-0 pt-2">
                   <v-chip
                     size="small"
                     variant="tonal"
-                    :color="
-                      card.difficulty === 'EASY'
-                        ? 'success'
-                        : card.difficulty === 'MEDIUM'
-                          ? 'warning'
-                          : 'error'
-                    "
+                    :color="difficultyChip(card.difficulty).color"
+                    :prepend-icon="difficultyChip(card.difficulty).prependIcon"
                   >
-                    {{ card.difficulty }}
+                    {{ formatChallengeValue(card.difficulty) }}
                   </v-chip>
                 </v-card-subtitle>
               </v-card-item>

@@ -2,6 +2,7 @@
 import { computed, reactive, ref } from 'vue'
 import { greetings, responseFormatter } from './AIClient'
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
+import ThoughtLine from '@/components/ui/ThoughtLine.vue'
 
 const props = defineProps<{
   challengeId?: string
@@ -15,15 +16,15 @@ const userInput = ref<string>('')
 const isAsking = ref(false)
 const hasError = ref('')
 
+// ThoughtLine trace for the in-flight AI request; appended as the agent works.
+const showThoughtLine = ref(false)
+const thinkingSteps = ref<string[]>([])
 
 const conversationId = crypto.randomUUID()
-
 
 const conversation = reactive(new Map<string, string[]>())
 conversation.set('user', [])
 conversation.set('ai', [])
-
-
 
 const messages = computed<{ role: string, text: string }[]>(() => {
   const userMessages = conversation.get('user') || []
@@ -57,6 +58,13 @@ async function askAI() {
 
   hasError.value = ''
   isAsking.value = true
+  showThoughtLine.value = true
+  thinkingSteps.value = ['Reading your question']
+
+  const stepTimer = window.setTimeout(() => {
+    thinkingSteps.value = [...thinkingSteps.value, 'Studying the challenge and your code']
+  }, 1200)
+
   const question = userInput.value
   conversation.get('user')?.push(question)
   userInput.value = ''
@@ -70,9 +78,11 @@ async function askAI() {
     })
     conversation.get('ai')?.push(answer)
   } catch (error) {
+    showThoughtLine.value = false
     hasError.value =
       error instanceof Error ? error.message : 'An unknown error occurred'
   } finally {
+    clearTimeout(stepTimer)
     isAsking.value = false
   }
 }
@@ -98,7 +108,14 @@ async function askAI() {
             <v-card-text class="text-body-2" style="white-space: pre-wrap">{{ message.text }}</v-card-text>
           </v-card>
         </div>
-
+        <div style="margin: 16px 0;">
+          <ThoughtLine
+            v-if="showThoughtLine"
+            class="mt-3"
+            :working="isAsking"
+            :steps="thinkingSteps"
+          />
+        </div>
         <v-textarea
           v-model="userInput"
           label="Ask the AI"
@@ -108,6 +125,7 @@ async function askAI() {
           hide-details="auto"
         ></v-textarea>
         <v-btn color="grey-darken-4" variant="elevated" class="mt-2" :loading="isAsking" @click="askAI"> Submit </v-btn>
+
       </v-card-text>
     </v-card>
   </v-container>

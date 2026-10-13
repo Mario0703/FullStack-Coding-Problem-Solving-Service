@@ -33,14 +33,16 @@ function abortForm() {
     <v-container class="d-flex flex-column align-center py-8 px-4">
       <v-sheet v-if="currentUser" class="w-100" color="transparent">
         <v-card color="grey-lighten-2" class="w-100 mx-auto" max-width="720" variant="tonal">
-          <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
+          <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2 d-flex align-center justify-center">
+            <v-icon icon="mdi-account-circle" color="indigo" class="mr-2" />
             User Information
           </v-card-title>
           <v-card-text class="pa-6 pt-2">
             <v-row align="stretch" class="ma-n2">
               <v-col cols="12" sm="6" class="d-flex pa-2">
                 <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
-                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center d-flex align-center justify-center">
+                    <v-icon icon="mdi-account-outline" size="small" color="indigo" class="mr-1" />
                     <span style="color: white">User name</span>
                   </v-card-title>
                   <template v-if="activeForm !== 'username'">
@@ -48,7 +50,7 @@ function abortForm() {
                       <span style="color: white">{{ currentUser.userName }}</span>
                     </v-card-text>
                     <v-card-actions class="justify-center pb-4">
-                      <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('username')">
+                      <v-btn size="large" variant="elevated" color="grey-darken-4" prepend-icon="mdi-account-edit-outline" @click="openForm('username')">
                         Change username
                       </v-btn>
                     </v-card-actions>
@@ -61,7 +63,8 @@ function abortForm() {
 
               <v-col cols="12" sm="6" class="d-flex pa-2">
                 <v-card color="grey-lighten-1"  class="w-100 h-100 d-flex flex-column" variant="outlined">
-                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center d-flex align-center justify-center">
+                    <v-icon icon="mdi-email-outline" size="small" color="indigo" class="mr-1" />
                     <span style="color: white">Email</span>
                   </v-card-title>
                   <template v-if="activeForm !== 'email'">
@@ -69,7 +72,7 @@ function abortForm() {
                       <span style="color: white">{{ currentUser.email }}</span>
                     </v-card-text>
                     <v-card-actions class="justify-center pb-4">
-                      <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('email')">
+                      <v-btn size="large" variant="elevated" color="grey-darken-4" prepend-icon="mdi-email-edit-outline" @click="openForm('email')">
                         Change email
                       </v-btn>
                     </v-card-actions>
@@ -82,7 +85,7 @@ function abortForm() {
             </v-row>
           </v-card-text>
           <v-card-actions v-if="activeForm !== 'password'" class="justify-center pb-6">
-            <v-btn size="large" color="grey-darken-4" variant="elevated" @click="openForm('password')">
+            <v-btn size="large" color="grey-darken-4" variant="elevated" prepend-icon="mdi-lock-reset" @click="openForm('password')">
               Change password
             </v-btn>
           </v-card-actions>

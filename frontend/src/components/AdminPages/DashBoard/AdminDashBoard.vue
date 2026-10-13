@@ -37,17 +37,24 @@ function goToStats() {
   >
     <v-container class="py-8">
       <v-container class="mb-8">
-        <v-card variant="text">
-          <v-card-title class="text-h4 font-weight-bold px-0"> Admin dashboard </v-card-title>
-          <div class="d-flex flex-wrap ga-2 mt-2">
-            <v-btn color="grey-darken-4" variant="elevated" @click="goToStats">Click to view stats</v-btn>
+        <v-card color="indigo" variant="tonal">
+          <v-card-item>
+            <template #prepend>
+              <v-avatar color="indigo" size="48">
+                <v-icon icon="mdi-view-dashboard-outline" size="28" />
+              </v-avatar>
+            </template>
+            <v-card-title class="text-h4 font-weight-bold">Admin dashboard</v-card-title>
+            <v-card-subtitle class="text-body-1">Create and review coding challenges.</v-card-subtitle>
+          </v-card-item>
+          <v-card-actions class="px-4 pb-4 flex-wrap ga-2">
+            <v-btn color="indigo" variant="elevated" prepend-icon="mdi-chart-areaspline" @click="goToStats">
+              View statistics
+            </v-btn>
             <AddStaff @created="staffCreated" />
-          </div>
-
-          <v-card-subtitle class="text-body-1 mt-2 px-0">
-            Create and review coding challenges.
-          </v-card-subtitle>
-          <Logout class="mt-4" />
+            <v-spacer />
+            <Logout />
+          </v-card-actions>
         </v-card>
       </v-container>
 

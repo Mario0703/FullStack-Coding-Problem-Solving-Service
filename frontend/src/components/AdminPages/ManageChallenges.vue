@@ -2,7 +2,7 @@
 import ErrorFeedback from '@/components/FeedBack/Error.vue'
 import InfoFeedback from '@/components/FeedBack/info.vue'
 import { onMounted, ref, watch } from "vue";
-import { formatChallengeValue } from '@/utils/Challenges/Types/options'
+import { formatChallengeValue, difficultyChip } from '@/utils/Challenges/Types/options'
 import { listChallenges } from '@/utils/Challenges/API/api'
 import type { Challenge, ChallengeSummary } from '@/utils/Challenges/Types/types'
 import { baseUrl } from '@/utils/api';
@@ -83,9 +83,12 @@ async function deleteChallenge(challengeId: string) {
 <template>
   <v-container>
     <v-card class="d-flex align-center justify-space-between mb-4" variant="text">
-      <v-card-title class="text-h5 font-weight-bold px-0">Challenges</v-card-title>
+      <v-card-title class="text-h5 font-weight-bold px-0 d-flex align-center">
+        <v-icon icon="mdi-clipboard-list-outline" color="indigo" class="mr-2" />
+        Challenges
+      </v-card-title>
       <v-card-actions class="pa-0">
-        <v-btn variant="text" color="grey-darken-4" :loading="isLoading" @click="loadChallengeSummery">Refresh</v-btn>
+        <v-btn variant="text" color="grey-darken-4" prepend-icon="mdi-refresh" :loading="isLoading" @click="loadChallengeSummery">Refresh</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -109,10 +112,17 @@ async function deleteChallenge(challengeId: string) {
 
     <v-row v-else>
       <v-col v-for="challenge in challenges" :key="challenge.id" cols="12" md="6">
-        <v-card color="grey-lighten-2" class="h-100" variant="tonal">
+        <v-card :color="difficultyChip(challenge.difficulty).color" class="h-100" variant="tonal">
           <v-card-title class="d-flex align-center justify-space-between">
-            {{ challenge.name }}
-            <v-chip size="small" color="primary">
+            <span class="d-flex align-center">
+              <v-icon icon="mdi-code-braces" size="small" class="mr-2" />
+              {{ challenge.name }}
+            </span>
+            <v-chip
+              size="small"
+              :color="difficultyChip(challenge.difficulty).color"
+              :prepend-icon="difficultyChip(challenge.difficulty).prependIcon"
+            >
               {{ formatChallengeValue(challenge.difficulty) }}
             </v-chip>
           </v-card-title>

@@ -28,11 +28,13 @@ export type SubmissionDetails = {
   code: string
 }
 
+import type { ChallengeDifficulty } from '@/utils/Challenges/Types/types'
+
 export type DashboardCard = {
   key: string
   challengeId: string
   challengeName: string
-  difficulty: string
+  difficulty: ChallengeDifficulty
   status: string
   isSolved: boolean
   languages: string[]

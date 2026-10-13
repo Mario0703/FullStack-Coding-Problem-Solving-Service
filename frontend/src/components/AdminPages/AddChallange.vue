@@ -42,7 +42,10 @@ async function createChallenge(challengeData: CreateChallengeForm) {
 
 <template>
   <v-card color="grey-lighten-2" class="mx-auto" max-width="720" variant="tonal">
-    <v-card-title class="text-h5 font-weight-bold pa-6">Add challenge</v-card-title>
+    <v-card-title class="text-h5 font-weight-bold pa-6 d-flex align-center">
+      <v-icon icon="mdi-plus-box-outline" color="indigo" class="mr-2" />
+      Add challenge
+    </v-card-title>
     <v-card-text>
       <ErrorFeedback
         v-if="formError"
