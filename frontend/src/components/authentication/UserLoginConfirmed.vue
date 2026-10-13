@@ -14,7 +14,7 @@ function SendUserToUser() {
 
 <template>
   <v-container class="d-flex flex-column align-center justify-center h-screen">
-    <v-card class="pa-4 text-center">
+    <v-card color="grey-lighten-2" class="pa-4 text-center" variant="tonal">
       <SuccessFeedback
         title="Login successful"
         :message="`Welcome, ${userName}! You are now logged in and can proceed to your user page.`"

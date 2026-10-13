@@ -119,7 +119,8 @@ defineExpose({ resetForm: actions.resetForm })
     <v-card
       v-for="option in fields.extraLanguages"
       :key="option"
-      variant="tonal"
+      color="grey-lighten-1"
+      variant="outlined"
       class="mb-4 pa-4"
     >
       <v-card-title class="px-0 pt-0 text-subtitle-1">{{ languageLabel(option) }} setup</v-card-title>
@@ -168,7 +169,8 @@ defineExpose({ resetForm: actions.resetForm })
     <v-card
       v-for="(testCase, index) in fields.testCases"
       :key="index"
-      variant="tonal"
+      color="grey-lighten-1"
+      variant="outlined"
       class="mb-4 pa-4"
     >
       <v-card-title class="px-0 pt-0 text-subtitle-1">Test case {{ index + 1 }}</v-card-title>
@@ -203,7 +205,8 @@ defineExpose({ resetForm: actions.resetForm })
     <v-card
       v-for="(example, index) in fields.examples"
       :key="index"
-      variant="tonal"
+      color="grey-lighten-1"
+      variant="outlined"
       class="mb-4 pa-4"
     >
       <v-card-title class="px-0 pt-0 text-subtitle-1">Example {{ index + 1 }}</v-card-title>

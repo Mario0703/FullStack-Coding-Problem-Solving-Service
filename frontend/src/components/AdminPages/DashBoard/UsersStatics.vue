@@ -13,7 +13,7 @@ const filteredUsers = computed(() => filterUsersBySearch(props.users, searchQuer
 </script>
 
 <template>
-  <v-card>
+  <v-card color="grey-lighten-2" variant="tonal">
     <v-card-title class="text-h4 font-weight-bold px-4 mb-4">Users</v-card-title>
     <v-card-text>
       <v-text-field v-model="searchQuery" label="Search users by username" variant="outlined" clearable hide-details>

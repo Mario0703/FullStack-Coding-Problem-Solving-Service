@@ -131,7 +131,7 @@ onMounted(loadChallenge)
       variant="tonal"
     />
 
-    <v-card v-else-if="challenge" variant="outlined">
+    <v-card v-else-if="challenge" color="grey-lighten-2" variant="tonal">
       <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
       <v-card-subtitle>
         {{ formatChallengeValue(challenge.difficulty) }} ·
@@ -143,7 +143,7 @@ onMounted(loadChallenge)
       </v-card-actions>
     </v-card>
 
-    <v-card v-if="examples.length > 0" variant="outlined" class="mt-4">
+    <v-card v-if="examples.length > 0" color="grey-lighten-2" variant="tonal" class="mt-4">
       <v-card-title class="text-h5">Examples</v-card-title>
       <v-list lines="three">
         <v-list-item v-for="(example, index) in examples" :key="example.id ?? index">
@@ -201,7 +201,7 @@ onMounted(loadChallenge)
     <h3 class="text-h5 mb-4">Solved by</h3>
     <v-row v-for="(person, index) in filteredSolvedByPeople" :key="index">
       <v-col>
-        <v-card class="mb-4">
+        <v-card color="grey-lighten-2" class="mb-4" variant="tonal">
           <v-card-title>{{ person.userName }}</v-card-title>
           <v-card-subtitle>Submitted: {{ formatSubmittedDate(person.solvedAt) }}</v-card-subtitle>
           <v-card-text>

@@ -60,7 +60,7 @@ function returnToLogin() {
 
 <template>
   <v-container class="d-flex align-center justify-center py-8">
-    <v-card class="w-100" max-width="480" border="primary" variant="outlined">
+    <v-card color="grey-lighten-2" class="w-100" max-width="480" variant="tonal">
       <v-card-title class="text-h5 font-weight-bold text-center pa-6">
         Reset password
       </v-card-title>

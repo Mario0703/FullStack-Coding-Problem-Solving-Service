@@ -109,7 +109,7 @@ async function deleteChallenge(challengeId: string) {
 
     <v-row v-else>
       <v-col v-for="challenge in challenges" :key="challenge.id" cols="12" md="6">
-        <v-card class="h-100" variant="outlined">
+        <v-card color="grey-lighten-2" class="h-100" variant="tonal">
           <v-card-title class="d-flex align-center justify-space-between">
             {{ challenge.name }}
             <v-chip size="small" color="primary">

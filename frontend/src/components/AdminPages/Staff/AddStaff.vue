@@ -22,7 +22,7 @@ function staffCreated(staff: UserData) {
       </v-btn>
     </template>
 
-    <v-card>
+    <v-card color="grey-lighten-2" variant="tonal">
       <v-card-title class="text-h5 font-weight-bold pa-6">
         Add staff to MiniLeetCode
       </v-card-title>

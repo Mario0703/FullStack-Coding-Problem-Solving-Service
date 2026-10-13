@@ -80,7 +80,7 @@ async function askAI() {
 
 <template>
   <v-container>
-    <v-card>
+    <v-card color="grey-lighten-2" variant="tonal">
       <v-card-title>MiniCode AI helper</v-card-title>
       <v-card-subtitle>Ask this AI for hints for the given challenge</v-card-subtitle>
       <v-card-text>
@@ -93,7 +93,7 @@ async function askAI() {
             v-for="(message, index) in messages"
             :key="index"
             :color="message.role === 'ai' ? 'green' : 'light-blue'"
-            variant="flat"
+            variant="tonal"
           >
             <v-card-text class="text-body-2" style="white-space: pre-wrap">{{ message.text }}</v-card-text>
           </v-card>

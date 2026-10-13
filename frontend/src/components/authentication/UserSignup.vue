@@ -183,7 +183,7 @@ function canSubmit(): boolean {
   </v-container>
 
   <v-dialog v-model="showPolicy" max-width="640" scrollable>
-    <v-card class="pa-4">
+    <v-card color="grey-lighten-2" class="pa-4" variant="tonal">
       <VPolicy
         v-model:has-agreed="agreedToPolicy"
         @accept="showPolicy = false"

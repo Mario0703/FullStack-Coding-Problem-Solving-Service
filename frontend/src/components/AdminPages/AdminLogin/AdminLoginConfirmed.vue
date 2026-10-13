@@ -11,7 +11,7 @@ function goToAdminDashboard() {
 
 <template>
   <v-container class="d-flex flex-column align-center justify-center h-screen">
-    <v-card class="pa-4 text-center">
+    <v-card color="grey-lighten-2" class="pa-4 text-center" variant="tonal">
       <SuccessFeedback
         title="Admin login successful"
         message="You are now logged in as an administrator."

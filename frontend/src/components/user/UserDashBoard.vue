@@ -98,12 +98,12 @@ const totalPoints = computed(() =>
 
 <template>
   <v-container>
-    <v-card class="border-lg mb-8 bg-surface" border="primary" variant="outlined">
+    <v-card color="grey-lighten-2" class="mb-8" variant="tonal">
       <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Stats </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <v-row align="stretch">
           <v-col cols="12" sm="4">
-            <v-card class="border-lg h-100 bg-green-lighten-4" border="primary" variant="outlined">
+            <v-card color="green-lighten-4" class="h-100" variant="tonal">
               <v-card-title class="text-headline-medium font-weight-bold text-center">
                 Easy questions solved
               </v-card-title>
@@ -114,7 +114,7 @@ const totalPoints = computed(() =>
           </v-col>
 
           <v-col cols="12" sm="4">
-            <v-card class="border-lg h-100 bg-yellow-lighten-4" border="primary" variant="outlined">
+            <v-card color="yellow-lighten-4" class="h-100" variant="tonal">
               <v-card-title class="text-headline-medium font-weight-bold text-center">
                 Medium questions solved
               </v-card-title>
@@ -125,7 +125,7 @@ const totalPoints = computed(() =>
           </v-col>
 
           <v-col cols="12" sm="4">
-            <v-card class="border-lg h-100 bg-red-lighten-4" border="primary" variant="outlined">
+            <v-card color="red-lighten-4" class="h-100" variant="tonal">
               <v-card-title class="text-headline-medium font-weight-bold text-center">
                 Hard questions solved
               </v-card-title>
@@ -136,7 +136,7 @@ const totalPoints = computed(() =>
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-card class="border-lg h-100 bg-blue-lighten-4" border="primary" variant="outlined">
+            <v-card color="blue-lighten-4" class="h-100" variant="tonal">
               <v-card-title class="text-headline-medium font-weight-bold text-center">
                 Total questions solved
               </v-card-title>
@@ -147,7 +147,7 @@ const totalPoints = computed(() =>
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-card class="border-lg h-100 bg-purple-lighten-4" border="primary" variant="outlined">
+            <v-card color="purple-lighten-4" class="h-100" variant="tonal">
               <v-card-title class="text-headline-medium font-weight-bold text-center">
                 Total points earned
               </v-card-title>
@@ -161,7 +161,7 @@ const totalPoints = computed(() =>
     </v-card>
   </v-container>
   <v-container class="py-8">
-    <v-card color="grey-lighten-2" class="border-lg bg-surface" border="primary" variant="elevated">
+    <v-card color="grey-lighten-2" variant="tonal">
       <v-card-title class="text-h4 font-weight-bold text-center pa-6"> Questions </v-card-title>
       <v-card-text class="pa-6 pt-0">
         <SearchComponentChallange v-model="search" class="mb-4" />
@@ -180,9 +180,9 @@ const totalPoints = computed(() =>
         <v-row align="stretch">
           <v-col v-for="card in filteredCards" :key="card.key" cols="12" sm="6" md="4">
             <v-card
-              class="border-lg h-100 d-flex flex-column bg-black"
-              border="primary"
-              variant="elevated"
+              color="grey-lighten-1"
+              class="h-100 d-flex flex-column"
+              variant="outlined"
             >
               <v-card-item>
                 <v-card-title class="text-h6 font-weight-bold px-0">
@@ -208,7 +208,7 @@ const totalPoints = computed(() =>
               <v-divider />
 
               <v-card-text class="flex-grow-1">
-                <v-list class="pa-0 bg-black" lines="one">
+                <v-list class="pa-0" bg-color="transparent" lines="one">
                   <v-list-item class="px-0" title="Status">
                     <template #append>
                       <v-chip

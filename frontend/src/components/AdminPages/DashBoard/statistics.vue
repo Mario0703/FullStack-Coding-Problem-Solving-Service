@@ -22,16 +22,16 @@ defineProps<{
 
   <v-row v-else-if="statistics">
     <v-col cols="12" sm="6" md="3">
-      <v-card variant="outlined"><v-card-title>Users</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfUsers }}</v-card-text></v-card>
+      <v-card color="grey-lighten-2" variant="tonal"><v-card-title>Users</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfUsers }}</v-card-text></v-card>
     </v-col>
     <v-col cols="12" sm="6" md="3">
-      <v-card variant="outlined"><v-card-title>Challenges</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfChallenges }}</v-card-text></v-card>
+      <v-card color="grey-lighten-2" variant="tonal"><v-card-title>Challenges</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfChallenges }}</v-card-text></v-card>
     </v-col>
     <v-col cols="12" sm="6" md="3">
-      <v-card variant="outlined"><v-card-title>Submissions</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfSubmittedSolutions }}</v-card-text></v-card>
+      <v-card color="grey-lighten-2" variant="tonal"><v-card-title>Submissions</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfSubmittedSolutions }}</v-card-text></v-card>
     </v-col>
     <v-col cols="12" sm="6" md="3">
-      <v-card variant="outlined"><v-card-title>Solved challenges</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfSolvedChallenges }}</v-card-text></v-card>
+      <v-card color="grey-lighten-2" variant="tonal"><v-card-title>Solved challenges</v-card-title><v-card-text class="text-h4">{{ statistics.numberOfSolvedChallenges }}</v-card-text></v-card>
     </v-col>
   </v-row>
 </template>

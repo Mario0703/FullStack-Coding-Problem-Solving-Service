@@ -67,7 +67,7 @@ onMounted(loadChallangeWithExamplesAndTestCases)
     />
 
     <template v-else-if="challenge && !editMode">
-      <v-card variant="outlined" class="mb-6">
+      <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
         <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
         <v-card-subtitle>
           {{ formatChallengeValue(challenge.difficulty) }} ·
@@ -76,7 +76,7 @@ onMounted(loadChallangeWithExamplesAndTestCases)
         <v-card-text>{{ challenge.description }}</v-card-text>
       </v-card>
 
-      <v-card variant="outlined" class="mb-6">
+      <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
         <v-card-title>Examples</v-card-title>
         <v-card-text v-if="challenge.inputOutput.length === 0">No examples available.</v-card-text>
         <v-list v-else>
@@ -93,7 +93,7 @@ onMounted(loadChallangeWithExamplesAndTestCases)
         </v-list>
       </v-card>
 
-      <v-card variant="outlined">
+      <v-card color="grey-lighten-2" variant="tonal">
         <v-card-title>Test cases</v-card-title>
         <v-card-text v-if="challenge.testCases.length === 0">No test cases available.</v-card-text>
         <v-list v-else>

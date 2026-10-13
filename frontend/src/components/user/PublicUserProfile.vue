@@ -32,7 +32,7 @@ onMounted(async () => {
       <v-progress-circular indeterminate color="primary" />
     </v-container>
 
-    <v-card v-else-if="publicUser" class="w-200" max-width="720" border="primary" variant="outlined">
+    <v-card v-else-if="publicUser" color="grey-lighten-2" class="w-200" max-width="720" variant="tonal">
       <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
         <v-icon icon="mdi-account-circle" class="mr-2" />
         User Profile
@@ -48,7 +48,7 @@ onMounted(async () => {
 
         <v-row align="stretch" class="ma-n2">
           <v-col cols="12" sm="6" class="d-flex pa-2">
-            <v-card class="w-100 h-100 d-flex flex-column" variant="outlined" border="primary">
+            <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
               <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                 <v-icon icon="mdi-trophy" class="mr-2 text-amber-darken-2" />
                 Score
@@ -60,7 +60,7 @@ onMounted(async () => {
           </v-col>
 
           <v-col cols="12" sm="6" class="d-flex pa-2">
-            <v-card class="w-100 h-100 d-flex flex-column" variant="outlined" border="primary">
+            <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
               <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                 <v-icon icon="mdi-format-list-checks" class="mr-2" />
                 Total challenges solved
@@ -74,7 +74,7 @@ onMounted(async () => {
 
         <v-row align="stretch" class="ma-n2">
           <v-col cols="12" sm="4" class="d-flex pa-2">
-            <v-card class="w-100 h-100 d-flex flex-column" variant="outlined" border="success">
+            <v-card color="success" class="w-100 h-100 d-flex flex-column" variant="tonal">
               <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                 <v-icon icon="mdi-leaf" class="mr-2 text-success" />
                 Easy challenges solved
@@ -86,7 +86,7 @@ onMounted(async () => {
           </v-col>
 
           <v-col cols="12" sm="4" class="d-flex pa-2">
-            <v-card class="w-100 h-100 d-flex flex-column" variant="outlined" border="warning">
+            <v-card color="warning" class="w-100 h-100 d-flex flex-column" variant="tonal">
               <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                 <v-icon icon="mdi-fire" class="mr-2 text-warning" />
                 Medium challenges solved
@@ -98,7 +98,7 @@ onMounted(async () => {
           </v-col>
 
           <v-col cols="12" sm="4" class="d-flex pa-2">
-            <v-card class="w-100 h-100 d-flex flex-column" variant="outlined" border="error">
+            <v-card color="error" class="w-100 h-100 d-flex flex-column" variant="tonal">
               <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                 <v-icon icon="mdi-skull" class="mr-2 text-error" />
                 Hard challenges solved

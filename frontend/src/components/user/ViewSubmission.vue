@@ -35,7 +35,7 @@ onMounted(async () => {
   <v-container>
     <ErrorFeedback v-if="errorMessage" :message="errorMessage" />
 
-    <v-card v-else-if="submission" class="border-lg" border="primary" variant="outlined">
+    <v-card v-else-if="submission" color="grey-lighten-2" variant="tonal">
       <v-card-title class="text-h5 font-weight-bold pa-6">
         {{ submission.challengeName }}
       </v-card-title>
@@ -66,7 +66,7 @@ onMounted(async () => {
             </v-card>
           </v-col>
           <v-col cols="12" sm="6">
-            <v-card class="h-100" variant="tonal">
+            <v-card class="h-100" color="grey-lighten-4" variant="tonal">
               <v-card-text>
                 <div class="text-caption text-medium-emphasis">Status</div>
                 <v-chip

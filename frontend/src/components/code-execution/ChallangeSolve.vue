@@ -157,7 +157,7 @@ async function executeCode() {
 
       <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
-      <v-card v-if="submissionStatus || output" class="mt-4">
+      <v-card v-if="submissionStatus || output" color="grey-lighten-2" class="mt-4" variant="tonal">
         <v-card-title class="d-flex align-center flex-wrap ga-3">
           Result
           <v-chip
