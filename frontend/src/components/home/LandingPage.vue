@@ -1,8 +1,78 @@
 <script setup lang="ts">
 import FadeContent from '@/components/ui/FadeContent.vue'
 import Footer from '@/components/navigation/Footer.vue'
+import LogoLoop, { type LogoItem } from '@/components/ui/LogoLoop.vue'
 import SplitFlapText from '@/components/home/SplitFlapText.vue'
 
+const supportedLanguageLogos: LogoItem[] = [
+  {
+    node: '<i class="mdi mdi-language-python"></i>',
+    title: 'Python',
+    href: 'https://www.python.org/',
+  },
+  {
+    node: '<i class="mdi mdi-language-java"></i>',
+    title: 'Java',
+    href: 'https://www.java.com/',
+  },
+  {
+    node: '<i class="mdi mdi-language-csharp"></i>',
+    title: 'C#',
+    href: 'https://dotnet.microsoft.com/languages/csharp',
+  },
+  {
+    node: '<i class="mdi mdi-language-cpp"></i>',
+    title: 'C++',
+    href: 'https://isocpp.org/',
+  },
+]
+const techLogos: LogoItem[] = [
+  {
+    src: '/logos/google.svg',
+    alt: 'Google',
+    href: 'https://www.google.com/',
+  },
+  {
+    src: '/logos/apple.svg',
+    alt: 'Apple',
+    href: 'https://www.apple.com/',
+  },
+  {
+    src: '/logos/netflix.svg',
+    alt: 'Netflix',
+    href: 'https://www.netflix.com/',
+  },
+  {
+    src: '/logos/meta.svg',
+    alt: 'Meta',
+    href: 'https://about.meta.com/',
+  },
+  {
+    src: '/logos/nvidia.svg',
+    alt: 'NVIDIA',
+    href: 'https://www.nvidia.com/',
+  },
+  {
+    src: '/logos/uber.svg',
+    alt: 'Uber',
+    href: 'https://www.uber.com/',
+  },
+  {
+    src: '/logos/airbnb.svg',
+    alt: 'Airbnb',
+    href: 'https://www.airbnb.com/',
+  },
+  {
+    src: '/logos/tesla.svg',
+    alt: 'Tesla',
+    href: 'https://www.tesla.com/',
+  },
+  {
+    src: '/logos/spotify.svg',
+    alt: 'Spotify',
+    href: 'https://www.spotify.com/',
+  },
+]
 </script>
 
 <template>
@@ -72,6 +142,30 @@ import SplitFlapText from '@/components/home/SplitFlapText.vue'
             <v-divider />
             <v-list-item title="Binary Tree" />
           </v-list>
+          <v-card-text class="text-body-1 px-0 pt-6 pb-0">
+            Solve challenges in the languages you already use:
+          </v-card-text>
+          <div
+            style="
+              height: 200px;
+              position: relative;
+              overflow: hidden;
+            "
+                  >
+          <LogoLoop
+            :logos="supportedLanguageLogos"
+            :speed="120"
+            direction="left"
+            :logo-height="40"
+            :gap="48"
+            :hover-speed="30"
+            :scale-on-hover="true"
+            :fade-out="true"
+            fade-out-color="#ffffff"
+            aria-label="Supported programming languages"
+            class="mt-4 mb-2"
+          />
+          </div>
         </v-card>
 
         <v-card variant="text">
@@ -100,7 +194,20 @@ import SplitFlapText from '@/components/home/SplitFlapText.vue'
         </v-card>
 
       <v-card variant="text">
-        <v-title>Questionss asked by </v-title>
+        <v-card-title class="px-0 font-weight-bold">Questions asked by</v-card-title>
+        <LogoLoop
+          :logos="techLogos"
+          :speed="120"
+          direction="left"
+          :logo-height="40"
+          :gap="48"
+          :hover-speed="30"
+          :scale-on-hover="true"
+          :fade-out="true"
+          fade-out-color="#ffffff"
+          aria-label="Tech companies our questions are based on"
+          class="mt-4 mb-2"
+        />
 
       </v-card>
 
