@@ -33,24 +33,24 @@ onMounted(async () => {
     ease="power2.out"
   >
     <v-container class="d-flex align-center justify-center py-8">
-      <ErrorFeedback v-if="loadError" :message="loadError" class="w-100 mb-4" style="max-width: 720px" />
+      <ErrorFeedback v-if="loadError" :message="loadError" class="w-100 mb-4" style="max-width: 960px" />
 
       <v-container v-else-if="isLoading" class="d-flex justify-center pa-4">
         <v-progress-circular indeterminate color="primary" />
       </v-container>
 
-      <v-card v-else-if="publicUser" color="grey-lighten-2" class="w-200" max-width="720" variant="tonal">
-        <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
+      <v-card v-else-if="publicUser" color="grey-lighten-2" class="w-100" max-width="960" variant="tonal">
+        <v-card-title class="text-h4 font-weight-bold text-center pa-8 pb-2">
           <v-icon icon="mdi-account-circle" class="mr-2" />
           User Profile
         </v-card-title>
 
-        <v-card-text class="pa-6 pt-2">
-          <div class="d-flex flex-column align-center ga-2 mb-6">
-            <v-avatar size="96" color="primary" variant="tonal">
-              <v-icon icon="mdi-account-circle" size="64" />
+        <v-card-text class="pa-8 pt-2">
+          <div class="d-flex flex-column align-center ga-3 mb-8">
+            <v-avatar size="120" color="primary" variant="tonal">
+              <v-icon icon="mdi-account-circle" size="80" />
             </v-avatar>
-            <div class="text-h5 font-weight-bold">{{ publicUser.userName }}</div>
+            <div class="text-h4 font-weight-bold">{{ publicUser.userName }}</div>
           </div>
 
           <v-row align="stretch" class="ma-n2">
@@ -60,7 +60,7 @@ onMounted(async () => {
                   <v-icon icon="mdi-trophy" class="mr-2 text-amber-darken-2" />
                   Score
                 </v-card-title>
-                <v-card-text class="text-h4 text-center flex-grow-1">
+                <v-card-text class="text-h3 text-center flex-grow-1 py-6">
                   {{ publicUser.score }}
                 </v-card-text>
               </v-card>
@@ -72,7 +72,7 @@ onMounted(async () => {
                   <v-icon icon="mdi-format-list-checks" class="mr-2" />
                   Total challenges solved
                 </v-card-title>
-                <v-card-text class="text-h4 text-center flex-grow-1">
+                <v-card-text class="text-h3 text-center flex-grow-1 py-6">
                   {{ publicUser.totalChallengesSolved }}
                 </v-card-text>
               </v-card>
@@ -81,12 +81,12 @@ onMounted(async () => {
 
           <v-row align="stretch" class="ma-n2">
             <v-col cols="12" sm="4" class="d-flex pa-2">
-              <v-card color="success" class="w-100 h-100 d-flex flex-column" variant="tonal">
+              <v-card color="success" class="w-200 h-100 d-flex flex-column" variant="tonal">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   <v-icon icon="mdi-leaf" class="mr-2 text-success" />
                   Easy challenges solved
                 </v-card-title>
-                <v-card-text class="text-h4 text-center flex-grow-1 text-success">
+                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-success">
                   {{ publicUser.numberOfEasyChallengesSolved }}
                 </v-card-text>
               </v-card>
@@ -98,19 +98,19 @@ onMounted(async () => {
                   <v-icon icon="mdi-fire" class="mr-2 text-warning" />
                   Medium challenges solved
                 </v-card-title>
-                <v-card-text class="text-h4 text-center flex-grow-1 text-warning">
+                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-warning">
                   {{ publicUser.numberOfMediumChallengesSolved }}
                 </v-card-text>
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="4" class="d-flex pa-2">
+            <v-col cols="13" sm="4" class="d-flex pa-2">
               <v-card color="error" class="w-100 h-100 d-flex flex-column" variant="tonal">
                 <v-card-title class="text-subtitle-1 font-weight-bold text-center">
                   <v-icon icon="mdi-skull" class="mr-2 text-error" />
                   Hard challenges solved
                 </v-card-title>
-                <v-card-text class="text-h4 text-center flex-grow-1 text-error">
+                <v-card-text class="text-h3 text-center flex-grow-1 py-6 text-error">
                   {{ publicUser.numberOfHardChallengesSolved }}
                 </v-card-text>
               </v-card>
