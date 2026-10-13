@@ -8,7 +8,9 @@ import java.util.UUID;
 
 /**
  * Resolves the authenticated {@link Authentication} to the persisted user id.
- * Only sessions holding the user role are accepted; the lookup is by username.
+ * Any authenticated session is accepted (users, moderators and admins alike),
+ * so staff accounts can also talk to miniHelper and solve challenges; the
+ * lookup is by username.
  */
 public final class CurrentUser {
 
@@ -16,7 +18,7 @@ public final class CurrentUser {
     }
 
     public static UUID id(UserRepo userRepo, Authentication authentication) {
-        Access.requireUser(authentication);
+        Access.requireAuthenticated(authentication);
         return userRepo.findFirstByUserName(authentication.getName())
                 .orElseThrow(UnauthenticatedException::authenticationRequired)
                 .getUserId();

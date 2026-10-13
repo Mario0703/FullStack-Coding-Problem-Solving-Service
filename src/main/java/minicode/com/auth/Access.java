@@ -22,10 +22,6 @@ public final class Access {
         return hasAuthority(authentication, "ROLE_ADMIN");
     }
 
-    public static boolean isUser(Authentication authentication) {
-        return hasAuthority(authentication, "ROLE_USER");
-    }
-
     public static void requireAuthenticated(Authentication authentication) {
         if (!isAuthenticated(authentication)) {
             throw UnauthenticatedException.authenticationRequired();
@@ -34,10 +30,6 @@ public final class Access {
 
     public static void requireAdmin(Authentication authentication) {
         requireRole(authentication, Access::isAdmin, ForbiddenAccessException.adminRequired());
-    }
-
-    public static void requireUser(Authentication authentication) {
-        requireRole(authentication, Access::isUser, ForbiddenAccessException.userRequired());
     }
 
     private static void requireRole(
