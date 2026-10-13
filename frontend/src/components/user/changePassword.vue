@@ -82,10 +82,10 @@ function abortChange() {
       autocomplete="new-password"
     />
     <v-card-actions class="justify-center ga-2 px-0">
-      <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+      <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
         Save
       </v-btn>
-      <v-btn type="button" variant="text" :disabled="isSubmitting" @click="abortChange">
+      <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="abortChange">
         Abort
       </v-btn>
     </v-card-actions>

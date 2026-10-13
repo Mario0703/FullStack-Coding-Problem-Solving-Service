@@ -25,6 +25,6 @@ const emit = defineEmits<{
         <v-icon icon="mdi-filter-variant" />
       </template>
     </v-select>
-    <v-btn variant="outlined" @click="emit('update:modelValue', null)"> Remove filter </v-btn>
+    <v-btn size="large" variant="outlined" color="grey-lighten-4" @click="emit('update:modelValue', null)"> Remove filter </v-btn>
   </div>
 </template>

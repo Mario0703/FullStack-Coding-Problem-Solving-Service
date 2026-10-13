@@ -144,8 +144,8 @@ async function executeCode() {
         <v-btn
           v-for="option in validLanguages"
           :key="option"
-          :color="language === option ? 'primary' : undefined"
-          :variant="language === option ? 'flat' : 'outlined'"
+          :color="language === option ? 'grey-darken-4' : undefined"
+          :variant="language === option ? 'elevated' : 'outlined'"
           size="small"
           @click="selectLanguage(option)"
         >
@@ -155,7 +155,7 @@ async function executeCode() {
 
       <CodeEditor v-model="code" :language="language" />
 
-      <v-btn color="primary" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
+      <v-btn size="large" class="mt-4" color="grey-darken-4" variant="elevated" :loading="isExecuting" @click="executeCode"> Submit </v-btn>
 
       <v-card v-if="submissionStatus || output" color="grey-lighten-2" class="mt-4" variant="tonal">
         <v-card-title class="d-flex align-center flex-wrap ga-3">

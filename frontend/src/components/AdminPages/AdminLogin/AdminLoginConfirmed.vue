@@ -17,7 +17,7 @@ function goToAdminDashboard() {
         message="You are now logged in as an administrator."
       />
     </v-card>
-    <v-btn color="primary" class="mt-4" @click="goToAdminDashboard">
+    <v-btn color="grey-darken-4" variant="elevated" class="mt-4" @click="goToAdminDashboard">
       Go to admin dashboard
     </v-btn>
   </v-container>

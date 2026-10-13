@@ -33,7 +33,7 @@ function goToStats() {
       <v-card variant="text">
         <v-card-title class="text-h4 font-weight-bold px-0"> Admin dashboard </v-card-title>
         <div class="d-flex flex-wrap ga-2 mt-2">
-          <v-btn @click="goToStats">CLick to view stats</v-btn>
+          <v-btn color="grey-darken-4" variant="elevated" @click="goToStats">Click to view stats</v-btn>
           <AddStaff @created="staffCreated" />
         </div>
 

@@ -102,7 +102,8 @@ function clearForm() {
 
         <v-btn
           type="submit"
-          color="primary"
+          color="grey-darken-4"
+          variant="elevated"
           :loading="isSubmitting"
           :disabled="isSubmitting"
         >

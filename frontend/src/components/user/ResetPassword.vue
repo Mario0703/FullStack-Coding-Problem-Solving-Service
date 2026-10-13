@@ -95,18 +95,18 @@ function returnToLogin() {
           />
 
           <v-card-actions class="justify-center ga-2 px-0 pt-4">
-            <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+            <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
               Reset password
             </v-btn>
-            <v-btn type="button" variant="text" :disabled="isSubmitting" @click="returnToLogin">
+            <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
               Back to login
             </v-btn>
           </v-card-actions>
         </v-form>
 
         <v-card-actions v-else class="justify-center ga-2 px-0">
-          <v-btn color="primary" @click="requestNewLink">Request a new link</v-btn>
-          <v-btn variant="text" @click="returnToLogin">Back to login</v-btn>
+          <v-btn color="grey-darken-4" variant="elevated" @click="requestNewLink">Request a new link</v-btn>
+          <v-btn variant="text" color="grey-darken-4" @click="returnToLogin">Back to login</v-btn>
         </v-card-actions>
       </v-card-text>
     </v-card>

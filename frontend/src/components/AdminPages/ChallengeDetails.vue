@@ -85,7 +85,6 @@ onMounted(loadChallangeWithExamplesAndTestCases)
             <v-list-item-subtitle class="mt-2">
               <strong>Input:</strong> {{ example.inputExample }}
             </v-list-item-subtitle>
-            <v-btn></v-btn>
             <v-list-item-subtitle>
               <strong>Output:</strong> {{ example.outputExample }}
             </v-list-item-subtitle>
@@ -108,12 +107,12 @@ onMounted(loadChallangeWithExamplesAndTestCases)
           </v-list-item>
         </v-list>
       </v-card>
-      <v-btn @click="editMode = true">Edit Challenge</v-btn>
-      <v-btn to="/admin/dashboard" variant="text" class="mt-4">Back to dashboard</v-btn>
+      <v-btn color="grey-darken-4" variant="elevated" @click="editMode = true">Edit Challenge</v-btn>
+      <v-btn to="/admin/dashboard" variant="text" color="grey-darken-4" class="mt-4">Back to dashboard</v-btn>
     </template>
     <v-container v-else-if="editMode && challenge">
       <ChangeChallange :current="challenge" @update="alterChallenge" />
-      <v-btn @click="editMode = false">Abort</v-btn>
+      <v-btn variant="text" color="grey-darken-4" @click="editMode = false">Abort</v-btn>
     </v-container>
   </v-container>
 </template>

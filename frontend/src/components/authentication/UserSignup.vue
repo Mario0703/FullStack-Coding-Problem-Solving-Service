@@ -178,7 +178,7 @@ function canSubmit(): boolean {
         You must agree to the privacy policy to create an account.
       </div>
 
-      <v-btn type="submit" color="primary" :disabled="!agreedToPolicy">Sign up</v-btn>
+      <v-btn type="submit" color="grey-darken-4" variant="elevated" :disabled="!agreedToPolicy">Sign up</v-btn>
     </v-form>
   </v-container>
 
@@ -191,7 +191,7 @@ function canSubmit(): boolean {
       />
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="showPolicy = false">Close</v-btn>
+        <v-btn variant="text" color="grey-darken-4" @click="showPolicy = false">Close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

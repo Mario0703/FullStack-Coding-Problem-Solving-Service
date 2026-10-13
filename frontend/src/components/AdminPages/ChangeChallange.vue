@@ -29,7 +29,7 @@ const updatedChallenge = ref<Challenge>({
     <v-select v-model="updatedChallenge.difficulty" :items="difficultyOptions" required />
     <v-text-field disabled :value="props.current.category" />
     <v-select v-model="updatedChallenge.category" :items="categoryOptions" required />
-    <v-btn type="submit">Update Challenge</v-btn>
+    <v-btn type="submit" color="grey-darken-4" variant="elevated">Update Challenge</v-btn>
   </v-form>
 </template>
 

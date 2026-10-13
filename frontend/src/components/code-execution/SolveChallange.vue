@@ -139,7 +139,7 @@ onMounted(loadChallenge)
       </v-card-subtitle>
       <v-card-text class="text-body-1">{{ challenge.description }}</v-card-text>
       <v-card-actions>
-        <v-btn to="/challenges" variant="text">Back to challenges</v-btn>
+        <v-btn to="/challenges" variant="text" color="grey-darken-4">Back to challenges</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -214,7 +214,8 @@ onMounted(loadChallenge)
           </v-card-text>
           <v-card-actions>
             <v-btn
-              color="primary"
+              color="grey-darken-4"
+              variant="elevated"
               :to="{ name: 'publicProfile', params: { userId: person.userId } }"
             >
               View profile

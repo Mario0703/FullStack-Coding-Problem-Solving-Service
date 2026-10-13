@@ -49,8 +49,8 @@ function decline() {
     </v-alert>
 
     <v-card-actions class="px-0">
-      <v-btn color="primary" @click="accept">Accept</v-btn>
-      <v-btn variant="text" @click="decline">Decline</v-btn>
+      <v-btn color="grey-darken-4" variant="elevated" @click="accept">Accept</v-btn>
+      <v-btn variant="text" color="grey-darken-4" @click="decline">Decline</v-btn>
     </v-card-actions>
   </v-sheet>
 </template>

@@ -229,7 +229,7 @@ defineExpose({ resetForm: actions.resetForm })
       />
     </v-card>
 
-    <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+    <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
       Create challenge
     </v-btn>
   </v-form>

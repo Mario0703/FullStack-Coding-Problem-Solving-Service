@@ -175,14 +175,13 @@ const totalPoints = computed(() =>
           item-value="value"
           clearable
           hide-details
-          variant="outlined"
         />
         <v-row align="stretch">
           <v-col v-for="card in filteredCards" :key="card.key" cols="12" sm="6" md="4">
             <v-card
               color="grey-lighten-1"
               class="h-100 d-flex flex-column"
-              variant="outlined"
+              variant="tonal"
             >
               <v-card-item>
                 <v-card-title class="text-h6 font-weight-bold px-0">
@@ -258,7 +257,11 @@ const totalPoints = computed(() =>
                       </template>
                     </v-list-item>
                     <v-list-item>
-                      <v-btn @click="viewSubmissionDetails(card.submissionId ?? '')">
+                      <v-btn
+                        color="grey-darken-4"
+                        variant="elevated"
+                        @click="viewSubmissionDetails(card.submissionId ?? '')"
+                      >
                         View Details
                       </v-btn>
                     </v-list-item>

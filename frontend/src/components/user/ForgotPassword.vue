@@ -76,10 +76,10 @@ function returnToLogin() {
           />
 
           <v-card-actions class="justify-center ga-2 px-0 pt-4">
-            <v-btn type="submit" color="primary" :loading="isSubmitting" :disabled="isSubmitting">
+            <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
               Request reset
             </v-btn>
-            <v-btn type="button" variant="text" :disabled="isSubmitting" @click="returnToLogin">
+            <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
               Back to login
             </v-btn>
           </v-card-actions>

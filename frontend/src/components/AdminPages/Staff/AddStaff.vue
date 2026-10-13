@@ -17,7 +17,7 @@ function staffCreated(staff: UserData) {
 <template>
   <v-dialog v-model="isDialogOpen" max-width="1000">
     <template #activator="{ props: activatorProps }">
-      <v-btn v-bind="activatorProps" color="primary">
+      <v-btn v-bind="activatorProps" color="grey-darken-4" variant="elevated">
         Add staff to MiniLeetCode
       </v-btn>
     </template>
@@ -43,7 +43,7 @@ function staffCreated(staff: UserData) {
       </v-card-text>
 
       <v-card-actions class="justify-end pa-6">
-        <v-btn variant="text" @click="isDialogOpen = false">Close</v-btn>
+        <v-btn variant="text" color="grey-darken-4" @click="isDialogOpen = false">Close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

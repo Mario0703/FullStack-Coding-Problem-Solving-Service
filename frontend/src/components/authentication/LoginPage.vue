@@ -102,7 +102,8 @@ const emit = defineEmits<{
       <ForgotPasswordLink v-if="props.allowEmailLogin && props.loginWithEmail" />
       <v-btn
         type="submit"
-        color="primary"
+        color="grey-darken-4"
+        variant="elevated"
         :loading="props.isSubmitting"
         :disabled="props.isSubmitting"
       >

@@ -20,7 +20,7 @@ function SendUserToUser() {
         :message="`Welcome, ${userName}! You are now logged in and can proceed to your user page.`"
       />
     </v-card>
-    <v-btn color="primary" class="mt-4" @click="SendUserToUser">
+    <v-btn color="grey-darken-4" variant="elevated" class="mt-4" @click="SendUserToUser">
       Go to my user page
     </v-btn>
   </v-container>

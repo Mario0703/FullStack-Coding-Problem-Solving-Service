@@ -39,8 +39,8 @@ function goToLogin() {
       <div class="text-end">
         <v-btn
           class="text-none"
-          color="success"
-          variant="flat"
+          color="grey-darken-4"
+          variant="elevated"
           rounded
           @click="goToLogin"
         >

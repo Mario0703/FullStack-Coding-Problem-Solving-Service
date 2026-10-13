@@ -107,7 +107,7 @@ async function askAI() {
           variant="outlined"
           hide-details="auto"
         ></v-textarea>
-        <v-btn color="primary" class="mt-2" :loading="isAsking" @click="askAI"> Submit </v-btn>
+        <v-btn color="grey-darken-4" variant="elevated" class="mt-2" :loading="isAsking" @click="askAI"> Submit </v-btn>
       </v-card-text>
     </v-card>
   </v-container>

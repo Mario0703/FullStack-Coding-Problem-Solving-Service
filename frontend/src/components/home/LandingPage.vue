@@ -12,7 +12,7 @@ import Footer from '@/components/navigation/Footer.vue'
       </v-card-text>
       <v-card-actions class="mt-5 px-0">
         <RouterLink to="/Signup">
-          <v-btn variant="flat" color="white"  size="large" prepend-icon="mdi-account-plus" > Create an account</v-btn>
+          <v-btn variant="elevated" color="grey-darken-4" size="large" prepend-icon="mdi-account-plus"> Create an account</v-btn>
         </RouterLink>
       </v-card-actions>
     </v-card>
@@ -32,7 +32,7 @@ import Footer from '@/components/navigation/Footer.vue'
       </v-card-text>
       <v-card-actions class="mt-5 px-0">
         <RouterLink to="/challenges">
-          <v-btn variant="flat" color="white"  size="large" prepend-icon="mdi-eye">Start by viewing available challenges</v-btn>
+          <v-btn variant="elevated" color="grey-darken-4" size="large" prepend-icon="mdi-eye">Start by viewing available challenges</v-btn>
         </RouterLink>
       </v-card-actions>
     </v-card>
@@ -80,7 +80,7 @@ import Footer from '@/components/navigation/Footer.vue'
       </v-list>
       <v-card-actions class="mt-5 px-0">
         <RouterLink to="/Signup">
-          <v-btn color="white"  size="large" variant="flat">Get started for free</v-btn>
+          <v-btn color="grey-darken-4" size="large" variant="elevated">Get started for free</v-btn>
         </RouterLink>
       </v-card-actions>
     </v-card>
@@ -102,7 +102,7 @@ import Footer from '@/components/navigation/Footer.vue'
       </v-card-text>
       <v-card-actions class="mt-5 px-0">
         <RouterLink to="/challenges">
-          <v-btn color="white"  size="large" variant="flat">Browse all challenges</v-btn>
+          <v-btn color="grey-darken-4" size="large" variant="elevated">Browse all challenges</v-btn>
         </RouterLink>
       </v-card-actions>
     </v-card>
