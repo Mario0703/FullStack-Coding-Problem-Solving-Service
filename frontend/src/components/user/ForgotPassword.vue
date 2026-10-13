@@ -6,6 +6,7 @@ import { validateForgotPassword } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 import { readErrorMessage } from "@/utils/apiError";
+import FadeContent from "@/components/ui/FadeContent.vue";
 
 const router = useRouter();
 const email = ref("");
@@ -50,41 +51,48 @@ function returnToLogin() {
 </script>
 
 <template>
-  <v-container class="d-flex align-center justify-center py-8">
-    <v-card color="grey-lighten-2" class="w-100" max-width="480" variant="tonal">
-      <v-card-title class="text-h5 font-weight-bold text-center pa-6">
-        Forgot password
-      </v-card-title>
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <v-container class="d-flex align-center justify-center py-8">
+      <v-card color="grey-lighten-2" class="w-100" max-width="480" variant="tonal">
+        <v-card-title class="text-h5 font-weight-bold text-center pa-6">
+          Forgot password
+        </v-card-title>
 
-      <v-card-subtitle class="text-body-1 px-6 pb-0">
-        Enter your email address to request a password reset.
-      </v-card-subtitle>
+        <v-card-subtitle class="text-body-1 px-6 pb-0">
+          Enter your email address to request a password reset.
+        </v-card-subtitle>
 
-      <v-card-text class="pa-6 pt-0">
+        <v-card-text class="pa-6 pt-0">
 
-        <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
-        <ErrorFeedback v-if="requestError" :message="requestError" class="mb-4" />
-        <SuccessFeedback v-if="successMessage" :message="successMessage" class="mb-4" />
+          <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
+          <ErrorFeedback v-if="requestError" :message="requestError" class="mb-4" />
+          <SuccessFeedback v-if="successMessage" :message="successMessage" class="mb-4" />
 
-        <v-form @submit.prevent="submitForgotPassword">
-          <v-text-field
-            v-model="email"
-            label="Email"
-            placeholder="Type your email"
-            type="email"
-            autocomplete="email"
-          />
+          <v-form @submit.prevent="submitForgotPassword">
+            <v-text-field
+              v-model="email"
+              label="Email"
+              placeholder="Type your email"
+              type="email"
+              autocomplete="email"
+            />
 
-          <v-card-actions class="justify-center ga-2 px-0 pt-4">
-            <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
-              Request reset
-            </v-btn>
-            <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
-              Back to login
-            </v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-container>
+            <v-card-actions class="justify-center ga-2 px-0 pt-4">
+              <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
+                Request reset
+              </v-btn>
+              <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
+                Back to login
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-container>
+  </FadeContent>
 </template>

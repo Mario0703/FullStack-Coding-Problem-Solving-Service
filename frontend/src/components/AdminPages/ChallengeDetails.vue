@@ -10,6 +10,7 @@ import {
   getChallengeTestCases,
   listChallenges,
 } from '@/utils/Challenges/API/api'
+import FadeContent from '@/components/ui/FadeContent.vue'
 
 const route = useRoute()
 const challenge = ref<Challenge | null>(null)
@@ -54,67 +55,74 @@ onMounted(loadChallangeWithExamplesAndTestCases)
 </script>
 
 <template>
-  <v-container class="py-8">
-    <v-container v-if="isLoading" class="d-flex justify-center pa-8">
-      <v-progress-circular indeterminate color="primary" />
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <v-container class="py-8">
+      <v-container v-if="isLoading" class="d-flex justify-center pa-8">
+        <v-progress-circular indeterminate color="primary" />
+      </v-container>
+
+      <ErrorFeedback
+        v-else-if="loadError"
+        title="Challenge unavailable"
+        :message="loadError"
+        variant="tonal"
+      />
+
+      <template v-else-if="challenge && !editMode">
+        <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
+          <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
+          <v-card-subtitle>
+            {{ formatChallengeValue(challenge.difficulty) }} ·
+            {{ formatChallengeValue(challenge.category) }}
+          </v-card-subtitle>
+          <v-card-text>{{ challenge.description }}</v-card-text>
+        </v-card>
+
+        <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
+          <v-card-title>Examples</v-card-title>
+          <v-card-text v-if="challenge.inputOutput.length === 0">No examples available.</v-card-text>
+          <v-list v-else>
+            <v-list-item v-for="(example, index) in challenge.inputOutput" :key="index">
+              <v-list-item-title>Example {{ index + 1 }}</v-list-item-title>
+              <v-list-item-subtitle class="mt-2">
+                <strong>Input:</strong> {{ example.inputExample }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle>
+                <strong>Output:</strong> {{ example.outputExample }}
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+        <v-card color="grey-lighten-2" variant="tonal">
+          <v-card-title>Test cases</v-card-title>
+          <v-card-text v-if="challenge.testCases.length === 0">No test cases available.</v-card-text>
+          <v-list v-else>
+            <v-list-item v-for="(testCase, index) in challenge.testCases" :key="index">
+              <v-list-item-title>Test case {{ index + 1 }}</v-list-item-title>
+              <v-list-item-subtitle class="mt-2">
+                <strong>Input:</strong> {{ testCase.testInput }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle>
+                <strong>Output:</strong> {{ testCase.testOutput }}
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-card>
+        <v-btn color="grey-darken-4" variant="elevated" @click="editMode = true">Edit Challenge</v-btn>
+        <v-btn to="/admin/dashboard" variant="text" color="grey-darken-4" class="mt-4">Back to dashboard</v-btn>
+      </template>
+      <v-container v-else-if="editMode && challenge">
+        <ChangeChallange :current="challenge" @update="alterChallenge" />
+        <v-btn variant="text" color="grey-darken-4" @click="editMode = false">Abort</v-btn>
+      </v-container>
     </v-container>
-
-    <ErrorFeedback
-      v-else-if="loadError"
-      title="Challenge unavailable"
-      :message="loadError"
-      variant="tonal"
-    />
-
-    <template v-else-if="challenge && !editMode">
-      <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
-        <v-card-title class="text-h4">{{ challenge.name }}</v-card-title>
-        <v-card-subtitle>
-          {{ formatChallengeValue(challenge.difficulty) }} ·
-          {{ formatChallengeValue(challenge.category) }}
-        </v-card-subtitle>
-        <v-card-text>{{ challenge.description }}</v-card-text>
-      </v-card>
-
-      <v-card color="grey-lighten-2" class="mb-6" variant="tonal">
-        <v-card-title>Examples</v-card-title>
-        <v-card-text v-if="challenge.inputOutput.length === 0">No examples available.</v-card-text>
-        <v-list v-else>
-          <v-list-item v-for="(example, index) in challenge.inputOutput" :key="index">
-            <v-list-item-title>Example {{ index + 1 }}</v-list-item-title>
-            <v-list-item-subtitle class="mt-2">
-              <strong>Input:</strong> {{ example.inputExample }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle>
-              <strong>Output:</strong> {{ example.outputExample }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-      </v-card>
-
-      <v-card color="grey-lighten-2" variant="tonal">
-        <v-card-title>Test cases</v-card-title>
-        <v-card-text v-if="challenge.testCases.length === 0">No test cases available.</v-card-text>
-        <v-list v-else>
-          <v-list-item v-for="(testCase, index) in challenge.testCases" :key="index">
-            <v-list-item-title>Test case {{ index + 1 }}</v-list-item-title>
-            <v-list-item-subtitle class="mt-2">
-              <strong>Input:</strong> {{ testCase.testInput }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle>
-              <strong>Output:</strong> {{ testCase.testOutput }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-      </v-card>
-      <v-btn color="grey-darken-4" variant="elevated" @click="editMode = true">Edit Challenge</v-btn>
-      <v-btn to="/admin/dashboard" variant="text" color="grey-darken-4" class="mt-4">Back to dashboard</v-btn>
-    </template>
-    <v-container v-else-if="editMode && challenge">
-      <ChangeChallange :current="challenge" @update="alterChallenge" />
-      <v-btn variant="text" color="grey-darken-4" @click="editMode = false">Abort</v-btn>
-    </v-container>
-  </v-container>
+  </FadeContent>
 </template>
 
 <style scoped></style>

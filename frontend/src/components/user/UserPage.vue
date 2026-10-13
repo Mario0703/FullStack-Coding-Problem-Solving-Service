@@ -7,6 +7,7 @@ import UserDashBoard from "@/components/user/UserDashBoard.vue";
 import ChangeEmail from "@/components/user/ChangeEmail.vue";
 import ChangeUserName from "@/components/user/ChangeUserName.vue";
 import ChangePassword from "@/components/user/changePassword.vue";
+import FadeContent from "@/components/ui/FadeContent.vue";
 
 const activeForm = ref<ActiveForm>(null);
 
@@ -23,71 +24,78 @@ function abortForm() {
 </script>
 
 <template>
-  <v-container class="d-flex flex-column align-center py-8 px-4">
-    <v-sheet v-if="currentUser" class="w-100" color="transparent">
-      <v-card color="grey-lighten-2" class="w-100 mx-auto" max-width="720" variant="tonal">
-        <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
-          User Information
-        </v-card-title>
-        <v-card-text class="pa-6 pt-2">
-          <v-row align="stretch" class="ma-n2">
-            <v-col cols="12" sm="6" class="d-flex pa-2">
-              <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
-                <v-card-title class="text-subtitle-1 font-weight-bold text-center">
-                  <span style="color: white">User name</span>
-                </v-card-title>
-                <template v-if="activeForm !== 'username'">
-                  <v-card-text class="text-body-1 text-center flex-grow-1">
-                    <span style="color: white">{{ currentUser.userName }}</span>
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <v-container class="d-flex flex-column align-center py-8 px-4">
+      <v-sheet v-if="currentUser" class="w-100" color="transparent">
+        <v-card color="grey-lighten-2" class="w-100 mx-auto" max-width="720" variant="tonal">
+          <v-card-title class="text-h5 font-weight-bold text-center pa-6 pb-2">
+            User Information
+          </v-card-title>
+          <v-card-text class="pa-6 pt-2">
+            <v-row align="stretch" class="ma-n2">
+              <v-col cols="12" sm="6" class="d-flex pa-2">
+                <v-card color="grey-lighten-1" class="w-100 h-100 d-flex flex-column" variant="outlined">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                    <span style="color: white">User name</span>
+                  </v-card-title>
+                  <template v-if="activeForm !== 'username'">
+                    <v-card-text class="text-body-1 text-center flex-grow-1">
+                      <span style="color: white">{{ currentUser.userName }}</span>
+                    </v-card-text>
+                    <v-card-actions class="justify-center pb-4">
+                      <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('username')">
+                        Change username
+                      </v-btn>
+                    </v-card-actions>
+                  </template>
+                  <v-card-text v-else>
+                    <ChangeUserName @abort="abortForm" />
                   </v-card-text>
-                  <v-card-actions class="justify-center pb-4">
-                    <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('username')">
-                      Change username
-                    </v-btn>
-                  </v-card-actions>
-                </template>
-                <v-card-text v-else>
-                  <ChangeUserName @abort="abortForm" />
-                </v-card-text>
-              </v-card>
-            </v-col>
+                </v-card>
+              </v-col>
 
-            <v-col cols="12" sm="6" class="d-flex pa-2">
-              <v-card color="grey-lighten-1"  class="w-100 h-100 d-flex flex-column" variant="outlined">
-                <v-card-title class="text-subtitle-1 font-weight-bold text-center">
-                  <span style="color: white">Email</span>
-                </v-card-title>
-                <template v-if="activeForm !== 'email'">
-                  <v-card-text class="text-body-1 text-center flex-grow-1 text-break">
-                    <span style="color: white">{{ currentUser.email }}</span>
+              <v-col cols="12" sm="6" class="d-flex pa-2">
+                <v-card color="grey-lighten-1"  class="w-100 h-100 d-flex flex-column" variant="outlined">
+                  <v-card-title class="text-subtitle-1 font-weight-bold text-center">
+                    <span style="color: white">Email</span>
+                  </v-card-title>
+                  <template v-if="activeForm !== 'email'">
+                    <v-card-text class="text-body-1 text-center flex-grow-1 text-break">
+                      <span style="color: white">{{ currentUser.email }}</span>
+                    </v-card-text>
+                    <v-card-actions class="justify-center pb-4">
+                      <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('email')">
+                        Change email
+                      </v-btn>
+                    </v-card-actions>
+                  </template>
+                  <v-card-text v-else>
+                    <ChangeEmail @abort="abortForm" />
                   </v-card-text>
-                  <v-card-actions class="justify-center pb-4">
-                    <v-btn size="large" variant="elevated" color="grey-darken-4" @click="openForm('email')">
-                      Change email
-                    </v-btn>
-                  </v-card-actions>
-                </template>
-                <v-card-text v-else>
-                  <ChangeEmail @abort="abortForm" />
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions v-if="activeForm !== 'password'" class="justify-center pb-6">
-          <v-btn size="large" color="grey-darken-4" variant="elevated" @click="openForm('password')">
-            Change password
-          </v-btn>
-        </v-card-actions>
-        <v-card-text v-else class="pa-6 pt-0">
-          <ChangePassword @abort="abortForm" />
-        </v-card-text>
-        <v-card-actions class="justify-center pb-6">
-          <Logout />
-        </v-card-actions>
-      </v-card>
-      <UserDashBoard />
-    </v-sheet>
-    <v-card-text v-else class="text-body-1">No user data available.</v-card-text>
-  </v-container>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions v-if="activeForm !== 'password'" class="justify-center pb-6">
+            <v-btn size="large" color="grey-darken-4" variant="elevated" @click="openForm('password')">
+              Change password
+            </v-btn>
+          </v-card-actions>
+          <v-card-text v-else class="pa-6 pt-0">
+            <ChangePassword @abort="abortForm" />
+          </v-card-text>
+          <v-card-actions class="justify-center pb-6">
+            <Logout />
+          </v-card-actions>
+        </v-card>
+        <UserDashBoard />
+      </v-sheet>
+      <v-card-text v-else class="text-body-1">No user data available.</v-card-text>
+    </v-container>
+  </FadeContent>
 </template>

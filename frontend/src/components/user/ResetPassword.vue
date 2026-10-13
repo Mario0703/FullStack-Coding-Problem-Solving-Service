@@ -6,6 +6,7 @@ import { validateResetPassword } from "@/utils/Users/validation";
 import ErrorFeedback from "@/components/FeedBack/Error.vue";
 import SuccessFeedback from "@/components/FeedBack/Succes.vue";
 import { readErrorMessage } from "@/utils/apiError";
+import FadeContent from "@/components/ui/FadeContent.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -59,56 +60,63 @@ function returnToLogin() {
 </script>
 
 <template>
-  <v-container class="d-flex align-center justify-center py-8">
-    <v-card color="grey-lighten-2" class="w-100" max-width="480" variant="tonal">
-      <v-card-title class="text-h5 font-weight-bold text-center pa-6">
-        Reset password
-      </v-card-title>
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <v-container class="d-flex align-center justify-center py-8">
+      <v-card color="grey-lighten-2" class="w-100" max-width="480" variant="tonal">
+        <v-card-title class="text-h5 font-weight-bold text-center pa-6">
+          Reset password
+        </v-card-title>
 
-      <v-card-subtitle class="text-body-1 px-6 pb-0">
-        Choose a new password for your account.
-      </v-card-subtitle>
+        <v-card-subtitle class="text-body-1 px-6 pb-0">
+          Choose a new password for your account.
+        </v-card-subtitle>
 
-      <v-card-text class="pa-6 pt-0">
+        <v-card-text class="pa-6 pt-0">
 
-        <ErrorFeedback
-          v-if="isTokenMissing"
-          message="This reset link is incomplete. Please request a new reset link."
-          class="mb-4"
-        />
-        <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
-        <ErrorFeedback v-if="resetError" :message="resetError" class="mb-4" />
-        <SuccessFeedback v-if="resetSuccess" :message="resetSuccess" class="mb-4" />
-
-        <v-form v-if="!isTokenMissing" @submit.prevent="submitResetPassword">
-          <v-text-field
-            v-model="newPassword"
-            label="New password"
-            type="password"
-            autocomplete="new-password"
+          <ErrorFeedback
+            v-if="isTokenMissing"
+            message="This reset link is incomplete. Please request a new reset link."
+            class="mb-4"
           />
-          <v-text-field
-            v-model="confirmNewPassword"
-            label="Confirm new password"
-            type="password"
-            autocomplete="new-password"
-          />
+          <ErrorFeedback v-if="validationError" :message="validationError" class="mb-4" />
+          <ErrorFeedback v-if="resetError" :message="resetError" class="mb-4" />
+          <SuccessFeedback v-if="resetSuccess" :message="resetSuccess" class="mb-4" />
 
-          <v-card-actions class="justify-center ga-2 px-0 pt-4">
-            <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
-              Reset password
-            </v-btn>
-            <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
-              Back to login
-            </v-btn>
+          <v-form v-if="!isTokenMissing" @submit.prevent="submitResetPassword">
+            <v-text-field
+              v-model="newPassword"
+              label="New password"
+              type="password"
+              autocomplete="new-password"
+            />
+            <v-text-field
+              v-model="confirmNewPassword"
+              label="Confirm new password"
+              type="password"
+              autocomplete="new-password"
+            />
+
+            <v-card-actions class="justify-center ga-2 px-0 pt-4">
+              <v-btn type="submit" color="grey-darken-4" variant="elevated" :loading="isSubmitting" :disabled="isSubmitting">
+                Reset password
+              </v-btn>
+              <v-btn type="button" variant="text" color="grey-darken-4" :disabled="isSubmitting" @click="returnToLogin">
+                Back to login
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+
+          <v-card-actions v-else class="justify-center ga-2 px-0">
+            <v-btn color="grey-darken-4" variant="elevated" @click="requestNewLink">Request a new link</v-btn>
+            <v-btn variant="text" color="grey-darken-4" @click="returnToLogin">Back to login</v-btn>
           </v-card-actions>
-        </v-form>
-
-        <v-card-actions v-else class="justify-center ga-2 px-0">
-          <v-btn color="grey-darken-4" variant="elevated" @click="requestNewLink">Request a new link</v-btn>
-          <v-btn variant="text" color="grey-darken-4" @click="returnToLogin">Back to login</v-btn>
-        </v-card-actions>
-      </v-card-text>
-    </v-card>
-  </v-container>
+        </v-card-text>
+      </v-card>
+    </v-container>
+  </FadeContent>
 </template>

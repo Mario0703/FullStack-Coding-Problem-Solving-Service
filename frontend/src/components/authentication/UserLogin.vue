@@ -5,6 +5,7 @@ import { loadCurrentUser } from '@/utils/Users/state'
 import { getLoginValidationErrors } from '@/utils/Login/UserInputCheck.ts'
 import LoginPage from '@/components/authentication/LoginPage.vue'
 import { loginFactory } from '@/utils/Login/LoginFactory.ts'
+import FadeContent from '@/components/ui/FadeContent.vue'
 
 const router = useRouter()
 const name = ref('')
@@ -50,13 +51,20 @@ async function login() {
 </script>
 
 <template>
-  <LoginPage
-    login-title="Login to your account"
-    :login-error="loginError"
-    :login="login"
-    :is-submitting="isSubmitting"
-    v-model:login-with-email="loginWithEmail"
-    v-model:name="name"
-    v-model:password="password"
-  />
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <LoginPage
+      login-title="Login to your account"
+      :login-error="loginError"
+      :login="login"
+      :is-submitting="isSubmitting"
+      v-model:login-with-email="loginWithEmail"
+      v-model:name="name"
+      v-model:password="password"
+    />
+  </FadeContent>
 </template>

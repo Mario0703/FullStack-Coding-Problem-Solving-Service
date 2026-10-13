@@ -8,6 +8,7 @@ import type { Challenge } from '@/utils/Challenges/Types/types'
 import type { UserData } from '@/utils/Users/types'
 import { useRouter } from 'vue-router'
 import SuccessFeedback from '@/components/FeedBack/Succes.vue'
+import FadeContent from '@/components/ui/FadeContent.vue'
 
 const newChallenge = ref<Challenge | null>(null)
 const successMessage = ref('')
@@ -28,35 +29,42 @@ function goToStats() {
 </script>
 
 <template>
-  <v-container class="py-8">
-    <v-container class="mb-8">
-      <v-card variant="text">
-        <v-card-title class="text-h4 font-weight-bold px-0"> Admin dashboard </v-card-title>
-        <div class="d-flex flex-wrap ga-2 mt-2">
-          <v-btn color="grey-darken-4" variant="elevated" @click="goToStats">Click to view stats</v-btn>
-          <AddStaff @created="staffCreated" />
-        </div>
+  <FadeContent
+    :blur="true"
+    :duration="1000"
+    :initial-opacity="0"
+    ease="power2.out"
+  >
+    <v-container class="py-8">
+      <v-container class="mb-8">
+        <v-card variant="text">
+          <v-card-title class="text-h4 font-weight-bold px-0"> Admin dashboard </v-card-title>
+          <div class="d-flex flex-wrap ga-2 mt-2">
+            <v-btn color="grey-darken-4" variant="elevated" @click="goToStats">Click to view stats</v-btn>
+            <AddStaff @created="staffCreated" />
+          </div>
 
-        <v-card-subtitle class="text-body-1 mt-2 px-0">
-          Create and review coding challenges.
-        </v-card-subtitle>
-        <Logout class="mt-4" />
-      </v-card>
+          <v-card-subtitle class="text-body-1 mt-2 px-0">
+            Create and review coding challenges.
+          </v-card-subtitle>
+          <Logout class="mt-4" />
+        </v-card>
+      </v-container>
+
+      <AddChallange @created="addChallenge" />
+
+      <SuccessFeedback
+        v-if="successMessage"
+        :message="successMessage"
+        variant="tonal"
+        class="mt-4"
+      />
+
+      <v-divider class="my-8" />
+
+      <ManageChallenges :new-challenge="newChallenge" />
     </v-container>
-
-    <AddChallange @created="addChallenge" />
-
-    <SuccessFeedback
-      v-if="successMessage"
-      :message="successMessage"
-      variant="tonal"
-      class="mt-4"
-    />
-
-    <v-divider class="my-8" />
-
-    <ManageChallenges :new-challenge="newChallenge" />
-  </v-container>
+  </FadeContent>
 </template>
 
 <style scoped></style>
